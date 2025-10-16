@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Calendar, Gear, Database } from '@phosphor-icons/react';
+import { Users, Calendar, Gear, Database, Moon, Sun, Sparkle } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
 import type { YearData } from '@/types';
 import { getCurrentYear } from '@/lib/dateUtils';
@@ -9,10 +9,14 @@ import PeopleTab from '@/components/PeopleTab';
 import ScheduleTab from '@/components/ScheduleTab';
 import ManualTab from '@/components/ManualTab';
 import DataTab from '@/components/DataTab';
+import { Button } from '@/components/ui/button';
+
+type Theme = 'light' | 'dark' | 'twilight';
 
 function App() {
   const currentYear = getCurrentYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [theme, setTheme] = useKV<Theme>('giessplan-theme', 'light');
   
   const [yearData, setYearData] = useKV<YearData>(`giessplan-year-${selectedYear}`, {
     year: selectedYear,
@@ -20,6 +24,13 @@ function App() {
     schedules: [],
     lastModified: new Date().toISOString()
   });
+
+  useEffect(() => {
+    document.documentElement.classList.remove('light', 'dark', 'twilight');
+    if (theme) {
+      document.documentElement.classList.add(theme);
+    }
+  }, [theme]);
 
   const updateYearData = (updates: Partial<YearData>) => {
     setYearData((current) => {
@@ -43,6 +54,20 @@ function App() {
     });
   };
 
+  const cycleTheme = () => {
+    setTheme((currentTheme) => {
+      if (currentTheme === 'light') return 'dark';
+      if (currentTheme === 'dark') return 'twilight';
+      return 'light';
+    });
+  };
+
+  const getThemeIcon = () => {
+    if (theme === 'dark') return <Moon size={18} weight="fill" />;
+    if (theme === 'twilight') return <Sparkle size={18} weight="fill" />;
+    return <Sun size={18} weight="fill" />;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Toaster />
@@ -60,6 +85,15 @@ function App() {
             </div>
             
             <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={cycleTheme}
+                title={`Theme: ${theme}`}
+              >
+                {getThemeIcon()}
+              </Button>
+              
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
