@@ -1,7 +1,22 @@
+/**
+ * tailwind.config.js - TailwindCSS Configuration
+ * 
+ * This file configures TailwindCSS for the GießPlan application styling system.
+ * Configuration includes:
+ * - Custom theme loading from theme.json for design system consistency
+ * - Extended color palette with semantic color variables for theming
+ * - Custom screen breakpoints for responsive design and PWA support
+ * - Consistent spacing scale using CSS custom properties
+ * - Border radius system for component design consistency
+ * - Dark mode support with data attribute selector
+ * - Content scanning for optimal bundle size
+ */
+
 import fs from "fs";
 
 /** @type {import('tailwindcss').Config} */
 
+// Load custom theme configuration if available
 let theme = {};
 try {
   const themePath = "./theme.json";
@@ -12,18 +27,23 @@ try {
 } catch (err) {
   console.error('failed to parse custom styles', err)
 }
+
+// Default theme configuration with design system tokens
 const defaultTheme = {
   container: {
     center: true,
     padding: "2rem",
   },
   extend: {
+    // Custom screen breakpoints for responsive design
     screens: {
-      coarse: { raw: "(pointer: coarse)" },
-      fine: { raw: "(pointer: fine)" },
-      pwa: { raw: "(display-mode: standalone)" },
+      coarse: { raw: "(pointer: coarse)" }, // Touch devices
+      fine: { raw: "(pointer: fine)" }, // Mouse/trackpad devices
+      pwa: { raw: "(display-mode: standalone)" }, // PWA mode
     },
+    // Semantic color system using CSS custom properties
     colors: {
+      // Neutral color scale (grays)
       neutral: {
         1: "var(--color-neutral-1)",
         2: "var(--color-neutral-2)",
@@ -51,6 +71,7 @@ const defaultTheme = {
         a12: "var(--color-neutral-a12)",
         contrast: "var(--color-neutral-contrast)",
       },
+      // Primary accent color scale
       accent: {
         1: "var(--color-accent-1)",
         2: "var(--color-accent-2)",
@@ -66,6 +87,7 @@ const defaultTheme = {
         12: "var(--color-accent-12)",
         contrast: "var(--color-accent-contrast)",
       },
+      // Secondary accent color scale
       "accent-secondary": {
         1: "var(--color-accent-secondary-1)",
         2: "var(--color-accent-secondary-2)",
@@ -81,17 +103,21 @@ const defaultTheme = {
         12: "var(--color-accent-secondary-12)",
         contrast: "var(--color-accent-secondary-contrast)",
       },
+      // Foreground color system
       fg: {
         DEFAULT: "var(--color-fg)",
         secondary: "var(--color-fg-secondary)",
       },
+      // Background color system
       bg: {
         DEFAULT: "var(--color-bg)",
         inset: "var(--color-bg-inset)",
         overlay: "var(--color-bg-overlay)",
       },
+      // Focus ring color for accessibility
       "focus-ring": "var(--color-focus-ring)",
     },
+    // Consistent border radius system
     borderRadius: {
       sm: "var(--radius-sm)",
       md: "var(--radius-md)",
@@ -101,6 +127,7 @@ const defaultTheme = {
       full: "var(--radius-full)",
     },
   },
+  // Consistent spacing scale using design tokens
   spacing: {
     px: "var(--size-px)",
     0: "var(--size-0)",
@@ -138,10 +165,13 @@ const defaultTheme = {
     80: "var(--size-80)",
     96: "var(--size-96)",
   },
+  // Dark mode configuration using data attribute
   darkMode: ["selector", '[data-appearance="dark"]'],
 }
 
 export default {
+  // Content paths for class scanning
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  // Merge default theme with any custom theme overrides
   theme: { ...defaultTheme, ...theme },
 };

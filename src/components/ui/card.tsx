@@ -1,7 +1,21 @@
+/**
+ * card.tsx - Flexible Card Component System
+ * 
+ * A comprehensive card component built for content organization and layout structure.
+ * Features:
+ * - Semantic card structure with header, content, and footer sections
+ * - Flexible grid-based header with automatic action placement
+ * - Consistent spacing and typography hierarchy
+ * - Support for borders, shadows, and semantic content areas
+ * - Responsive design with container queries
+ * - Composable architecture for various card layouts
+ */
+
 import { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
 
+// Main card container with consistent styling
 function Card({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
@@ -15,6 +29,7 @@ function Card({ className, ...props }: ComponentProps<"div">) {
   )
 }
 
+// Card header with grid layout for title/description and actions
 function CardHeader({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
@@ -28,6 +43,7 @@ function CardHeader({ className, ...props }: ComponentProps<"div">) {
   )
 }
 
+// Card title with semantic typography
 function CardTitle({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
@@ -38,6 +54,7 @@ function CardTitle({ className, ...props }: ComponentProps<"div">) {
   )
 }
 
+// Card description with muted styling
 function CardDescription({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
@@ -48,6 +65,7 @@ function CardDescription({ className, ...props }: ComponentProps<"div">) {
   )
 }
 
+// Card action area positioned in header grid
 function CardAction({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
@@ -61,6 +79,7 @@ function CardAction({ className, ...props }: ComponentProps<"div">) {
   )
 }
 
+// Main content area of the card
 function CardContent({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
@@ -71,6 +90,7 @@ function CardContent({ className, ...props }: ComponentProps<"div">) {
   )
 }
 
+// Card footer with optional border separator
 function CardFooter({ className, ...props }: ComponentProps<"div">) {
   return (
     <div

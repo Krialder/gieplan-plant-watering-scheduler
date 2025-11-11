@@ -1,7 +1,28 @@
+/**
+ * table.tsx - Styled Table Components
+ * 
+ * This file provides a complete set of table components for data display.
+ * Features:
+ * - Responsive table wrapper with horizontal scrolling
+ * - Semantic HTML table structure with proper accessibility
+ * - Consistent styling with design system integration  
+ * - Hover and selection states for interactive rows
+ * - Checkbox integration with proper alignment
+ * - Caption support for table descriptions
+ * - Full TypeScript support with prop forwarding
+ */
+
 import { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Main table component with responsive wrapper
+ * 
+ * @param className - Additional CSS classes to merge with default styles
+ * @param props - All HTML table element attributes
+ * @returns Table element wrapped in responsive container with horizontal scroll
+ */
 function Table({ className, ...props }: ComponentProps<"table">) {
   return (
     <div
@@ -17,6 +38,13 @@ function Table({ className, ...props }: ComponentProps<"table">) {
   )
 }
 
+/**
+ * Table header section component
+ * 
+ * @param className - Additional CSS classes to merge with default styles
+ * @param props - All HTML thead element attributes
+ * @returns Styled table header with bottom borders on rows
+ */
 function TableHeader({ className, ...props }: ComponentProps<"thead">) {
   return (
     <thead
@@ -27,6 +55,13 @@ function TableHeader({ className, ...props }: ComponentProps<"thead">) {
   )
 }
 
+/**
+ * Table body section component
+ * 
+ * @param className - Additional CSS classes to merge with default styles
+ * @param props - All HTML tbody element attributes
+ * @returns Styled table body with border management for last row
+ */
 function TableBody({ className, ...props }: ComponentProps<"tbody">) {
   return (
     <tbody
@@ -37,6 +72,13 @@ function TableBody({ className, ...props }: ComponentProps<"tbody">) {
   )
 }
 
+/**
+ * Table footer section component
+ * 
+ * @param className - Additional CSS classes to merge with default styles
+ * @param props - All HTML tfoot element attributes
+ * @returns Styled table footer with background and border styling
+ */
 function TableFooter({ className, ...props }: ComponentProps<"tfoot">) {
   return (
     <tfoot
@@ -50,12 +92,24 @@ function TableFooter({ className, ...props }: ComponentProps<"tfoot">) {
   )
 }
 
+/**
+ * Table row component with interactive states
+ * 
+ * @param className - Additional CSS classes to merge with default styles
+ * @param props - All HTML tr element attributes including data-state
+ * @returns Styled table row with hover and selection states
+ */
 function TableRow({ className, ...props }: ComponentProps<"tr">) {
   return (
     <tr
       data-slot="table-row"
       className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+        // Hover state for better UX
+        "hover:bg-muted/50",
+        // Selection state styling
+        "data-[state=selected]:bg-muted",
+        // Border and transition effects
+        "border-b transition-colors",
         className
       )}
       {...props}
@@ -63,12 +117,22 @@ function TableRow({ className, ...props }: ComponentProps<"tr">) {
   )
 }
 
+/**
+ * Table header cell component
+ * 
+ * @param className - Additional CSS classes to merge with default styles
+ * @param props - All HTML th element attributes
+ * @returns Styled table header cell with proper alignment and checkbox support
+ */
 function TableHead({ className, ...props }: ComponentProps<"th">) {
   return (
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        // Basic styling: height, padding, alignment, typography
+        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap",
+        // Checkbox integration with proper spacing and alignment
+        "[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
       {...props}
@@ -76,12 +140,22 @@ function TableHead({ className, ...props }: ComponentProps<"th">) {
   )
 }
 
+/**
+ * Table data cell component
+ * 
+ * @param className - Additional CSS classes to merge with default styles
+ * @param props - All HTML td element attributes
+ * @returns Styled table cell with consistent padding and checkbox support
+ */
 function TableCell({ className, ...props }: ComponentProps<"td">) {
   return (
     <td
       data-slot="table-cell"
       className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        // Basic cell styling with padding and alignment
+        "p-2 align-middle whitespace-nowrap",
+        // Checkbox integration with proper spacing and alignment
+        "[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
       {...props}
@@ -89,6 +163,13 @@ function TableCell({ className, ...props }: ComponentProps<"td">) {
   )
 }
 
+/**
+ * Table caption component for accessibility
+ * 
+ * @param className - Additional CSS classes to merge with default styles
+ * @param props - All HTML caption element attributes
+ * @returns Styled table caption for screen readers and table description
+ */
 function TableCaption({
   className,
   ...props

@@ -1,18 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!--
+  index.html - Main HTML Entry Point
+  
+  This file serves as the entry point for the GießPlan watering schedule application.
+  Features:
+  - Progressive Web App ready with proper viewport configuration
+  - Inter font family preloading for consistent typography
+  - React application mount point with TypeScript module loading
+  - Optimized font loading with preconnect hints for performance
+  - TailwindCSS integration through main.css stylesheet
+-->
+
 <head>
+    <!-- Document encoding and viewport for responsive design -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Application title for browser tab and bookmarks -->
     <title>GießPlan System - Watering Schedule Management</title>
+    
+    <!-- Font optimization: preconnect to Google Fonts for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Inter font family with multiple weights for consistent typography -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Main stylesheet including TailwindCSS and custom styles -->
     <link href="/src/main.css" rel="stylesheet" />
 </head>
 
 <body>
+    <!-- React application mount point -->
     <div id="root"></div>
+    
+    <!-- TypeScript React application entry point with Vite module loading -->
     <script type="module" src="/src/main.tsx"></script>
 </body>
 

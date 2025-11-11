@@ -1,7 +1,19 @@
+/**
+ * App.tsx - Main Application Component
+ * 
+ * This is the root component of the GießPlan (Watering Schedule) system for Rotkreuz-Institut BBW.
+ * Functions:
+ * - Manages application state including selected year and theme
+ * - Provides tabbed navigation between main features (People, Schedule, Manual, Data)
+ * - Handles theme switching (light, dark, twilight)
+ * - Manages year data persistence using localStorage
+ * - Renders header with application title and controls
+ */
+
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Calendar, Gear, Database, Moon, Sun, Sparkle } from '@phosphor-icons/react';
-import { useKV } from '@github/spark/hooks';
+import { Users, Calendar, Settings, Database, Moon, Sun, Sparkles } from 'lucide-react';
+import { useLocalKV } from '@/lib/storage';
 import type { YearData } from '@/types';
 import { getCurrentYear } from '@/lib/dateUtils';
 import { Toaster } from '@/components/ui/sonner';
@@ -11,20 +23,52 @@ import ManualTab from '@/components/ManualTab';
 import DataTab from '@/components/DataTab';
 import { Button } from '@/components/ui/button';
 
+// Supported theme types for the application
 type Theme = 'light' | 'dark' | 'twilight';
 
 function App() {
+  // Get current year and set as default selection
   const currentYear = getCurrentYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [theme, setTheme] = useKV<Theme>('giessplan-theme', 'light');
   
-  const [yearData, setYearData] = useKV<YearData>(`giessplan-year-${selectedYear}`, {
+  // Theme state persisted in localStorage
+  const [theme, setTheme] = useLocalKV<Theme>('giessplan-theme', 'light');
+  
+  // Year-specific data persisted in localStorage with unique key per year
+  const [yearData, setYearData] = useLocalKV<YearData>(`giessplan-year-${selectedYear}`, {
     year: selectedYear,
     people: [],
     schedules: [],
     lastModified: new Date().toISOString()
   });
 
+  // Migrate old schedules to add substitutes field if missing
+  useEffect(() => {
+    if (yearData && yearData.schedules) {
+      let needsMigration = false;
+      const migratedSchedules = yearData.schedules.map(schedule => {
+        const migratedAssignments = schedule.assignments.map(assignment => {
+          if (!assignment.substitutes) {
+            needsMigration = true;
+            return { ...assignment, substitutes: [] };
+          }
+          return assignment;
+        });
+        return { ...schedule, assignments: migratedAssignments };
+      });
+
+      if (needsMigration) {
+        console.log('Migrating old schedule data to add substitutes field');
+        setYearData(prev => ({
+          ...prev!,
+          schedules: migratedSchedules,
+          lastModified: new Date().toISOString()
+        }));
+      }
+    }
+  }, [selectedYear]); // Run when year changes
+
+  // Apply theme class to document root when theme changes
   useEffect(() => {
     document.documentElement.classList.remove('light', 'dark', 'twilight');
     if (theme) {
@@ -32,8 +76,10 @@ function App() {
     }
   }, [theme]);
 
+  // Update year data with partial changes while preserving existing data
   const updateYearData = (updates: Partial<YearData>) => {
     setYearData((current) => {
+      // Initialize with defaults if no current data
       if (!current) {
         return {
           year: selectedYear,
@@ -43,10 +89,11 @@ function App() {
           ...updates
         };
       }
+      // Merge updates with current data and update timestamp
       return {
         ...current,
         ...updates,
-        year: current.year,
+        year: current.year, // Preserve original year
         people: updates.people !== undefined ? updates.people : current.people,
         schedules: updates.schedules !== undefined ? updates.schedules : current.schedules,
         lastModified: new Date().toISOString()
@@ -54,6 +101,7 @@ function App() {
     });
   };
 
+  // Cycle through available themes in sequence
   const cycleTheme = () => {
     setTheme((currentTheme) => {
       if (currentTheme === 'light') return 'dark';
@@ -62,19 +110,24 @@ function App() {
     });
   };
 
+  // Get appropriate icon for current theme
+  // Get appropriate icon for current theme
   const getThemeIcon = () => {
-    if (theme === 'dark') return <Moon size={18} weight="fill" />;
-    if (theme === 'twilight') return <Sparkle size={18} weight="fill" />;
-    return <Sun size={18} weight="fill" />;
+    if (theme === 'dark') return <Moon size={18} />;
+    if (theme === 'twilight') return <Sparkles size={18} />;
+    return <Sun size={18} />;
   };
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Toast notification system */}
       <Toaster />
       
+      {/* Application header with title and controls */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
+            {/* Application title and subtitle */}
             <div>
               <h1 className="text-3xl font-bold text-foreground tracking-tight">
                 GießPlan System
@@ -84,6 +137,7 @@ function App() {
               </p>
             </div>
             
+            {/* Theme toggle and year selection controls */}
             <div className="flex items-center gap-4">
               <Button
                 variant="outline"
@@ -94,6 +148,7 @@ function App() {
                 {getThemeIcon()}
               </Button>
               
+              {/* Year selection dropdown */}
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
@@ -108,8 +163,10 @@ function App() {
         </div>
       </header>
 
+      {/* Main content area with tabbed navigation */}
       <main className="container mx-auto px-6 py-6">
         <Tabs defaultValue="people" className="w-full">
+          {/* Tab navigation bar */}
           <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="people" className="flex items-center gap-2">
               <Users size={18} />
@@ -120,7 +177,7 @@ function App() {
               <span className="hidden sm:inline">Zeitplan</span>
             </TabsTrigger>
             <TabsTrigger value="manual" className="flex items-center gap-2">
-              <Gear size={18} />
+              <Settings size={18} />
               <span className="hidden sm:inline">Manuell</span>
             </TabsTrigger>
             <TabsTrigger value="data" className="flex items-center gap-2">
@@ -129,6 +186,7 @@ function App() {
             </TabsTrigger>
           </TabsList>
 
+          {/* People management tab */}
           <TabsContent value="people" className="mt-0">
             {yearData && (
               <PeopleTab 
@@ -138,6 +196,7 @@ function App() {
             )}
           </TabsContent>
 
+          {/* Schedule generation tab */}
           <TabsContent value="schedule" className="mt-0">
             {yearData && (
               <ScheduleTab 
@@ -147,6 +206,7 @@ function App() {
             )}
           </TabsContent>
 
+          {/* Manual schedule editing tab */}
           <TabsContent value="manual" className="mt-0">
             {yearData && (
               <ManualTab 
@@ -156,6 +216,7 @@ function App() {
             )}
           </TabsContent>
 
+          {/* Data import/export tab */}
           <TabsContent value="data" className="mt-0">
             {yearData && (
               <DataTab 

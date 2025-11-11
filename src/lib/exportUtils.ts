@@ -1,12 +1,28 @@
+/**
+ * exportUtils.ts - Data Export and File Download Utilities
+ * 
+ * This module provides comprehensive data export functionality for the watering schedule system.
+ * Functions:
+ * - Generate properly formatted CSV files with German locale support
+ * - Export people data with complete statistics and status information
+ * - Export schedule data with assignment details and fairness metrics
+ * - Create JSON backups containing all system data
+ * - Handle file downloads with proper MIME types and encoding
+ * - Support Excel/Sheets compatibility with BOM and proper escaping
+ * - Provide year-level summary exports for reporting purposes
+ */
+
 import type { Person, Schedule, YearData } from '@/types';
 import { formatDateGerman } from './dateUtils';
 import { isPersonActive } from './fairnessEngine';
 
+// Generate CSV string from 2D array data with proper escaping
 export function generateCSV(data: string[][], includeHeader: boolean = true): string {
   return data
     .map(row => 
       row.map(cell => {
         const cellStr = String(cell);
+        // Escape cells containing commas, quotes, or newlines
         if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
           return `"${cellStr.replace(/"/g, '""')}"`;
         }
@@ -16,6 +32,7 @@ export function generateCSV(data: string[][], includeHeader: boolean = true): st
     .join('\n');
 }
 
+// Export people data as CSV with comprehensive information
 export function exportPeopleToCSV(people: Person[]): string {
   const headers = [
     'Name',
@@ -39,15 +56,19 @@ export function exportPeopleToCSV(people: Person[]): string {
     person.fairnessMetrics.assignmentsPerDayPresent.toFixed(4)
   ]);
   
+  // Add BOM for proper Excel/German locale support
   return '\uFEFF' + generateCSV([headers, ...rows]);
 }
 
+// Export schedule data as CSV with assignment details
 export function exportScheduleToCSV(schedule: Schedule, people: Person[]): string {
   const headers = [
     'Woche',
     'Startdatum',
     'Person 1',
     'Person 2',
+    'Ersatz 1',
+    'Ersatz 2',
     'Mentor vorhanden',
     'Fairness Person 1',
     'Fairness Person 2'
@@ -56,12 +77,16 @@ export function exportScheduleToCSV(schedule: Schedule, people: Person[]): strin
   const rows = schedule.assignments.map(assignment => {
     const person1 = people.find(p => p.id === assignment.assignedPeople[0]);
     const person2 = people.find(p => p.id === assignment.assignedPeople[1]);
+    const substitute1 = (assignment.substitutes && assignment.substitutes[0]) ? people.find(p => p.id === assignment.substitutes![0]) : null;
+    const substitute2 = (assignment.substitutes && assignment.substitutes[1]) ? people.find(p => p.id === assignment.substitutes![1]) : null;
     
     return [
       assignment.weekNumber.toString(),
       formatDateGerman(new Date(assignment.weekStartDate)),
       person1?.name || 'Unbekannt',
       person2?.name || '-',
+      substitute1?.name || '-',
+      substitute2?.name || '-',
       assignment.hasMentor ? 'Ja' : 'Nein',
       assignment.fairnessScores[0]?.toFixed(2) || '-',
       assignment.fairnessScores[1]?.toFixed(2) || '-'
@@ -71,6 +96,7 @@ export function exportScheduleToCSV(schedule: Schedule, people: Person[]): strin
   return '\uFEFF' + generateCSV([headers, ...rows]);
 }
 
+// Export year-level summary data as CSV
 export function exportYearDataToCSV(yearData: YearData): string {
   const headers = [
     'Jahr',
@@ -93,6 +119,7 @@ export function exportYearDataToCSV(yearData: YearData): string {
   return '\uFEFF' + generateCSV([headers, row]);
 }
 
+// Download CSV content as file
 export function downloadCSV(content: string, filename: string) {
   const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
@@ -106,13 +133,16 @@ export function downloadCSV(content: string, filename: string) {
   link.click();
   document.body.removeChild(link);
   
+  // Clean up object URL
   URL.revokeObjectURL(url);
 }
 
+// Export complete year data as formatted JSON backup
 export function exportJSONBackup(yearData: YearData): string {
   return JSON.stringify(yearData, null, 2);
 }
 
+// Download JSON content as file
 export function downloadJSON(content: string, filename: string) {
   const blob = new Blob([content], { type: 'application/json' });
   const link = document.createElement('a');
@@ -126,5 +156,6 @@ export function downloadJSON(content: string, filename: string) {
   link.click();
   document.body.removeChild(link);
   
+  // Clean up object URL
   URL.revokeObjectURL(url);
 }

@@ -1,8 +1,22 @@
+/**
+ * DataTab.tsx - Data Management and Export Component
+ * 
+ * This component handles data import/export functionality and displays system statistics.
+ * Functions:
+ * - Display overview statistics (people count, schedules, last modified date)
+ * - Export people data to CSV format for Excel/Sheets compatibility
+ * - Create complete JSON backups containing all system data
+ * - Provide data deletion functionality with multiple confirmations
+ * - Show system information and feature documentation
+ * - Display warnings and helpful information about data operations
+ * - Handle file downloads for CSV and JSON exports
+ */
+
 import type { YearData } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Download, Database, Trash, Info } from '@phosphor-icons/react';
+import { Download, Database, Trash, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { exportPeopleToCSV, exportJSONBackup, downloadCSV, downloadJSON } from '@/lib/exportUtils';
 import { formatDateGerman } from '@/lib/dateUtils';
@@ -14,18 +28,21 @@ interface DataTabProps {
 }
 
 export default function DataTab({ yearData, updateYearData, selectedYear }: DataTabProps) {
+  // Export people data as CSV file
   const handleExportPeople = () => {
     const csv = exportPeopleToCSV(yearData.people);
     downloadCSV(csv, `personen-${selectedYear}.csv`);
     toast.success('Personen exportiert');
   };
 
+  // Create complete JSON backup of all data
   const handleExportBackup = () => {
     const json = exportJSONBackup(yearData);
     downloadJSON(json, `giessplan-backup-${selectedYear}.json`);
     toast.success('Backup erstellt');
   };
 
+  // Clear all data with double confirmation for safety
   const handleClearData = () => {
     if (confirm('Alle Daten für dieses Jahr löschen? Diese Aktion kann nicht rückgängig gemacht werden!')) {
       if (confirm('Sind Sie sicher? Dies löscht ALLE Personen und Zeitpläne!')) {
@@ -40,6 +57,7 @@ export default function DataTab({ yearData, updateYearData, selectedYear }: Data
 
   return (
     <div className="space-y-6">
+      {/* Statistics overview card */}
       <Card>
         <CardHeader>
           <CardTitle>Datenübersicht</CardTitle>
@@ -69,6 +87,7 @@ export default function DataTab({ yearData, updateYearData, selectedYear }: Data
         </CardContent>
       </Card>
 
+      {/* Export functionality card */}
       <Card>
         <CardHeader>
           <CardTitle>Daten exportieren</CardTitle>
@@ -98,6 +117,7 @@ export default function DataTab({ yearData, updateYearData, selectedYear }: Data
             </Button>
           </div>
           
+          {/* Information about export formats */}
           <Alert>
             <Info size={20} />
             <AlertDescription>
@@ -108,6 +128,7 @@ export default function DataTab({ yearData, updateYearData, selectedYear }: Data
         </CardContent>
       </Card>
 
+      {/* Data management card */}
       <Card>
         <CardHeader>
           <CardTitle>Datenverwaltung</CardTitle>
@@ -116,6 +137,7 @@ export default function DataTab({ yearData, updateYearData, selectedYear }: Data
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Warning alert for destructive actions */}
           <Alert className="mb-4">
             <AlertDescription>
               <strong>Warnung:</strong> Das Löschen von Daten kann nicht rückgängig gemacht werden.
@@ -134,6 +156,7 @@ export default function DataTab({ yearData, updateYearData, selectedYear }: Data
         </CardContent>
       </Card>
 
+      {/* System information card */}
       <Card>
         <CardHeader>
           <CardTitle>Über GießPlan System</CardTitle>
@@ -154,6 +177,7 @@ export default function DataTab({ yearData, updateYearData, selectedYear }: Data
             </p>
           </div>
           
+          {/* Feature list */}
           <div className="border-t border-border pt-4 mt-4">
             <h4 className="font-semibold mb-2">Kernfunktionen</h4>
             <ul className="text-sm text-muted-foreground space-y-1">

@@ -1,7 +1,20 @@
+/**
+ * ManualTab.tsx - Manual Schedule Management Component
+ * 
+ * This component provides an interface for manually editing and adjusting watering schedules.
+ * Functions:
+ * - Future feature placeholder for manual schedule editing
+ * - Will allow editing individual week assignments
+ * - Will provide ability to swap people between assignments
+ * - Will support emergency overrides and special cases
+ * - Will include commenting system for assignment notes
+ * - Currently displays informational content about planned features
+ */
+
 import type { YearData } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info } from '@phosphor-icons/react';
+import { Info } from 'lucide-react';
 
 interface ManualTabProps {
   yearData: YearData;
@@ -19,6 +32,7 @@ export default function ManualTab({ yearData, updateYearData }: ManualTabProps) 
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Information about future functionality */}
           <Alert>
             <Info size={20} />
             <AlertDescription>
@@ -27,6 +41,7 @@ export default function ManualTab({ yearData, updateYearData }: ManualTabProps) 
             </AlertDescription>
           </Alert>
           
+          {/* Placeholder content showing planned features */}
           <div className="mt-6 space-y-4">
             <div className="border border-border rounded-lg p-6 text-center">
               <h3 className="font-semibold mb-2">Zukünftige Funktionen</h3>

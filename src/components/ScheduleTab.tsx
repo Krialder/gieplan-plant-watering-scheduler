@@ -1,3 +1,17 @@
+/**
+ * ScheduleTab.tsx - Schedule Generation Component
+ * 
+ * This component handles the automatic generation of watering schedules based on fairness algorithms.
+ * Functions:
+ * - Generate fair 6-week watering schedules with configurable parameters
+ * - Display existing schedules with week-by-week assignments
+ * - Export schedules to CSV format for external use
+ * - Delete unwanted schedules with confirmation
+ * - Show warnings when mentor requirements cannot be met
+ * - Validate input parameters and show appropriate error messages
+ * - Ensure time-proportional fairness in assignment distribution
+ */
+
 import { useState } from 'react';
 import type { YearData, Schedule } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,11 +20,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Trash, Download } from '@phosphor-icons/react';
+import { Calendar, Trash, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { generateSchedule } from '@/lib/scheduleEngine';
-import { getTodayString, formatDateGerman } from '@/lib/dateUtils';
+import { getTodayString, formatDateGerman, getNextMonday, parseDate, formatDate } from '@/lib/dateUtils';
 import { exportScheduleToCSV, downloadCSV } from '@/lib/exportUtils';
+import { isPersonActive } from '@/lib/fairnessEngine';
 
 interface ScheduleTabProps {
   yearData: YearData;
@@ -18,46 +33,86 @@ interface ScheduleTabProps {
 }
 
 export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabProps) {
+  // Form state for schedule generation parameters
   const [startDate, setStartDate] = useState(getTodayString());
   const [weeks, setWeeks] = useState(6);
   const [generating, setGenerating] = useState(false);
 
+  // Calculate the next Monday from the selected date and show info about adjustment
+  const selectedDate = parseDate(startDate);
+  const nextMonday = getNextMonday(selectedDate);
+  const nextMondayString = formatDate(nextMonday);
+  const needsAdjustment = startDate !== nextMondayString;
+
+  // Calculate how many people are active on the next Monday
+  const activePeopleCount = yearData.people.filter(p => {
+    try {
+      return isPersonActive(p, nextMondayString);
+    } catch (error) {
+      return false;
+    }
+  }).length;
+
+  // Generate a new schedule with specified parameters
   const handleGenerate = () => {
     setGenerating(true);
     
-    const result = generateSchedule({
-      startDate,
-      weeks,
-      people: yearData.people,
-      existingSchedules: yearData.schedules,
-      enforceNoConsecutive: true,
-      requireMentor: true
-    });
-    
-    if (!result.success) {
+    try {
+      console.log('Generating schedule with:');
+      console.log('- Start date:', startDate);
+      console.log('- Next Monday:', nextMondayString);
+      console.log('- Weeks:', weeks);
+      console.log('- Total people:', yearData.people.length);
+      console.log('- Active people count:', activePeopleCount);
+      console.log('- Existing schedules:', yearData.schedules.length);
+      console.log('- People data:', yearData.people);
+      
+      const result = generateSchedule({
+        startDate: nextMondayString, // Use next Monday instead of selected date
+        weeks,
+        people: yearData.people,
+        existingSchedules: yearData.schedules,
+        enforceNoConsecutive: true, // Prevent consecutive assignments
+        requireMentor: true // Ensure at least one experienced person per week
+      });
+      
+      console.log('Generation result:', result);
+      
+      // Handle generation errors
+      if (!result.success) {
+        console.error('Schedule generation failed:', result.errors);
+        toast.error('Fehler beim Erstellen des Zeitplans', {
+          description: result.errors.join(', ')
+        });
+        setGenerating(false);
+        return;
+      }
+      
+      // Show warnings if any constraints couldn't be perfectly met
+      if (result.warnings.length > 0) {
+        result.warnings.forEach(warning => {
+          toast.warning(warning);
+        });
+      }
+      
+      // Save the generated schedule
+      if (result.schedule) {
+        updateYearData({
+          schedules: [...yearData.schedules, result.schedule]
+        });
+        toast.success('Zeitplan erfolgreich erstellt');
+      }
+    } catch (error) {
+      console.error('Exception during schedule generation:', error);
       toast.error('Fehler beim Erstellen des Zeitplans', {
-        description: result.errors.join(', ')
+        description: error instanceof Error ? error.message : 'Unbekannter Fehler'
       });
-      setGenerating(false);
-      return;
-    }
-    
-    if (result.warnings.length > 0) {
-      result.warnings.forEach(warning => {
-        toast.warning(warning);
-      });
-    }
-    
-    if (result.schedule) {
-      updateYearData({
-        schedules: [...yearData.schedules, result.schedule]
-      });
-      toast.success('Zeitplan erfolgreich erstellt');
     }
     
     setGenerating(false);
   };
 
+  // Delete a schedule with confirmation
   const handleDeleteSchedule = (scheduleId: string) => {
     if (confirm('Zeitplan wirklich löschen?')) {
       updateYearData({
@@ -67,6 +122,7 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
     }
   };
 
+  // Export schedule as CSV file
   const handleExportSchedule = (schedule: Schedule) => {
     const csv = exportScheduleToCSV(schedule, yearData.people);
     const filename = `giessplan-${schedule.startDate}.csv`;
@@ -76,6 +132,7 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
 
   return (
     <div className="space-y-6">
+      {/* Schedule generation form */}
       <Card>
         <CardHeader>
           <CardTitle>Zeitplan generieren</CardTitle>
@@ -84,6 +141,7 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Input parameters grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="startDate">Startdatum</Label>
@@ -93,6 +151,11 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
               />
+              {needsAdjustment && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  ℹ️ Startet am nächsten Montag ({formatDateGerman(nextMonday)})
+                </p>
+              )}
             </div>
             
             <div>
@@ -108,6 +171,7 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
             </div>
           </div>
           
+          {/* Warning when no people are available */}
           {yearData.people.length === 0 && (
             <Alert>
               <AlertDescription>
@@ -116,9 +180,28 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
             </Alert>
           )}
           
+          {/* Warning when people exist but none are active on selected date */}
+          {yearData.people.length > 0 && activePeopleCount === 0 && (
+            <Alert>
+              <AlertDescription>
+                Es sind keine Personen für das gewählte Startdatum ({formatDateGerman(new Date(startDate))}) aktiv. 
+                Bitte wählen Sie ein anderes Datum oder stellen Sie sicher, dass die Ankunftsdaten der Personen korrekt sind.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {/* Info about active people */}
+          {activePeopleCount > 0 && (
+            <Alert>
+              <AlertDescription>
+                {activePeopleCount} {activePeopleCount === 1 ? 'Person ist' : 'Personen sind'} für das gewählte Startdatum aktiv.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Button
             onClick={handleGenerate}
-            disabled={yearData.people.length === 0 || generating}
+            disabled={yearData.people.length === 0 || activePeopleCount === 0 || generating}
             className="w-full md:w-auto flex items-center gap-2"
           >
             <Calendar size={18} />
@@ -127,6 +210,7 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
         </CardContent>
       </Card>
 
+      {/* Display existing schedules */}
       {yearData.schedules.length > 0 && (
         <Card>
           <CardHeader>
@@ -141,6 +225,7 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
                 key={schedule.id}
                 className="border border-border rounded-lg p-4"
               >
+                {/* Schedule header with metadata and actions */}
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="font-semibold text-lg mb-1">
@@ -170,10 +255,13 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
                   </div>
                 </div>
                 
+                {/* Weekly assignment details */}
                 <div className="space-y-2">
                   {schedule.assignments.map(assignment => {
                     const person1 = yearData.people.find(p => p.id === assignment.assignedPeople[0]);
                     const person2 = yearData.people.find(p => p.id === assignment.assignedPeople[1]);
+                    const substitute1 = (assignment.substitutes && assignment.substitutes[0]) ? yearData.people.find(p => p.id === assignment.substitutes![0]) : null;
+                    const substitute2 = (assignment.substitutes && assignment.substitutes[1]) ? yearData.people.find(p => p.id === assignment.substitutes![1]) : null;
                     
                     return (
                       <div
@@ -189,15 +277,33 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
                         
                         <div className="flex items-center gap-3">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm">{person1?.name || 'Unbekannt'}</span>
+                            <span className="text-sm font-medium">{person1?.name || 'Unbekannt'}</span>
                             {person2 && (
                               <>
                                 <span className="text-muted-foreground">+</span>
-                                <span className="text-sm">{person2.name}</span>
+                                <span className="text-sm font-medium">{person2.name}</span>
+                              </>
+                            )}
+                            
+                            {/* Show substitutes if available */}
+                            {(substitute1 || substitute2) && (
+                              <>
+                                <span className="text-muted-foreground mx-2">|</span>
+                                <span className="text-xs text-muted-foreground">Ersatz:</span>
+                                {substitute1 && (
+                                  <span className="text-sm text-muted-foreground">{substitute1.name}</span>
+                                )}
+                                {substitute2 && (
+                                  <>
+                                    <span className="text-muted-foreground">,</span>
+                                    <span className="text-sm text-muted-foreground">{substitute2.name}</span>
+                                  </>
+                                )}
                               </>
                             )}
                           </div>
                           
+                          {/* Warning badge for weeks without mentor */}
                           {!assignment.hasMentor && (
                             <Badge variant="destructive">Kein Mentor</Badge>
                           )}
