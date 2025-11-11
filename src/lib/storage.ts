@@ -1,11 +1,11 @@
 /**
- * storage.ts - Local Storage 
+ * storage.ts - Local Storage Hook
  * 
- * This module provides a localStorage-based e.
+ * This module provides a localStorage-based persistence hook.
  * Functions:
  * - Reactive state management with localStorage persistence
  * - Type-safe storage with JSON serialization
- * - React hook interface 
+ * - React hook interface for easy state management
  * - Automatic state synchronization across components
  * - Error handling for storage quota and serialization issues
  */
@@ -13,7 +13,7 @@
 import { useState, useEffect } from 'react';
 
 /**
- * Custom hook
+ * Custom hook for localStorage-based state persistence
  * 
  * @param key - Storage key for the value
  * @param defaultValue - Default value if key doesn't exist
@@ -70,8 +70,8 @@ export function useLocalStorage<T>(key: string, defaultValue: T): [T, (value: T 
 }
 
 /**
- * Alias for useLocalStorage 
- * This allows us to do a simple find/replace: useKV -> useLocalKV
+ * Alias for useLocalStorage to maintain backward compatibility
+ * This allows us to use a consistent naming convention
  */
 export const useLocalKV = useLocalStorage;
 

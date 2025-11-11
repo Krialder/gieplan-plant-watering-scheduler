@@ -13,14 +13,19 @@
  */
 
 import type { Person, Schedule, WeekAssignment } from '@/types';
-import { formatDate, addWeeks, getMonday, parseDate } from './dateUtils';
+import { formatDate, addWeeks, getMonday, parseDate, formatDateGerman, getWeekNumber } from './dateUtils';
 import { 
-  selectTeamsAndSubstitutes, 
+  selectTeamsAndSubstitutes,
+  selectTeamsAndSubstitutesWithState,
   isPersonActive, 
   isExperienced, 
   validateScheduleConstraints,
   calculatePriority,
-  fillGapAfterDeletion
+  fillGapAfterDeletion,
+  initializeRunningState,
+  updateRunningState,
+  calculateStandardDeviation,
+  type RunningFairnessState
 } from './fairnessEngine';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -74,6 +79,60 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
     };
   }
   
+  // Start from Monday of the start week for consistency
+  const monday = getMonday(parsedDate);
+  const mondayString = formatDate(monday);
+  
+  // Instead of blocking, we'll skip weeks that already exist and only generate missing ones
+  const weeksToGenerate: { weekStart: Date; weekNumber: number; isGap: boolean }[] = [];
+  const skippedWeeks: string[] = [];
+  
+  for (let i = 0; i < weeks; i++) {
+    const weekStart = addWeeks(monday, i);
+    const weekStartString = formatDate(weekStart);
+    
+    // Check if this week already exists in any schedule
+    let weekExists = false;
+    for (const existingSchedule of existingSchedules) {
+      const hasWeek = existingSchedule.assignments.some(a => a.weekStartDate === weekStartString);
+      if (hasWeek) {
+        weekExists = true;
+        const weekDate = parseDate(weekStartString);
+        const weekNum = getWeekNumber(weekDate);
+        const year = weekDate.getFullYear();
+        skippedWeeks.push(`KW ${weekNum} (${year})`);
+        break;
+      }
+    }
+    
+    if (!weekExists) {
+      weeksToGenerate.push({
+        weekStart,
+        weekNumber: i + 1,
+        isGap: skippedWeeks.length > 0 // This is a gap if we skipped some weeks
+      });
+    }
+  }
+  
+  // If no weeks to generate, return error
+  if (weeksToGenerate.length === 0) {
+    return {
+      success: false,
+      errors: [
+        'Alle angeforderten Kalenderwochen sind bereits geplant.'
+      ],
+      warnings: [
+        `Übersprungen: ${skippedWeeks.join(', ')}`
+      ]
+    };
+  }
+  
+  // Show info about skipped weeks
+  if (skippedWeeks.length > 0) {
+    warnings.push(`Übersprungene Wochen (bereits geplant): ${skippedWeeks.join(', ')}`);
+    warnings.push(`Generiere ${weeksToGenerate.length} fehlende Woche(n)`);
+  }
+  
   // Filter to only active people at the start date
   const activePeople = people.filter(p => isPersonActive(p, startDate));
   
@@ -92,20 +151,31 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
   }
   
   // Check mentor availability
-  const experiencedCount = activePeople.filter(p => isExperienced(p, existingSchedules, startDate)).length;
+  const experiencedCount = activePeople.filter(p => isExperienced(p, existingSchedules, mondayString)).length;
   if (experiencedCount === 0 && requireMentor) {
     warnings.push('No experienced mentors available - proceeding with emergency override');
   }
   
   // Start from Monday of the start week for consistency
-  const monday = getMonday(parseDate(startDate));
   const assignments: WeekAssignment[] = [];
   let lastAssignment: WeekAssignment | null = null;
   let lastSubstitutes: string[] = [];
   
-  // Generate assignments for each week
-  for (let i = 0; i < weeks; i++) {
-    const weekStart = addWeeks(monday, i);
+  // Initialize running state for progressive fairness calculation
+  const runningState = initializeRunningState(activePeople, existingSchedules, mondayString);
+  
+  console.log('[ScheduleGeneration] Starting with running state:', {
+    people: activePeople.length,
+    historicalAssignments: Array.from(runningState.historicalAssignments.entries()).map(([id, count]) => ({
+      person: activePeople.find(p => p.id === id)?.name,
+      count
+    })),
+    weeksToGenerate: weeksToGenerate.length
+  });
+  
+  // Generate assignments for each week that needs to be filled
+  for (const weekInfo of weeksToGenerate) {
+    const weekStart = weekInfo.weekStart;
     const weekStartString = formatDate(weekStart);
     
     // Get excluded IDs from last week based on number of available people
@@ -122,10 +192,10 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
       }
     }
     
-    // Use mathematical algorithm to select team and substitutes
-    const selection = selectTeamsAndSubstitutes(
+    // Use mathematical algorithm with running state for progressive fairness
+    const selection = selectTeamsAndSubstitutesWithState(
       activePeople,
-      existingSchedules,
+      runningState,
       weekStartString,
       excludedIds,
       2, // team size = 2
@@ -133,11 +203,15 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
     );
     
     if (selection.warnings.length > 0) {
-      warnings.push(...selection.warnings.map(w => `Woche ${i + 1}: ${w}`));
+      const weekDate = parseDate(weekStartString);
+      const weekNum = getWeekNumber(weekDate);
+      warnings.push(...selection.warnings.map(w => `KW ${weekNum}: ${w}`));
     }
     
     if (selection.teamIds.length === 0) {
-      errors.push(`Woche ${i + 1} konnte nicht generiert werden: Keine verfügbaren Personen (${activePeople.length} aktiv, ${excludedIds.length} ausgeschlossen)`);
+      const weekDate = parseDate(weekStartString);
+      const weekNum = getWeekNumber(weekDate);
+      errors.push(`KW ${weekNum} konnte nicht generiert werden: Keine verfügbaren Personen (${activePeople.length} aktiv, ${excludedIds.length} ausgeschlossen)`);
       continue;
     }
     
@@ -147,7 +221,10 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
     // Store substitutes for next iteration's exclusion
     lastSubstitutes = selection.substituteIds;
     
-    // Check if any assigned person is a mentor
+    // Update running state with this week's assignments
+    updateRunningState(runningState, assignedPeople);
+    
+    // Check if any assigned person is a mentor (using existing schedules + running state)
     const hasMentor = assignedPeople.some(id => {
       const person = people.find(p => p.id === id);
       return person && isExperienced(person, existingSchedules, weekStartString);
@@ -161,7 +238,7 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
     
     // Create week assignment object
     const assignment: WeekAssignment = {
-      weekNumber: i + 1,
+      weekNumber: weekInfo.weekNumber,
       weekStartDate: weekStartString,
       assignedPeople,
       substitutes: selection.substituteIds,
@@ -201,10 +278,32 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
   const schedule: Schedule = {
     id: uuidv4(),
     startDate: formatDate(monday),
-    weeks,
+    weeks: weeksToGenerate.length, // Only count generated weeks
     assignments,
     createdAt: new Date().toISOString()
   };
+  
+  // Calculate and log final distribution statistics
+  const finalAssignments = new Map<string, number>();
+  for (const person of activePeople) {
+    const historical = runningState.historicalAssignments.get(person.id) || 0;
+    const accumulated = runningState.accumulatedAssignments.get(person.id) || 0;
+    finalAssignments.set(person.id, historical + accumulated);
+  }
+  
+  const stdDev = calculateStandardDeviation(finalAssignments);
+  const assignmentCounts = Array.from(finalAssignments.entries()).map(([id, count]) => ({
+    name: activePeople.find(p => p.id === id)?.name || id,
+    count,
+    historical: runningState.historicalAssignments.get(id) || 0,
+    accumulated: runningState.accumulatedAssignments.get(id) || 0
+  }));
+  
+  console.log('[ScheduleGeneration] ✅ Generation result:', {
+    weeksGenerated: weeksToGenerate.length,
+    standardDeviation: stdDev.toFixed(3),
+    distribution: assignmentCounts.sort((a, b) => a.count - b.count)
+  });
   
   return {
     success: true,
@@ -249,7 +348,11 @@ export function handlePersonDeletion(
   deletedPersonId: string,
   people: Person[]
 ): Schedule[] {
-  return schedules.map(schedule => {
+  // Process schedules one at a time, updating the schedules array as we go
+  // This ensures fairness calculations include previous replacements
+  let updatedSchedules = [...schedules];
+  
+  updatedSchedules = updatedSchedules.map((schedule, scheduleIndex) => {
     const updatedAssignments = schedule.assignments.map(assignment => {
       // Check if this assignment includes the deleted person
       if (!assignment.assignedPeople.includes(deletedPersonId)) {
@@ -257,11 +360,12 @@ export function handlePersonDeletion(
       }
       
       // Fill the gap with highest priority unassigned person
+      // Use updatedSchedules to include replacements made in earlier schedules
       const replacementId = fillGapAfterDeletion(
         deletedPersonId,
         assignment.assignedPeople,
         people,
-        schedules,
+        updatedSchedules,
         assignment.weekStartDate
       );
       
@@ -274,12 +378,22 @@ export function handlePersonDeletion(
       }
       
       // Replace the deleted person with the highest priority person
-      return {
+      const newAssignments = {
         ...assignment,
         assignedPeople: assignment.assignedPeople.map(id => 
           id === deletedPersonId ? replacementId : id
         )
       };
+      
+      // Update the schedule in updatedSchedules immediately so next assignment sees this change
+      updatedSchedules[scheduleIndex] = {
+        ...updatedSchedules[scheduleIndex],
+        assignments: updatedSchedules[scheduleIndex].assignments.map(a =>
+          a.weekStartDate === assignment.weekStartDate ? newAssignments : a
+        )
+      };
+      
+      return newAssignments;
     });
     
     return {
@@ -287,4 +401,6 @@ export function handlePersonDeletion(
       assignments: updatedAssignments
     };
   });
+  
+  return updatedSchedules;
 }

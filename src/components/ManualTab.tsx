@@ -18,7 +18,7 @@ import { Info } from 'lucide-react';
 
 interface ManualTabProps {
   yearData: YearData;
-  updateYearData: (updates: Partial<YearData>) => void;
+  updateYearData: (updates: Partial<YearData> | ((current: YearData | null) => Partial<YearData>)) => void;
 }
 
 export default function ManualTab({ yearData, updateYearData }: ManualTabProps) {

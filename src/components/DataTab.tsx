@@ -23,7 +23,7 @@ import { formatDateGerman } from '@/lib/dateUtils';
 
 interface DataTabProps {
   yearData: YearData;
-  updateYearData: (updates: Partial<YearData>) => void;
+  updateYearData: (updates: Partial<YearData> | ((current: YearData | null) => Partial<YearData>)) => void;
   selectedYear: number;
 }
 

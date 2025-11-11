@@ -43,12 +43,13 @@ export function formatDateGerman(date: Date): string {
   });
 }
 
-// Calculate number of days between two dates
+// Calculate number of days between two dates (inclusive)
 export function getDaysBetween(startDate: string, endDate: string): number {
   const start = parseDate(startDate);
   const end = parseDate(endDate);
-  const diffTime = Math.abs(end.getTime() - start.getTime());
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffTime = end.getTime() - start.getTime();
+  // Add 1 to include both start and end dates
+  return Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1);
 }
 
 // Add specified number of days to a date

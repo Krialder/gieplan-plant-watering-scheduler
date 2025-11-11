@@ -12,7 +12,7 @@
  * - Ensure time-proportional fairness in assignment distribution
  */
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type { YearData, Schedule } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,13 +23,13 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Trash, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { generateSchedule } from '@/lib/scheduleEngine';
-import { getTodayString, formatDateGerman, getNextMonday, parseDate, formatDate } from '@/lib/dateUtils';
+import { getTodayString, formatDateGerman, getNextMonday, parseDate, formatDate, getWeekNumber } from '@/lib/dateUtils';
 import { exportScheduleToCSV, downloadCSV } from '@/lib/exportUtils';
 import { isPersonActive } from '@/lib/fairnessEngine';
 
 interface ScheduleTabProps {
   yearData: YearData;
-  updateYearData: (updates: Partial<YearData>) => void;
+  updateYearData: (updates: Partial<YearData> | ((current: YearData | null) => Partial<YearData>)) => void;
 }
 
 export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabProps) {
@@ -37,6 +37,9 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
   const [startDate, setStartDate] = useState(getTodayString());
   const [weeks, setWeeks] = useState(6);
   const [generating, setGenerating] = useState(false);
+  
+  // Use a ref for immediate lock (not dependent on React state updates)
+  const generatingRef = useRef(false);
 
   // Calculate the next Monday from the selected date and show info about adjustment
   const selectedDate = parseDate(startDate);
@@ -55,6 +58,13 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
 
   // Generate a new schedule with specified parameters
   const handleGenerate = () => {
+    // Prevent multiple simultaneous generations using both state and ref
+    if (generating || generatingRef.current) {
+      console.log('Generation already in progress, ignoring duplicate call');
+      return;
+    }
+    
+    generatingRef.current = true;
     setGenerating(true);
     
     try {
@@ -84,7 +94,6 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
         toast.error('Fehler beim Erstellen des Zeitplans', {
           description: result.errors.join(', ')
         });
-        setGenerating(false);
         return;
       }
       
@@ -97,9 +106,9 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
       
       // Save the generated schedule
       if (result.schedule) {
-        updateYearData({
-          schedules: [...yearData.schedules, result.schedule]
-        });
+        updateYearData((current) => ({
+          schedules: [...(current?.schedules || []), result.schedule!]
+        }));
         toast.success('Zeitplan erfolgreich erstellt');
       }
     } catch (error) {
@@ -107,9 +116,10 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
       toast.error('Fehler beim Erstellen des Zeitplans', {
         description: error instanceof Error ? error.message : 'Unbekannter Fehler'
       });
+    } finally {
+      setGenerating(false);
+      generatingRef.current = false;
     }
-    
-    setGenerating(false);
   };
 
   // Delete a schedule with confirmation
@@ -263,13 +273,17 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
                     const substitute1 = (assignment.substitutes && assignment.substitutes[0]) ? yearData.people.find(p => p.id === assignment.substitutes![0]) : null;
                     const substitute2 = (assignment.substitutes && assignment.substitutes[1]) ? yearData.people.find(p => p.id === assignment.substitutes![1]) : null;
                     
+                    // Calculate calendar week number
+                    const weekDate = parseDate(assignment.weekStartDate);
+                    const calendarWeek = getWeekNumber(weekDate);
+                    
                     return (
                       <div
                         key={assignment.weekNumber}
                         className="flex items-center justify-between py-2 px-3 bg-muted/30 rounded"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="font-medium text-sm">Woche {assignment.weekNumber}</span>
+                          <span className="font-medium text-sm">KW {calendarWeek}</span>
                           <span className="text-sm text-muted-foreground">
                             {formatDateGerman(new Date(assignment.weekStartDate))}
                           </span>
