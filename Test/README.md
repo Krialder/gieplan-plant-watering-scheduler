@@ -1,175 +1,429 @@
-# Test-Dokumentation - GießPlan System
+# Test Directory (`Test/`)
 
-## Übersicht
+Test suite for the GießPlan application using Vitest.
 
-Dieses Projekt verwendet **Vitest** als Test-Framework für umfassende Unit- und Integration-Tests.
+## Overview
 
-## Test-Struktur
+This directory contains comprehensive tests for the core business logic, algorithms, and utilities. The test suite ensures correctness, fairness, and reliability of the scheduling system.
 
-### 📁 Test-Dateien
+## Test Files
 
-- `Test/dateUtils.test.ts` - Tests für Datums- und Zeit-Funktionen
-- `Test/personManager.test.ts` - Tests für Personenverwaltung und Lifecycle
-- `Test/fairnessEngine.test.ts` - Tests für Fairness-Algorithmen
-- `Test/scheduleEngine.test.ts` - Integration-Tests für Schedule-Generierung
+### Core Functionality Tests
 
-### 🧪 Test-Abdeckung
+#### `scheduleEngine.test.ts`
+Tests for the schedule generation engine.
 
-#### dateUtils.test.ts (10 Test-Suites, 26+ Tests)
-- `parseDate()` - ISO-String zu Date-Objekt Konvertierung
-- `formatDate()` - Date zu ISO-Format (YYYY-MM-DD)
-- `formatDateGerman()` - Deutsche Datumsformatierung (DD.MM.YYYY)
-- `getDaysBetween()` - Tagesberechnung inkl. Schaltjahre
-- `addDays()` / `addWeeks()` - Datums-Arithmetik
-- `getWeekNumber()` - ISO-Wochennummern
-- `getMonday()` - Montag-Berechnung für Wochen
-- `isDateInRange()` - Zeitraum-Validierung
+**Test Coverage:**
+- Schedule generation with various participant counts
+- Week assignment logic
+- Mentor-mentee pairing
+- Availability checking during active periods
+- Partial participation period handling
+- Edge cases (empty lists, single person, etc.)
 
-**Besondere Tests:**
-- Schaltjahr-Berücksichtigung (2024 vs. 2023)
-- Monats- und Jahresübergänge
-- Offene Zeiträume (endDate = null)
+**Key Test Scenarios:**
+```typescript
+- "generates schedule with fair distribution"
+- "pairs experienced with new people"
+- "respects arrival and departure dates"
+- "handles overlapping participation periods"
+- "validates schedule completeness"
+```
 
-#### personManager.test.ts (9 Test-Suites, 29+ Tests)
-- `createPerson()` - Personen-Erstellung mit Initialisierung
-- `updatePerson()` - Partielle Updates mit Fairness-Metrics
-- `markPersonDeparture()` - Ausscheiden mit Grund-Angabe
-- `markPersonReturn()` - Rückkehr mit neuer TimePeriod
-- `deletePerson()` - Entfernung aus Arrays
-- `findPersonById()` / `findPersonByName()` - Such-Funktionen
-- `validatePersonData()` - Validierung von Eingabedaten
-- `normalizeGermanName()` - Deutsche Namen-Normalisierung
+#### `fairnessEngine.test.ts`
+Tests for the fairness calculation system.
 
-**Besondere Tests:**
-- Mehrere Programm-Perioden
-- Case-insensitive Namenssuche
-- Umlaute (ü, ö, ä)
-- Datums-Logik-Validierung
+**Test Coverage:**
+- Temporal fairness score calculation
+- Assignments per day present metric
+- Cross-year fairness debt tracking
+- Mentorship burden scoring
+- Recent assignment balance
+- Fairness metric updates
 
-#### fairnessEngine.test.ts (13 Test-Suites, 45+ Tests)
-- `calculateTenure()` - Tenure-Berechnung in Tagen
-- `calculateTotalDaysPresent()` - Mehrperioden-Summierung
-- `isPersonActive()` - Aktiv-Status prüfen
-- `getPersonAssignmentCount()` - Assignment-Zählung
-- `isExperienced()` - Erfahrungslevel (90 Tage oder 4+ Assignments)
-- `calculatePriority()` - Mathematischer Priority-Score
-- `selectTeamsAndSubstitutes()` - Team-Auswahl Algorithmus
-- `fillGapAfterDeletion()` - Lücken-Füllung nach Löschung
-- `validateScheduleConstraints()` - Consecutive-Assignment-Prüfung
+**Key Test Scenarios:**
+```typescript
+- "calculates temporal fairness correctly"
+- "tracks fairness debt across periods"
+- "accounts for mentorship burden"
+- "handles people with no assignments"
+- "updates fairness metrics after assignment"
+```
 
-**Besondere Tests:**
-- Mathematische Fairness-Algorithmen
-- Priority-basierte Auswahl
-- Excluded IDs Handling
-- Mehrfache consecutive Violations
+#### `personManager.test.ts`
+Tests for person lifecycle management.
 
-#### scheduleEngine.test.ts (6 Test-Suites, 37+ Tests)
-- `generateSchedule()` - Komplette Schedule-Generierung
-  - Korrekte Wochen-Anzahl
-  - Keine consecutive Assignments
-  - Nur aktive Personen
-  - Mentor-Warnungen
-  - Montag-Normalisierung
-- `getScheduleForWeek()` - Wochen-spezifische Suche
-- `updateAssignment()` - Assignment-Updates
-- `deleteSchedule()` - Schedule-Entfernung
-- `handlePersonDeletion()` - Gap-Filling Integration
+**Test Coverage:**
+- Adding new people
+- Updating person details
+- Removing people
+- Handling departures
+- Getting active people for a date
+- Program period management
+- Experience level transitions
 
-**Besondere Tests:**
-- Multi-Schedule Szenarien
-- Edge Cases (0, 1 Person)
-- Fairness Score Speicherung
-- Eindeutige ID-Generierung
+**Key Test Scenarios:**
+```typescript
+- "adds person with valid data"
+- "prevents duplicate names"
+- "updates person details correctly"
+- "handles departure with reason"
+- "returns only active people for date range"
+- "manages multiple program periods"
+```
 
-## Test-Ausführung
+#### `dateUtils.test.ts`
+Tests for date manipulation utilities.
 
-### Kommandos
+**Test Coverage:**
+- ISO week number calculation
+- Week start date calculation
+- Week range generation
+- Date range checking
+- Date parsing and formatting
+- Edge cases (year boundaries, leap years)
 
+**Key Test Scenarios:**
+```typescript
+- "calculates correct ISO week numbers"
+- "gets Monday for any week number"
+- "generates correct week list for range"
+- "handles year boundary weeks correctly"
+- "validates date range inclusion"
+```
+
+### Integration Tests
+
+#### `simple.test.ts`
+Basic integration tests with simple scenarios.
+
+**Purpose:**
+- Quick smoke tests
+- Basic workflow validation
+- Simple use cases
+
+#### `debug-8-people.test.ts` and `debug-10-people.test.ts`
+Focused debugging tests with specific participant counts.
+
+**Purpose:**
+- Reproduce specific issues
+- Test with realistic data sets
+- Verify fixes for edge cases
+
+### Advanced Fairness Tests
+
+#### `progressive-fairness.test.ts`
+Tests progressive fairness debt accumulation.
+
+**Test Coverage:**
+- Fairness debt building over time
+- Debt resolution through assignments
+- Multi-period fairness tracking
+- Long-term fairness balance
+
+**Key Test Scenarios:**
+```typescript
+- "accumulates debt for under-assigned people"
+- "reduces debt when assigned"
+- "maintains fairness across multiple schedules"
+- "prioritizes people with highest debt"
+```
+
+### Stress Tests
+
+#### `stress.test.ts`
+High-load and edge case stress tests.
+
+**Test Coverage:**
+- Large participant counts (50+, 100+)
+- Long time periods (full year, multi-year)
+- Frequent arrivals and departures
+- Complex mentor-mentee chains
+- Performance benchmarks
+
+**Key Test Scenarios:**
+```typescript
+- "handles 100 people efficiently"
+- "generates year-long schedule"
+- "manages high turnover (weekly departures)"
+- "maintains fairness with complex relationships"
+- "completes in reasonable time"
+```
+
+#### `stress-progressive-fairness.test.ts`
+Stress tests specifically for fairness algorithm.
+
+**Test Coverage:**
+- Fairness at scale
+- Long-term fairness convergence
+- Extreme imbalance correction
+- Multi-year fairness tracking
+
+### Test Results
+
+#### `stress-results/`
+Directory containing saved stress test results.
+
+**Files:**
+- `stress-test-2025-11-11T14-19-51.json` - Example stress test output
+
+**Purpose:**
+- Performance tracking over time
+- Regression detection
+- Benchmarking improvements
+
+## Test Setup
+
+### `setup.ts`
+Global test configuration and setup.
+
+**Configuration:**
+- Test environment setup
+- Global mocks
+- Test utilities
+- Common test data
+
+## Running Tests
+
+### All Tests
 ```bash
-# Alle Tests ausführen
 npm test
-
-# Tests mit vmThreads Pool (empfohlen für Windows)
-npx vitest run --pool=vmThreads
-
-# Tests mit UI
-npm run test:ui
-
-# Coverage Report
-npm run test:coverage
-
-# Watch Mode (mit vmThreads)
-npx vitest --pool=vmThreads
-
-# Spezifische Datei
-npx vitest run Test/dateUtils.test.ts --pool=vmThreads
 ```
 
-### Wichtiger Hinweis für Windows
-
-Auf Windows-Systemen gibt es manchmal Probleme mit dem Standard-Pool (`forks`). 
-In diesem Fall verwenden Sie `--pool=vmThreads`:
-
+### Watch Mode
 ```bash
-npx vitest run --pool=vmThreads
+npm run test:watch
 ```
 
-### CI/CD Integration
+### UI Mode
+```bash
+npm run test:ui
+```
 
-Die Tests sind bereit für CI/CD Pipelines:
-- Keine externen Abhängigkeiten
-- Deterministisch (außer Timestamp-Tests)
-- Schnelle Ausführung (< 5 Sekunden)
+### Coverage Report
+```bash
+npm run test:coverage
+```
 
-## Coverage-Ziele
+### Specific Test File
+```bash
+npx vitest scheduleEngine.test.ts
+```
 
-- **Utility-Funktionen:** 100% Coverage
-- **Business Logic:** 95%+ Coverage
-- **UI-Komponenten:** Ausgeschlossen (in vitest.config.ts)
+### Specific Test Pattern
+```bash
+npx vitest -t "fairness"
+```
 
-## Test-Best-Practices
+## Test Structure
 
-### ✅ Gut
-- Beschreibende Test-Namen auf Deutsch
-- Arrange-Act-Assert Pattern
-- Isolierte Tests (keine Abhängigkeiten)
-- Edge Cases testen
-- Positive und negative Szenarien
-
-### ❌ Zu vermeiden
-- Tests mit externen API-Aufrufen
-- Tests die von aktuellem Datum abhängen (ohne Mock)
-- Flaky Tests
-- Zu viele Assertions pro Test
-
-## Beispiel-Test
+### Typical Test File Pattern
 
 ```typescript
-describe('calculateTenure', () => {
-  it('sollte korrekte Tenure in Tagen berechnen', () => {
-    const person = createPerson('Test Person', '2024-01-01');
-    const tenure = calculateTenure(person, '2024-01-31');
-    
-    expect(tenure).toBe(30);
+import { describe, it, expect, beforeEach } from 'vitest';
+import { functionToTest } from '@/lib/module';
+
+describe('Module Name', () => {
+  // Setup
+  beforeEach(() => {
+    // Reset state, mocks, etc.
+  });
+
+  describe('functionToTest', () => {
+    it('should handle normal case', () => {
+      const result = functionToTest(input);
+      expect(result).toBe(expected);
+    });
+
+    it('should handle edge case', () => {
+      const result = functionToTest(edgeInput);
+      expect(result).toBe(edgeExpected);
+    });
+
+    it('should throw error on invalid input', () => {
+      expect(() => functionToTest(invalidInput)).toThrow();
+    });
   });
 });
 ```
 
-## Bekannte Einschränkungen
+## Testing Guidelines
 
-- TypeScript-Fehler in Tests sind normal (Path-Aliase `@/` werden erst zur Laufzeit aufgelöst)
-- Tests laufen trotz Compile-Fehler korrekt (siehe vitest.config.ts)
-- Einige Tests verwenden feste Daten für Konsistenz
+### What to Test
 
-## Wartung
+**Do test:**
+- Business logic and algorithms
+- Data transformations
+- Edge cases and error conditions
+- Integration between modules
+- Performance-critical paths
 
-- Tests bei Feature-Änderungen aktualisieren
-- Neue Funktionen sollten sofort Tests bekommen
-- Coverage-Report regelmäßig prüfen
-- Flaky Tests sofort fixen
+**Don't test:**
+- UI component rendering (use E2E for that)
+- Third-party library internals
+- Trivial getters/setters
+- Configuration files
 
-## Weitere Informationen
+### Test Naming
 
-- [Vitest Dokumentation](https://vitest.dev/)
-- [Testing Library](https://testing-library.com/)
-- SCHEDULING_ALGORITHM.md für Algorithmus-Details
+Use descriptive test names:
+```typescript
+// ✅ Good
+it('should prioritize under-assigned people in schedule generation')
+
+// ❌ Bad  
+it('test schedule')
+```
+
+### Test Organization
+
+Group related tests:
+```typescript
+describe('ScheduleEngine', () => {
+  describe('generation', () => {
+    it('test 1', ...);
+    it('test 2', ...);
+  });
+  
+  describe('validation', () => {
+    it('test 3', ...);
+    it('test 4', ...);
+  });
+});
+```
+
+### Assertions
+
+Use clear, specific assertions:
+```typescript
+// ✅ Good
+expect(result.weeks).toHaveLength(52);
+expect(result.weeks[0].assignedPeople).toContain('person1');
+
+// ❌ Bad
+expect(result).toBeTruthy();
+```
+
+### Test Data
+
+Create reusable test data:
+```typescript
+const mockPerson = (): Person => ({
+  id: 'test-id',
+  name: 'Test Person',
+  arrivalDate: '2025-01-01',
+  // ... other fields
+});
+
+const mockSchedule = (): Schedule => ({
+  // ... schedule data
+});
+```
+
+### Mocking
+
+Mock external dependencies:
+```typescript
+import { vi } from 'vitest';
+
+vi.mock('@/lib/fileStorage', () => ({
+  saveYearDataToFile: vi.fn(),
+  loadYearDataFromFile: vi.fn(() => mockData),
+}));
+```
+
+## Coverage Goals
+
+Target coverage levels:
+- **Statements**: > 80%
+- **Branches**: > 75%
+- **Functions**: > 80%
+- **Lines**: > 80%
+
+Critical modules (scheduleEngine, fairnessEngine):
+- **All metrics**: > 90%
+
+## Continuous Integration
+
+Tests run automatically on:
+- Every commit (pre-commit hook)
+- Pull requests
+- Main branch merges
+- Scheduled nightly runs (stress tests)
+
+## Performance Benchmarks
+
+Key performance targets:
+- Schedule generation (10 people, 1 year): < 100ms
+- Schedule generation (50 people, 1 year): < 500ms
+- Schedule generation (100 people, 1 year): < 2s
+- Fairness calculation (1 person): < 10ms
+- Fairness calculation (100 people): < 500ms
+
+## Debugging Tests
+
+### Failed Test
+```bash
+# Run specific test
+npx vitest -t "test name"
+
+# Run with console output
+npx vitest --reporter=verbose
+
+# Debug in UI
+npm run test:ui
+```
+
+### Performance Issues
+```bash
+# Run with profiling
+npx vitest --reporter=verbose --pool=vmThreads
+
+# Check stress test results
+cat Test/stress-results/latest.json
+```
+
+## Adding New Tests
+
+1. **Create test file**
+   ```
+   Test/myFeature.test.ts
+   ```
+
+2. **Import dependencies**
+   ```typescript
+   import { describe, it, expect } from 'vitest';
+   import { myFunction } from '@/lib/myModule';
+   ```
+
+3. **Write tests**
+   ```typescript
+   describe('MyFeature', () => {
+     it('should work correctly', () => {
+       expect(myFunction()).toBe(expected);
+     });
+   });
+   ```
+
+4. **Run and verify**
+   ```bash
+   npm test
+   ```
+
+5. **Check coverage**
+   ```bash
+   npm run test:coverage
+   ```
+
+## Best Practices
+
+- Write tests before fixing bugs (TDD)
+- Keep tests simple and focused
+- One assertion per test (when possible)
+- Use descriptive test names
+- Clean up after tests (no side effects)
+- Mock external dependencies
+- Test edge cases and error conditions
+- Maintain test performance (fast feedback)
+- Update tests when refactoring
+- Review test coverage regularly

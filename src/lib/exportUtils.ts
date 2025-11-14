@@ -71,7 +71,9 @@ export function exportScheduleToCSV(schedule: Schedule, people: Person[]): strin
     'Ersatz 2',
     'Mentor vorhanden',
     'Fairness Person 1',
-    'Fairness Person 2'
+    'Fairness Person 2',
+    'Notfall',
+    'Kommentar'
   ];
   
   const rows = schedule.assignments.map(assignment => {
@@ -79,6 +81,14 @@ export function exportScheduleToCSV(schedule: Schedule, people: Person[]): strin
     const person2 = people.find(p => p.id === assignment.assignedPeople[1]);
     const substitute1 = (assignment.substitutes && assignment.substitutes[0]) ? people.find(p => p.id === assignment.substitutes![0]) : null;
     const substitute2 = (assignment.substitutes && assignment.substitutes[1]) ? people.find(p => p.id === assignment.substitutes![1]) : null;
+    
+    // Get emergency info
+    const isEmergency = (assignment as any).isEmergency || false;
+    const emergencyReason = (assignment as any).emergencyReason || '';
+    const emergencyText = isEmergency ? (emergencyReason || 'Ja') : 'Nein';
+    
+    // Get comment
+    const comment = (assignment as any).comment || '-';
     
     return [
       assignment.weekNumber.toString(),
@@ -89,7 +99,9 @@ export function exportScheduleToCSV(schedule: Schedule, people: Person[]): strin
       substitute2?.name || '-',
       assignment.hasMentor ? 'Ja' : 'Nein',
       assignment.fairnessScores[0]?.toFixed(2) || '-',
-      assignment.fairnessScores[1]?.toFixed(2) || '-'
+      assignment.fairnessScores[1]?.toFixed(2) || '-',
+      emergencyText,
+      comment
     ];
   });
   

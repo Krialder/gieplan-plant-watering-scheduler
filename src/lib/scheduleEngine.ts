@@ -10,6 +10,10 @@
  * - Validate generated schedules against business constraints
  * - Support manual assignment updates and schedule modifications
  * - Provide week-specific assignment lookup functionality
+ * - Edit individual weeks (replace people, update assignments)
+ * - Add comments and emergency flags to specific weeks
+ * - Swap people globally across all schedules
+ * - Get person-specific statistics and reports
  */
 
 import type { Person, Schedule, WeekAssignment } from '@/types';
@@ -403,4 +407,278 @@ export function handlePersonDeletion(
   });
   
   return updatedSchedules;
+}
+
+// Replace a person in a specific week assignment
+export function replacePersonInWeek(
+  schedules: Schedule[],
+  weekStartDate: string,
+  oldPersonId: string,
+  newPersonId: string
+): Schedule[] {
+  return schedules.map(schedule => ({
+    ...schedule,
+    assignments: schedule.assignments.map(assignment => {
+      if (assignment.weekStartDate !== weekStartDate) {
+        return assignment;
+      }
+      
+      // Replace the person if they're in this week's assignment
+      if (assignment.assignedPeople.includes(oldPersonId)) {
+        return {
+          ...assignment,
+          assignedPeople: assignment.assignedPeople.map(id => 
+            id === oldPersonId ? newPersonId : id
+          )
+        };
+      }
+      
+      return assignment;
+    })
+  }));
+}
+
+// Update a single week's assignment completely
+export function updateWeekAssignment(
+  schedules: Schedule[],
+  weekStartDate: string,
+  newAssignedPeople: string[],
+  newSubstitutes?: string[]
+): Schedule[] {
+  return schedules.map(schedule => ({
+    ...schedule,
+    assignments: schedule.assignments.map(assignment => {
+      if (assignment.weekStartDate !== weekStartDate) {
+        return assignment;
+      }
+      
+      return {
+        ...assignment,
+        assignedPeople: newAssignedPeople,
+        ...(newSubstitutes && { substitutes: newSubstitutes })
+      };
+    })
+  }));
+}
+
+// Add a comment/note to a specific week assignment
+export function addWeekComment(
+  schedules: Schedule[],
+  weekStartDate: string,
+  comment: string
+): Schedule[] {
+  return schedules.map(schedule => ({
+    ...schedule,
+    assignments: schedule.assignments.map(assignment => {
+      if (assignment.weekStartDate !== weekStartDate) {
+        return assignment;
+      }
+      
+      return {
+        ...assignment,
+        comment
+      };
+    })
+  }));
+}
+
+// Remove comment from a specific week
+export function removeWeekComment(
+  schedules: Schedule[],
+  weekStartDate: string
+): Schedule[] {
+  return schedules.map(schedule => ({
+    ...schedule,
+    assignments: schedule.assignments.map(assignment => {
+      if (assignment.weekStartDate !== weekStartDate) {
+        return assignment;
+      }
+      
+      const { comment, ...assignmentWithoutComment } = assignment as any;
+      return assignmentWithoutComment;
+    })
+  }));
+}
+
+// Mark a week as emergency override (manual intervention needed)
+export function markWeekAsEmergency(
+  schedules: Schedule[],
+  weekStartDate: string,
+  emergencyReason?: string
+): Schedule[] {
+  return schedules.map(schedule => ({
+    ...schedule,
+    assignments: schedule.assignments.map(assignment => {
+      if (assignment.weekStartDate !== weekStartDate) {
+        return assignment;
+      }
+      
+      return {
+        ...assignment,
+        isEmergency: true,
+        emergencyReason
+      };
+    })
+  }));
+}
+
+// Remove emergency flag from a week
+export function clearEmergencyFlag(
+  schedules: Schedule[],
+  weekStartDate: string
+): Schedule[] {
+  return schedules.map(schedule => ({
+    ...schedule,
+    assignments: schedule.assignments.map(assignment => {
+      if (assignment.weekStartDate !== weekStartDate) {
+        return assignment;
+      }
+      
+      const { isEmergency, emergencyReason, ...assignmentWithoutEmergency } = assignment as any;
+      return assignmentWithoutEmergency;
+    })
+  }));
+}
+
+// Get all weeks with emergency flags
+export function getEmergencyWeeks(schedules: Schedule[]): WeekAssignment[] {
+  const emergencyWeeks: WeekAssignment[] = [];
+  
+  schedules.forEach(schedule => {
+    schedule.assignments.forEach(assignment => {
+      if ((assignment as any).isEmergency) {
+        emergencyWeeks.push(assignment);
+      }
+    });
+  });
+  
+  return emergencyWeeks;
+}
+
+// Swap two people across all schedules
+export function swapPeopleGlobally(
+  schedules: Schedule[],
+  personId1: string,
+  personId2: string
+): Schedule[] {
+  return schedules.map(schedule => ({
+    ...schedule,
+    assignments: schedule.assignments.map(assignment => ({
+      ...assignment,
+      assignedPeople: assignment.assignedPeople.map(id => {
+        if (id === personId1) return personId2;
+        if (id === personId2) return personId1;
+        return id;
+      }),
+      substitutes: assignment.substitutes?.map(id => {
+        if (id === personId1) return personId2;
+        if (id === personId2) return personId1;
+        return id;
+      })
+    }))
+  }));
+}
+
+// Swap two people in a specific timeframe
+export function swapPeopleInTimeframe(
+  schedules: Schedule[],
+  personId1: string,
+  personId2: string,
+  startDate?: string,
+  endDate?: string
+): Schedule[] {
+  return schedules.map(schedule => ({
+    ...schedule,
+    assignments: schedule.assignments.map(assignment => {
+      // Check if assignment is within timeframe
+      const assignmentDate = new Date(assignment.weekStartDate);
+      const isInTimeframe = 
+        (!startDate || assignmentDate >= new Date(startDate)) &&
+        (!endDate || assignmentDate <= new Date(endDate));
+      
+      if (!isInTimeframe) {
+        return assignment;
+      }
+      
+      return {
+        ...assignment,
+        assignedPeople: assignment.assignedPeople.map(id => {
+          if (id === personId1) return personId2;
+          if (id === personId2) return personId1;
+          return id;
+        }),
+        substitutes: assignment.substitutes?.map(id => {
+          if (id === personId1) return personId2;
+          if (id === personId2) return personId1;
+          return id;
+        })
+      };
+    })
+  }));
+}
+
+// Remove a person from all assignments in a timeframe
+export function removePersonFromTimeframe(
+  schedules: Schedule[],
+  personId: string,
+  startDate?: string,
+  endDate?: string
+): Schedule[] {
+  return schedules.map(schedule => ({
+    ...schedule,
+    assignments: schedule.assignments.map(assignment => {
+      // Check if assignment is within timeframe
+      const assignmentDate = new Date(assignment.weekStartDate);
+      const isInTimeframe = 
+        (!startDate || assignmentDate >= new Date(startDate)) &&
+        (!endDate || assignmentDate <= new Date(endDate));
+      
+      if (!isInTimeframe) {
+        return assignment;
+      }
+      
+      return {
+        ...assignment,
+        assignedPeople: assignment.assignedPeople.filter(id => id !== personId),
+        substitutes: assignment.substitutes?.filter(id => id !== personId)
+      };
+    })
+  }));
+}
+
+// Get statistics for a specific person across all schedules
+export function getPersonStatistics(
+  schedules: Schedule[],
+  personId: string
+): {
+  totalAssignments: number;
+  asMainAssignment: number;
+  asSubstitute: number;
+  weeks: string[];
+} {
+  let totalAssignments = 0;
+  let asMainAssignment = 0;
+  let asSubstitute = 0;
+  const weeks: string[] = [];
+  
+  schedules.forEach(schedule => {
+    schedule.assignments.forEach(assignment => {
+      if (assignment.assignedPeople.includes(personId)) {
+        totalAssignments++;
+        asMainAssignment++;
+        weeks.push(assignment.weekStartDate);
+      } else if (assignment.substitutes?.includes(personId)) {
+        totalAssignments++;
+        asSubstitute++;
+        weeks.push(assignment.weekStartDate);
+      }
+    });
+  });
+  
+  return {
+    totalAssignments,
+    asMainAssignment,
+    asSubstitute,
+    weeks
+  };
 }

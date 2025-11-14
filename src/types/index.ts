@@ -53,6 +53,9 @@ export interface WeekAssignment {
   substitutes?: string[]; // Array of person IDs serving as substitutes (optional for backwards compatibility)
   fairnessScores: number[]; // Fairness scores at time of assignment
   hasMentor: boolean; // Whether at least one assigned person is experienced
+  comment?: string; // Optional comment/note for this week
+  isEmergency?: boolean; // Flag indicating emergency override/manual intervention
+  emergencyReason?: string; // Reason for emergency override
 }
 
 // Complete multi-week schedule with all assignments
