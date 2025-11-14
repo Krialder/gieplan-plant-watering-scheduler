@@ -1,0 +1,97 @@
+/**
+ * index.css - CSS Custom Properties and Theme Definitions
+ * 
+ * This file defines the design system's color palette and theme variables.
+ * Functions:
+ * - Defines CSS custom properties for consistent color usage across the app
+ * - Implements three theme variations: light (default), dark, and twilight
+ * - Uses OKLCH color space for better perceptual uniformity
+ * - Provides semantic color names (background, foreground, primary, etc.)
+ * - Sets up global typography using Inter font family
+ */
+
+/* Light theme (default) */
+:root {
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.20 0 0);
+
+  --card: oklch(0.96 0 0);
+  --card-foreground: oklch(0.20 0 0);
+  --popover: oklch(0.98 0 0);
+  --popover-foreground: oklch(0.20 0 0);
+
+  --primary: oklch(0.45 0.15 25);
+  --primary-foreground: oklch(1.0 0 0);
+  --secondary: oklch(0.55 0.01 60);
+  --secondary-foreground: oklch(1.0 0 0);
+  --accent: oklch(0.65 0.18 145);
+  --accent-foreground: oklch(1.0 0 0);
+  --destructive: oklch(0.50 0.20 15);
+  --destructive-foreground: oklch(1.0 0 0);
+
+  --muted: oklch(0.92 0 0);
+  --muted-foreground: oklch(0.48 0 0);
+  --border: oklch(0.88 0 0);
+  --input: oklch(0.88 0 0);
+  --ring: oklch(0.45 0.15 25);
+
+  --radius: 0.5rem;
+}
+
+/* Dark theme - High contrast for low-light environments */
+.dark {
+  --background: oklch(0.18 0 0);
+  --foreground: oklch(0.98 0 0);
+
+  --card: oklch(0.22 0 0);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.22 0 0);
+  --popover-foreground: oklch(0.98 0 0);
+
+  --primary: oklch(0.55 0.15 25);
+  --primary-foreground: oklch(1.0 0 0);
+  --secondary: oklch(0.35 0.01 60);
+  --secondary-foreground: oklch(0.98 0 0);
+  --accent: oklch(0.70 0.18 145);
+  --accent-foreground: oklch(0.18 0 0);
+  --destructive: oklch(0.60 0.20 15);
+  --destructive-foreground: oklch(1.0 0 0);
+
+  --muted: oklch(0.28 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+  --border: oklch(0.32 0 0);
+  --input: oklch(0.32 0 0);
+  --ring: oklch(0.55 0.15 25);
+}
+
+/* Twilight theme - Purple-tinted theme for aesthetic variety */
+.twilight {
+  --background: oklch(0.25 0.05 270);
+  --foreground: oklch(0.92 0.02 280);
+
+  --card: oklch(0.30 0.06 265);
+  --card-foreground: oklch(0.92 0.02 280);
+  --popover: oklch(0.30 0.06 265);
+  --popover-foreground: oklch(0.92 0.02 280);
+
+  --primary: oklch(0.60 0.20 280);
+  --primary-foreground: oklch(1.0 0 0);
+  --secondary: oklch(0.50 0.15 250);
+  --secondary-foreground: oklch(1.0 0 0);
+  --accent: oklch(0.70 0.25 310);
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.55 0.22 20);
+  --destructive-foreground: oklch(1.0 0 0);
+
+  --muted: oklch(0.35 0.04 270);
+  --muted-foreground: oklch(0.70 0.02 280);
+  --border: oklch(0.40 0.06 265);
+  --input: oklch(0.40 0.06 265);
+  --ring: oklch(0.60 0.20 280);
+}
+
+/* Global typography settings */
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: 'tnum' 1; /* Enable tabular numbers for better alignment */
+}

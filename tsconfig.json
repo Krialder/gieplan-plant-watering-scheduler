@@ -1,0 +1,69 @@
+{
+  //
+  // tsconfig.json - TypeScript Configuration
+  //
+  // This file configures TypeScript compilation for the GießPlan application.
+  // Configuration features:
+  // - ES2020 target for modern JavaScript features and broad browser support
+  // - React JSX transformation using react-jsx for optimal runtime
+  // - Path aliases (@/* -> ./src/*) for clean import statements
+  // - Bundler-mode module resolution for Vite compatibility
+  // - Strict type checking for code quality and safety
+  // - DOM library support for browser APIs and web platform features
+  // - Build caching for faster incremental compilation
+  //
+  
+  "compilerOptions": {
+    // Build cache location for incremental compilation performance
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    
+    // Target ES2020 for modern features with broad browser support
+    "target": "ES2020",
+    
+    // Use standard class field behavior for modern JavaScript
+    "useDefineForClassFields": true,
+    
+    // Include type definitions for ES2020, DOM APIs, and iteration protocols
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    
+    // ESNext modules for latest import/export syntax
+    "module": "ESNext",
+    
+    // Skip type checking of declaration files for faster builds
+    "skipLibCheck": true,
+    
+    // Enable strict null checking for better type safety
+    "strictNullChecks": true,
+    
+    /* Bundler mode - optimized for Vite and modern bundlers */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true, // Vite handles compilation, TypeScript only for type checking
+    
+    // Use React's automatic JSX runtime (no need to import React)
+    "jsx": "react-jsx",
+    
+    /* Enhanced linting rules for code quality */
+    "noFallthroughCasesInSwitch": true, // Prevent switch fallthrough bugs
+    "noUncheckedSideEffectImports": true, // Catch potential import issues
+    
+    // Path mapping for clean imports (@/components instead of ../../../components)
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+  },
+  
+  // Include TypeScript files from src and Test directories
+  "include": [
+    "src",
+    "Test"
+  ]
+}
