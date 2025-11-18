@@ -24,21 +24,20 @@ import { formatDateGerman } from '@/lib/dateUtils';
 interface DataTabProps {
   yearData: YearData;
   updateYearData: (updates: Partial<YearData> | ((current: YearData | null) => Partial<YearData>)) => void;
-  selectedYear: number;
 }
 
-export default function DataTab({ yearData, updateYearData, selectedYear }: DataTabProps) {
+export default function DataTab({ yearData, updateYearData }: DataTabProps) {
   // Export people data as CSV file
   const handleExportPeople = () => {
     const csv = exportPeopleToCSV(yearData.people);
-    downloadCSV(csv, `personen-${selectedYear}.csv`);
+    downloadCSV(csv, `personen-${yearData.year}.csv`);
     toast.success('Personen exportiert');
   };
 
   // Create complete JSON backup of all data
   const handleExportBackup = () => {
     const json = exportJSONBackup(yearData);
-    downloadJSON(json, `giessplan-backup-${selectedYear}.json`);
+    downloadJSON(json, `giessplan-backup-${yearData.year}.json`);
     toast.success('Backup erstellt');
   };
 
@@ -62,7 +61,7 @@ export default function DataTab({ yearData, updateYearData, selectedYear }: Data
         <CardHeader>
           <CardTitle>Datenübersicht</CardTitle>
           <CardDescription>
-            Statistiken und Informationen für {selectedYear}
+            Statistiken und Informationen für {yearData.year}
           </CardDescription>
         </CardHeader>
         <CardContent>

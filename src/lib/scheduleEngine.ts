@@ -20,17 +20,13 @@ import type { Person, Schedule, WeekAssignment } from '@/types';
 import { formatDate, addWeeks, getMonday, parseDate, formatDateGerman, getWeekNumber } from './dateUtils';
 import { 
   selectTeamsAndSubstitutes,
-  selectTeamsAndSubstitutesWithState,
   isPersonActive, 
   isExperienced, 
   validateScheduleConstraints,
-  calculatePriority,
   fillGapAfterDeletion,
-  initializeRunningState,
-  updateRunningState,
-  calculateStandardDeviation,
-  type RunningFairnessState
+  calculateStandardDeviation
 } from './fairnessEngine';
+import { AdaptiveFairnessManager } from './adaptiveFairness';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ScheduleGenerationOptions {
@@ -165,12 +161,22 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
   let lastAssignment: WeekAssignment | null = null;
   let lastSubstitutes: string[] = [];
   
-  // Initialize running state for progressive fairness calculation
-  const runningState = initializeRunningState(activePeople, existingSchedules, mondayString);
+  // Initialize adaptive fairness manager with new dynamic fairness system
+  const fairnessManager = new AdaptiveFairnessManager(
+    activePeople,
+    existingSchedules,
+    mondayString,
+    {
+      usePenalizedPriority: true,
+      useBayesianUpdates: true,
+      useConstraintChecking: true,
+      useSoftmaxSelection: false // Keep deterministic selection for now
+    }
+  );
   
-  console.log('[ScheduleGeneration] Starting with running state:', {
+  console.log('[ScheduleGeneration] Starting with dynamic fairness system:', {
     people: activePeople.length,
-    historicalAssignments: Array.from(runningState.historicalAssignments.entries()).map(([id, count]) => ({
+    historicalAssignments: Array.from(fairnessManager.getState().historicalAssignments.entries()).map(([id, count]) => ({
       person: activePeople.find(p => p.id === id)?.name,
       count
     })),
@@ -196,10 +202,8 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
       }
     }
     
-    // Use mathematical algorithm with running state for progressive fairness
-    const selection = selectTeamsAndSubstitutesWithState(
-      activePeople,
-      runningState,
+    // Use dynamic fairness system with adaptive features
+    const selection = fairnessManager.selectTeamsAndSubstitutes(
       weekStartString,
       excludedIds,
       2, // team size = 2
@@ -219,14 +223,21 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
       continue;
     }
     
-    // Use the team IDs as the assigned people
-    const assignedPeople = selection.teamIds;
+    // Shuffle the team members to avoid fixed pairings
+    // People with similar fairness scores should not always be paired together
+    const assignedPeople = [...selection.teamIds];
+    if (assignedPeople.length > 1) {
+      // Randomly swap positions to break up patterns
+      if (Math.random() > 0.5) {
+        [assignedPeople[0], assignedPeople[1]] = [assignedPeople[1], assignedPeople[0]];
+      }
+    }
     
     // Store substitutes for next iteration's exclusion
     lastSubstitutes = selection.substituteIds;
     
-    // Update running state with this week's assignments
-    updateRunningState(runningState, assignedPeople);
+    // Update fairness manager with this week's assignments
+    fairnessManager.updateState(assignedPeople);
     
     // Check if any assigned person is a mentor (using existing schedules + running state)
     const hasMentor = assignedPeople.some(id => {
@@ -237,7 +248,7 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
     // Calculate priority scores at time of assignment for record keeping
     const priorityScores = assignedPeople.map(id => {
       const person = people.find(p => p.id === id);
-      return person ? calculatePriority(person, activePeople, existingSchedules, weekStartString) : 0;
+      return person ? fairnessManager.calculatePriority(person.id, weekStartString) : 0;
     });
     
     // Create week assignment object
@@ -288,10 +299,11 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
   };
   
   // Calculate and log final distribution statistics
+  const state = fairnessManager.getState();
   const finalAssignments = new Map<string, number>();
   for (const person of activePeople) {
-    const historical = runningState.historicalAssignments.get(person.id) || 0;
-    const accumulated = runningState.accumulatedAssignments.get(person.id) || 0;
+    const historical = state.historicalAssignments.get(person.id) || 0;
+    const accumulated = state.accumulatedAssignments.get(person.id) || 0;
     finalAssignments.set(person.id, historical + accumulated);
   }
   
@@ -299,8 +311,8 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
   const assignmentCounts = Array.from(finalAssignments.entries()).map(([id, count]) => ({
     name: activePeople.find(p => p.id === id)?.name || id,
     count,
-    historical: runningState.historicalAssignments.get(id) || 0,
-    accumulated: runningState.accumulatedAssignments.get(id) || 0
+    historical: state.historicalAssignments.get(id) || 0,
+    accumulated: state.accumulatedAssignments.get(id) || 0
   }));
   
   console.log('[ScheduleGeneration] ✅ Generation result:', {

@@ -3,7 +3,7 @@
  * 
  * This is the root component of the GießPlan (Watering Schedule) system for Rotkreuz-Institut BBW.
  * Functions:
- * - Manages application state including selected year and theme
+ * - Manages application state including current year and theme
  * - Provides tabbed navigation between main features (People, Schedule, Manual, Data)
  * - Handles theme switching (light, dark, twilight)
  * - Manages year data persistence using file-based storage
@@ -30,16 +30,15 @@ import { toast } from 'sonner';
 type Theme = 'light' | 'dark' | 'twilight';
 
 function App() {
-  // Get current year and set as default selection
+  // Get current year - now fixed to current year only
   const currentYear = getCurrentYear();
-  const [selectedYear, setSelectedYear] = useState(currentYear);
   
   // Theme state persisted in localStorage (lightweight, doesn't need file storage)
   const [theme, setTheme] = useLocalKV<Theme>('giessplan-theme', 'light');
   
   // Year-specific data - now managed with file storage
   const [yearData, setYearData] = useState<YearData>({
-    year: selectedYear,
+    year: currentYear,
     people: [],
     schedules: [],
     lastModified: new Date().toISOString()
@@ -59,13 +58,13 @@ function App() {
     }
   }, []);
 
-  // Load data from file when year changes or folder is selected
+  // Load data from file when folder is selected
   useEffect(() => {
     const loadData = async () => {
       if (!folderSelected) {
         // No folder selected - use empty defaults and mark as loaded
         setYearData({
-          year: selectedYear,
+          year: currentYear,
           people: [],
           schedules: [],
           lastModified: new Date().toISOString()
@@ -75,8 +74,8 @@ function App() {
       }
 
       try {
-        console.log('📂 Loading data for year:', selectedYear);
-        const data = await loadYearDataFromFile(selectedYear);
+        console.log('📂 Loading data for year:', currentYear);
+        const data = await loadYearDataFromFile(currentYear);
         if (data) {
           console.log('✅ Data loaded successfully:', data);
           setYearData(data);
@@ -84,7 +83,7 @@ function App() {
           // No file exists yet, use defaults
           console.log('📝 No existing file, using defaults');
           setYearData({
-            year: selectedYear,
+            year: currentYear,
             people: [],
             schedules: [],
             lastModified: new Date().toISOString()
@@ -94,7 +93,7 @@ function App() {
         console.error('❌ Failed to load data:', error);
         // Use defaults on error
         setYearData({
-          year: selectedYear,
+          year: currentYear,
           people: [],
           schedules: [],
           lastModified: new Date().toISOString()
@@ -109,7 +108,7 @@ function App() {
 
     setDataLoaded(false);
     loadData();
-  }, [selectedYear, folderSelected]);
+  }, [currentYear, folderSelected]);
 
   // Migrate old schedules to add substitutes field if missing
   useEffect(() => {
@@ -227,7 +226,7 @@ function App() {
               </p>
             </div>
             
-            {/* Theme toggle and year selection controls */}
+            {/* Theme toggle and year display */}
             <div className="flex items-center gap-4">
               <Button
                 variant="outline"
@@ -238,16 +237,10 @@ function App() {
                 {getThemeIcon()}
               </Button>
               
-              {/* Year selection dropdown */}
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="px-4 py-2 rounded-lg border border-input bg-background text-foreground font-medium"
-              >
-                {[currentYear - 1, currentYear, currentYear + 1].map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
+              {/* Current year display */}
+              <div className="px-4 py-2 rounded-lg border border-input bg-card text-foreground font-medium">
+                {currentYear}
+              </div>
             </div>
           </div>
         </div>
@@ -316,7 +309,6 @@ function App() {
               <DataTab 
                 yearData={yearData}
                 updateYearData={updateYearData}
-                selectedYear={selectedYear}
               />
             </TabsContent>
           </Tabs>
