@@ -21,6 +21,14 @@ export interface TimePeriod {
   departureReason?: string; // Optional reason for departure
 }
 
+// Virtual history for fair onboarding of new people
+// This is a ONE-TIME baseline set at person creation to start them at the average
+export interface VirtualHistory {
+  virtualAssignments: number; // Virtual assignments added at creation (based on average rate)
+  baselineDate: string; // Date when virtual history was calculated (person's arrival or first schedule)
+  averageRateAtCreation: number; // Average assignment rate when person was created
+}
+
 // Comprehensive fairness tracking metrics for equitable assignment distribution
 export interface FairnessMetrics {
   person: string; // Person name for reference
@@ -43,6 +51,7 @@ export interface Person {
   experienceLevel: ExperienceLevel; // Current experience classification
   mentorshipAssignments: string[]; // IDs of people this person has mentored
   fairnessMetrics: FairnessMetrics; // Current fairness calculations
+  virtualHistory?: VirtualHistory; // Optional one-time virtual history for fair onboarding
 }
 
 // Individual week assignment within a schedule

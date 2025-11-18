@@ -238,6 +238,7 @@ export default function PeopleTab({ yearData, updateYearData }: PeopleTabProps) 
         onOpenChange={setShowAddDialog}
         onAdd={handleAddPerson}
         existingPeople={yearData.people}
+        existingSchedules={yearData.schedules}
       />
     </div>
   );

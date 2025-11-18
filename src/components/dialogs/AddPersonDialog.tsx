@@ -24,7 +24,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { Person } from '@/types';
+import type { Person, Schedule } from '@/types';
 import { createPerson, normalizeGermanName, validatePersonData } from '@/lib/personManager';
 import { getTodayString } from '@/lib/dateUtils';
 
@@ -33,9 +33,10 @@ interface AddPersonDialogProps {
   onOpenChange: (open: boolean) => void;
   onAdd: (person: Person) => void;
   existingPeople: Person[];
+  existingSchedules: Schedule[];
 }
 
-export default function AddPersonDialog({ open, onOpenChange, onAdd, existingPeople }: AddPersonDialogProps) {
+export default function AddPersonDialog({ open, onOpenChange, onAdd, existingPeople, existingSchedules }: AddPersonDialogProps) {
   // Form state
   const [name, setName] = useState('');
   const [arrivalDate, setArrivalDate] = useState(getTodayString());
@@ -71,11 +72,13 @@ export default function AddPersonDialog({ open, onOpenChange, onAdd, existingPeo
       return;
     }
     
-    // Create new person object
+    // Create new person object with virtual history for fair onboarding
     const person = createPerson(
       normalizedName,
       arrivalDate,
-      expectedDepartureDate || null
+      expectedDepartureDate || null,
+      existingPeople,
+      existingSchedules
     );
     
     // Submit the new person

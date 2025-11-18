@@ -81,8 +81,14 @@ export class AdaptiveFairnessManager {
     }
     
     for (const person of people) {
-      const count = getPersonAssignmentCount(person, schedules);
-      this.historicalAssignments.set(person.id, count);
+      // Real assignments from schedules
+      const realCount = getPersonAssignmentCount(person, schedules);
+      
+      // Add virtual assignments (one-time baseline set at person creation)
+      const virtualCount = person.virtualHistory?.virtualAssignments || 0;
+      
+      // Total historical = real + virtual (virtual is permanent baseline)
+      this.historicalAssignments.set(person.id, realCount + virtualCount);
       this.accumulatedAssignments.set(person.id, 0);
       
       // First scheduling date logic:
@@ -90,7 +96,7 @@ export class AdaptiveFairnessManager {
       // 2. If no assignments but schedules exist: use earliest schedule date or join date (whichever is later)
       // 3. If no schedules: use join date
       
-      if (count > 0) {
+      if (realCount > 0) {
         // Person has assignments - find their earliest assignment date
         let personEarliestAssignment = evaluationDate;
         for (const schedule of schedules) {
@@ -133,12 +139,14 @@ export class AdaptiveFairnessManager {
       
       for (const person of people) {
         const schedulingDays = this.calculateSchedulingDays(person.id, evaluationDate);
-        const assignments = getPersonAssignmentCount(person, schedules);
+        const realAssignments = getPersonAssignmentCount(person, schedules);
+        const virtualAssignments = person.virtualHistory?.virtualAssignments || 0;
+        const totalAssignments = realAssignments + virtualAssignments;
         
         // New people with no history start at average rate (fair starting point)
-        const initialRate = assignments === 0 && schedulingDays === 0
+        const initialRate = totalAssignments === 0 && schedulingDays === 0
           ? averageRate
-          : (schedulingDays > 0 ? assignments / schedulingDays : averageRate);
+          : (schedulingDays > 0 ? totalAssignments / schedulingDays : averageRate);
         
         this.engine.initializePerson(person.id, initialRate, evaluationDate);
       }
@@ -228,10 +236,11 @@ export class AdaptiveFairnessManager {
       }
     }
     
-    // Update historical assignments
+    // Update historical assignments (real + virtual)
     for (const person of this.people) {
-      const count = getPersonAssignmentCount(person, schedules);
-      this.historicalAssignments.set(person.id, count);
+      const realCount = getPersonAssignmentCount(person, schedules);
+      const virtualCount = person.virtualHistory?.virtualAssignments || 0;
+      this.historicalAssignments.set(person.id, realCount + virtualCount);
     }
   }
   
@@ -360,20 +369,23 @@ export class AdaptiveFairnessManager {
     evaluationDate: string
   ): number {
     const schedulingDays = this.calculateSchedulingDays(person.id, evaluationDate);
-    const historicalAssignments = getPersonAssignmentCount(person, schedules);
+    const realAssignments = getPersonAssignmentCount(person, schedules);
+    const virtualAssignments = person.virtualHistory?.virtualAssignments || 0;
     const accumulatedAssignments = this.accumulatedAssignments.get(person.id) || 0;
-    const totalAssignments = historicalAssignments + accumulatedAssignments;
+    const totalAssignments = realAssignments + virtualAssignments + accumulatedAssignments;
     
     // Calculate expected assignments (Fairness-over-time Framework)
     // Proportional to scheduling days, not absolute tenure
     // IMPORTANT: Include accumulated assignments from all people in current generation
     const totalSchedulingDays = allPeople.reduce((sum, p) => 
       sum + this.calculateSchedulingDays(p.id, evaluationDate), 0);
-    const allHistoricalAssignments = allPeople.reduce((sum, p) => 
+    const allRealAssignments = allPeople.reduce((sum, p) => 
       sum + getPersonAssignmentCount(p, schedules), 0);
+    const allVirtualAssignments = allPeople.reduce((sum, p) => 
+      sum + (p.virtualHistory?.virtualAssignments || 0), 0);
     const allAccumulatedAssignments = allPeople.reduce((sum, p) => 
       sum + (this.accumulatedAssignments.get(p.id) || 0), 0);
-    const systemTotalAssignments = allHistoricalAssignments + allAccumulatedAssignments;
+    const systemTotalAssignments = allRealAssignments + allVirtualAssignments + allAccumulatedAssignments;
     
     const expected = totalSchedulingDays > 0 
       ? (schedulingDays / totalSchedulingDays) * systemTotalAssignments 

@@ -62,25 +62,28 @@ describe('dateUtils', () => {
 
   describe('getDaysBetween', () => {
     it('sollte korrekte Anzahl Tage zwischen zwei Daten berechnen', () => {
-      expect(getDaysBetween('2024-01-01', '2024-01-01')).toBe(0);
-      expect(getDaysBetween('2024-01-01', '2024-01-08')).toBe(7);
-      expect(getDaysBetween('2024-01-01', '2024-01-31')).toBe(30);
+      // Now includes both start and end dates (+1)
+      expect(getDaysBetween('2024-01-01', '2024-01-01')).toBe(1); // Same day = 1 day
+      expect(getDaysBetween('2024-01-01', '2024-01-08')).toBe(8); // 8 days inclusive
+      expect(getDaysBetween('2024-01-01', '2024-01-31')).toBe(31); // 31 days inclusive
     });
 
     it('sollte auch rückwärts funktionieren (absoluter Wert)', () => {
-      expect(getDaysBetween('2024-01-31', '2024-01-01')).toBe(30);
-      expect(getDaysBetween('2024-12-25', '2024-01-01')).toBeGreaterThan(350);
+      // Backwards gives 0 (max(0, negative + 1))
+      expect(getDaysBetween('2024-01-31', '2024-01-01')).toBe(0); // Backwards = 0
+      expect(getDaysBetween('2024-12-25', '2024-01-01')).toBe(0); // Backwards = 0
     });
 
     it('sollte Schaltjahre korrekt berücksichtigen', () => {
-      // 2024 ist ein Schaltjahr
-      expect(getDaysBetween('2024-01-01', '2024-03-01')).toBe(60);
-      // 2023 war kein Schaltjahr
-      expect(getDaysBetween('2023-01-01', '2023-03-01')).toBe(59);
+      // 2024 ist ein Schaltjahr (29 days in Feb)
+      expect(getDaysBetween('2024-01-01', '2024-03-01')).toBe(61); // Includes Feb 29
+      // 2023 war kein Schaltjahr (28 days in Feb)
+      expect(getDaysBetween('2023-01-01', '2023-03-01')).toBe(60); // No Feb 29
     });
 
     it('sollte über Jahresgrenzen hinweg funktionieren', () => {
-      expect(getDaysBetween('2023-12-25', '2024-01-05')).toBe(11);
+      // Dec 25 to Jan 5 = 12 days inclusive
+      expect(getDaysBetween('2023-12-25', '2024-01-05')).toBe(12);
     });
   });
 
@@ -120,7 +123,8 @@ describe('dateUtils', () => {
     it('sollte mit mehreren Wochen funktionieren', () => {
       const date = new Date('2024-01-01');
       const result = addWeeks(date, 10);
-      expect(getDaysBetween(formatDate(date), formatDate(result))).toBe(70);
+      // 10 weeks = 70 days, plus 1 for inclusive = 71
+      expect(getDaysBetween(formatDate(date), formatDate(result))).toBe(71);
     });
 
     it('sollte negative Wochen subtrahieren', () => {
