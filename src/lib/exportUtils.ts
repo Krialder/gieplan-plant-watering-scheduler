@@ -13,7 +13,7 @@
  */
 
 import type { Person, Schedule, YearData } from '@/types';
-import { formatDateGerman, getWeekNumber } from './dateUtils';
+import { formatDateGerman } from './dateUtils';
 import { isPersonActive } from './fairnessEngine';
 
 // Generate CSV string from 2D array data with proper escaping
@@ -63,7 +63,7 @@ export function exportPeopleToCSV(people: Person[]): string {
 // Export schedule data as CSV with assignment details
 export function exportScheduleToCSV(schedule: Schedule, people: Person[]): string {
   const headers = [
-    'KW',
+    'Woche',
     'Startdatum',
     'Person 1',
     'Person 2',
@@ -76,12 +76,7 @@ export function exportScheduleToCSV(schedule: Schedule, people: Person[]): strin
     'Kommentar'
   ];
   
-  // Sort assignments by week start date to ensure chronological order
-  const sortedAssignments = [...schedule.assignments].sort((a, b) => 
-    new Date(a.weekStartDate).getTime() - new Date(b.weekStartDate).getTime()
-  );
-  
-  const rows = sortedAssignments.map(assignment => {
+  const rows = schedule.assignments.map(assignment => {
     const person1 = people.find(p => p.id === assignment.assignedPeople[0]);
     const person2 = people.find(p => p.id === assignment.assignedPeople[1]);
     const substitute1 = (assignment.substitutes && assignment.substitutes[0]) ? people.find(p => p.id === assignment.substitutes![0]) : null;
@@ -95,12 +90,8 @@ export function exportScheduleToCSV(schedule: Schedule, people: Person[]): strin
     // Get comment
     const comment = (assignment as any).comment || '-';
     
-    // Calculate actual calendar week number from the date
-    const weekStartDate = new Date(assignment.weekStartDate);
-    const calendarWeek = getWeekNumber(weekStartDate);
-    
     return [
-      calendarWeek.toString(),
+      assignment.weekNumber.toString(),
       formatDateGerman(new Date(assignment.weekStartDate)),
       person1?.name || 'Unbekannt',
       person2?.name || '-',

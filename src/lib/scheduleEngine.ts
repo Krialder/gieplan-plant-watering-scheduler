@@ -95,41 +95,26 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
     const weekStart = addWeeks(monday, i);
     const weekStartString = formatDate(weekStart);
     
-    // Check if this week already exists in any schedule with a complete team
+    // Check if this week already exists in any schedule
     let weekExists = false;
-    let weekIsIncomplete = false;
     for (const existingSchedule of existingSchedules) {
-      const existingAssignment = existingSchedule.assignments.find(a => a.weekStartDate === weekStartString);
-      if (existingAssignment) {
-        // Week exists, but check if it has a complete team (2 people)
-        if (existingAssignment.assignedPeople.length >= 2) {
-          weekExists = true;
-          const weekDate = parseDate(weekStartString);
-          const weekNum = getWeekNumber(weekDate);
-          const year = weekDate.getFullYear();
-          skippedWeeks.push(`KW ${weekNum} (${year})`);
-          break;
-        } else {
-          // Week exists but is incomplete (only 1 person) - mark for regeneration
-          weekIsIncomplete = true;
-        }
+      const hasWeek = existingSchedule.assignments.some(a => a.weekStartDate === weekStartString);
+      if (hasWeek) {
+        weekExists = true;
+        const weekDate = parseDate(weekStartString);
+        const weekNum = getWeekNumber(weekDate);
+        const year = weekDate.getFullYear();
+        skippedWeeks.push(`KW ${weekNum} (${year})`);
+        break;
       }
     }
     
-    if (!weekExists || weekIsIncomplete) {
+    if (!weekExists) {
       weeksToGenerate.push({
         weekStart,
         weekNumber: i + 1,
         isGap: skippedWeeks.length > 0 // This is a gap if we skipped some weeks
       });
-      
-      // Add info about incomplete weeks being regenerated
-      if (weekIsIncomplete) {
-        const weekDate = parseDate(weekStartString);
-        const weekNum = getWeekNumber(weekDate);
-        const year = weekDate.getFullYear();
-        warnings.push(`KW ${weekNum} (${year}) wird neu generiert (unvollständiges Team)`);
-      }
     }
   }
   
@@ -183,22 +168,6 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
   // Initialize running state for progressive fairness calculation
   const runningState = initializeRunningState(activePeople, existingSchedules, mondayString);
   
-  // Remove incomplete assignments from existing schedules that will be regenerated
-  for (const weekInfo of weeksToGenerate) {
-    const weekStartString = formatDate(weekInfo.weekStart);
-    for (const existingSchedule of existingSchedules) {
-      const assignmentIndex = existingSchedule.assignments.findIndex(a => a.weekStartDate === weekStartString);
-      if (assignmentIndex !== -1) {
-        const assignment = existingSchedule.assignments[assignmentIndex];
-        if (assignment.assignedPeople.length < 2) {
-          // Remove incomplete assignment - it will be regenerated
-          existingSchedule.assignments.splice(assignmentIndex, 1);
-          console.log(`[ScheduleGeneration] Removed incomplete assignment for week ${weekStartString}`);
-        }
-      }
-    }
-  }
-
   console.log('[ScheduleGeneration] Starting with running state:', {
     people: activePeople.length,
     historicalAssignments: Array.from(runningState.historicalAssignments.entries()).map(([id, count]) => ({
@@ -248,34 +217,6 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
       const weekNum = getWeekNumber(weekDate);
       errors.push(`KW ${weekNum} konnte nicht generiert werden: Keine verfügbaren Personen (${activePeople.length} aktiv, ${excludedIds.length} ausgeschlossen)`);
       continue;
-    }
-    
-    // If we only got 1 person but have more than 1 active person, try without exclusions
-    if (selection.teamIds.length === 1 && activePeople.length > 1) {
-      const weekDate = parseDate(weekStartString);
-      const weekNum = getWeekNumber(weekDate);
-      
-      // Try again without excluding previous week's assignments
-      const retrySelection = selectTeamsAndSubstitutesWithState(
-        activePeople,
-        runningState,
-        weekStartString,
-        [], // No exclusions for retry
-        2, // team size = 2
-        2  // substitute size = 2
-      );
-      
-      if (retrySelection.teamIds.length >= 2) {
-        // Success with retry - use this selection
-        console.log(`[ScheduleGeneration] KW ${weekNum}: Retry without exclusions successful`);
-        warnings.push(`KW ${weekNum}: Aufeinanderfolgenden-Regel ignoriert um vollständiges Team zu bilden`);
-        selection.teamIds = retrySelection.teamIds;
-        selection.substituteIds = retrySelection.substituteIds;
-      } else {
-        // Still only 1 person available - this means truly only 1 person active this week
-        console.log(`[ScheduleGeneration] KW ${weekNum}: Only 1 person available even without exclusions`);
-        warnings.push(`KW ${weekNum}: Nur 1 Person verfügbar (${selection.teamIds.length})`);
-      }
     }
     
     // Use the team IDs as the assigned people

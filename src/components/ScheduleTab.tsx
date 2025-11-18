@@ -18,7 +18,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Trash, Download } from 'lucide-react';
@@ -38,9 +37,6 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
   const [startDate, setStartDate] = useState(getTodayString());
   const [weeks, setWeeks] = useState(6);
   const [generating, setGenerating] = useState(false);
-  
-  // Export state
-  const [exportTimeframe, setExportTimeframe] = useState<string>('all');
   
   // Use a ref for immediate lock (not dependent on React state updates)
   const generatingRef = useRef(false);
@@ -144,71 +140,6 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
     toast.success('Zeitplan exportiert');
   };
 
-  // Export assignments by timeframe
-  const handleExportByTimeframe = () => {
-    if (yearData.schedules.length === 0) {
-      toast.error('Keine Zeitpläne zum Exportieren vorhanden');
-      return;
-    }
-
-    // Collect all assignments from all schedules
-    const allAssignments: Array<any> = [];
-    
-    yearData.schedules.forEach(schedule => {
-      schedule.assignments.forEach(assignment => {
-        allAssignments.push({ ...assignment, scheduleId: schedule.id });
-      });
-    });
-
-    // Sort by week start date to ensure proper ordering
-    allAssignments.sort((a, b) => 
-      new Date(a.weekStartDate).getTime() - new Date(b.weekStartDate).getTime()
-    );
-
-    // Filter by timeframe
-    let filteredAssignments = allAssignments;
-    const now = new Date();
-    
-    if (exportTimeframe === 'past') {
-      filteredAssignments = allAssignments.filter(a => new Date(a.weekStartDate) < now);
-    } else if (exportTimeframe === 'current') {
-      const currentWeekStart = new Date(now);
-      currentWeekStart.setDate(now.getDate() - now.getDay() + 1); // Monday
-      const currentWeekEnd = new Date(currentWeekStart);
-      currentWeekEnd.setDate(currentWeekStart.getDate() + 6); // Sunday
-      
-      filteredAssignments = allAssignments.filter(a => {
-        const assignmentDate = new Date(a.weekStartDate);
-        return assignmentDate >= currentWeekStart && assignmentDate <= currentWeekEnd;
-      });
-    } else if (exportTimeframe === 'future') {
-      filteredAssignments = allAssignments.filter(a => new Date(a.weekStartDate) > now);
-    }
-
-    if (filteredAssignments.length === 0) {
-      toast.error('Keine Zuweisungen im gewählten Zeitraum');
-      return;
-    }
-
-    // Create a virtual schedule object for export
-    const virtualSchedule: Schedule = {
-      id: 'export',
-      startDate: filteredAssignments[0].weekStartDate,
-      weeks: filteredAssignments.length,
-      assignments: filteredAssignments.map(({ scheduleId, ...assignment }) => assignment),
-      createdAt: new Date().toISOString()
-    };
-
-    const csv = exportScheduleToCSV(virtualSchedule, yearData.people);
-    const timeframeName = exportTimeframe === 'all' ? 'alle' : 
-                         exportTimeframe === 'past' ? 'vergangene' :
-                         exportTimeframe === 'current' ? 'aktuelle' : 'zukünftige';
-    
-    const filename = `giessplan-${timeframeName}-wochen-${new Date().toISOString().split('T')[0]}.csv`;
-    downloadCSV(csv, filename);
-    toast.success(`${filteredAssignments.length} Wochen (${timeframeName}) exportiert`);
-  };
-
   return (
     <div className="space-y-6">
       {/* Schedule generation form */}
@@ -278,40 +209,14 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
             </Alert>
           )}
           
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button
-              onClick={handleGenerate}
-              disabled={yearData.people.length === 0 || activePeopleCount === 0 || generating}
-              className="flex items-center gap-2"
-            >
-              <Calendar size={18} />
-              {generating ? 'Generiere...' : 'Zeitplan generieren'}
-            </Button>
-            
-            {yearData.schedules.length > 0 && (
-              <div className="flex items-center gap-2">
-                <Select value={exportTimeframe} onValueChange={setExportTimeframe}>
-                  <SelectTrigger className="w-[140px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alle Wochen</SelectItem>
-                    <SelectItem value="past">Vergangene</SelectItem>
-                    <SelectItem value="current">Aktuelle Woche</SelectItem>
-                    <SelectItem value="future">Zukünftige</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  onClick={handleExportByTimeframe}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                >
-                  <Download size={16} />
-                  CSV Export
-                </Button>
-              </div>
-            )}
-          </div>
+          <Button
+            onClick={handleGenerate}
+            disabled={yearData.people.length === 0 || activePeopleCount === 0 || generating}
+            className="w-full md:w-auto flex items-center gap-2"
+          >
+            <Calendar size={18} />
+            {generating ? 'Generiere...' : 'Zeitplan generieren'}
+          </Button>
         </CardContent>
       </Card>
 
