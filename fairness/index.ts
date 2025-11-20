@@ -43,6 +43,8 @@ export class DynamicFairnessEngine {
   private bayesianStates: Map<string, BayesianState>;
   private correctiveActions: Map<string, CorrectiveAction>;
   private constraints: FairnessConstraints;
+  private varianceHistory: number[] = []; // Track variance over time for convergence analysis
+  private metricsHistory: FairnessMetrics[] = []; // Track all metrics over time
   
   constructor(constraints: FairnessConstraints = DEFAULT_CONSTRAINTS) {
     this.bayesianStates = new Map();
@@ -52,6 +54,7 @@ export class DynamicFairnessEngine {
   
   /**
    * Initialize or update Bayesian state for a person
+   * NOTE: Prefer using AdaptiveFairnessManager.initializeFromPeople() instead
    */
   initializePerson(
     personId: string,
@@ -64,6 +67,7 @@ export class DynamicFairnessEngine {
   
   /**
    * Update Bayesian state after an assignment
+   * NOTE: Prefer using AdaptiveFairnessManager for integrated state management
    */
   updateAfterAssignment(
     personId: string,
@@ -73,7 +77,9 @@ export class DynamicFairnessEngine {
   ): void {
     const currentState = this.bayesianStates.get(personId);
     if (!currentState) {
-      throw new Error(`No Bayesian state found for person ${personId}`);
+      // Silently initialize if not found (for graceful degradation)
+      this.initializePerson(personId, idealRate, new Date().toISOString());
+      return;
     }
     
     const updated = updateBayesianState(
@@ -106,12 +112,23 @@ export class DynamicFairnessEngine {
     // Calculate fairness metrics
     const metrics = calculateFairnessMetrics(rates);
     
-    // Check constraints
+    // Store metrics for convergence tracking
+    this.metricsHistory.push(metrics);
+    this.varianceHistory.push(metrics.variance);
+    
+    // Keep only recent history (last 100 measurements)
+    if (this.varianceHistory.length > 100) {
+      this.varianceHistory.shift();
+      this.metricsHistory.shift();
+    }
+    
+    // Check constraints (with person IDs for proper tracking)
     const { violations } = checkFairnessConstraints(
       rates,
       deficits,
       tenures,
-      this.constraints
+      this.constraints,
+      personIds // FIXED: Pass personIds to constraint checker
     );
     
     // Generate corrective actions
@@ -184,12 +201,13 @@ export class DynamicFairnessEngine {
   }
   
   /**
-   * Clear expired corrective actions
+   * Clear expired corrective actions (optional - not currently used)
+   * @deprecated Corrective actions are informational only, expiration not enforced
    */
   clearExpiredActions(currentWeek: number): void {
+    // This method is kept for backwards compatibility but is not actively used
+    // The corrective actions system is informational/diagnostic rather than prescriptive
     for (const [personId, action] of this.correctiveActions.entries()) {
-      // This is simplified - in real implementation, track start week
-      // For now, just clear all actions after duration
       if (action.duration <= 0) {
         this.correctiveActions.delete(personId);
       }
@@ -204,11 +222,72 @@ export class DynamicFairnessEngine {
   }
   
   /**
+   * Get variance history for convergence analysis
+   */
+  getVarianceHistory(): number[] {
+    return [...this.varianceHistory];
+  }
+  
+  /**
+   * Get full metrics history
+   */
+  getMetricsHistory(): FairnessMetrics[] {
+    return [...this.metricsHistory];
+  }
+  
+  /**
+   * Check if system is converging (variance decreasing over time)
+   */
+  isConverging(windowSize: number = 10): boolean {
+    if (this.varianceHistory.length < windowSize * 2) {
+      return false; // Not enough data
+    }
+    
+    const recent = this.varianceHistory.slice(-windowSize);
+    const older = this.varianceHistory.slice(-windowSize * 2, -windowSize);
+    
+    const recentMean = recent.reduce((a, b) => a + b, 0) / recent.length;
+    const olderMean = older.reduce((a, b) => a + b, 0) / older.length;
+    
+    return recentMean < olderMean;
+  }
+  
+  /**
+   * Get convergence rate (how fast variance is decreasing)
+   * Returns percentage change per measurement
+   */
+  getConvergenceRate(windowSize: number = 20): number {
+    if (this.varianceHistory.length < windowSize) {
+      return 0;
+    }
+    
+    const recent = this.varianceHistory.slice(-windowSize);
+    
+    // Calculate linear regression slope
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    for (let i = 0; i < recent.length; i++) {
+      sumX += i;
+      sumY += recent[i];
+      sumXY += i * recent[i];
+      sumX2 += i * i;
+    }
+    
+    const n = recent.length;
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    
+    // Return slope as percentage of current variance
+    const currentVariance = recent[recent.length - 1];
+    return currentVariance > 0 ? (slope / currentVariance) * 100 : 0;
+  }
+  
+  /**
    * Reset engine state
    */
   reset(): void {
     this.bayesianStates.clear();
     this.correctiveActions.clear();
+    this.varianceHistory = [];
+    this.metricsHistory = [];
   }
 }
 

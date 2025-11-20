@@ -1,0 +1,1755 @@
+{
+  "runs": [
+    {
+      "runId": 1,
+      "totalOperations": 43,
+      "schedulesCreated": 13,
+      "schedulesDeleted": 4,
+      "weeksDeleted": 23,
+      "peopleAdded": 12,
+      "peopleDeparted": 16,
+      "peopleReturned": 3,
+      "maxActivePeople": 24,
+      "minActivePeople": 14,
+      "avgActivePeople": 17.27906976744186,
+      "finalActivePeople": 15,
+      "totalPeopleEver": 27,
+      "timelineEvents": [
+        {
+          "date": "2019-12-31",
+          "eventType": "person_depart",
+          "details": "Jamie Smith #12 departed",
+          "activePeople": 14
+        },
+        {
+          "date": "2020-01-12",
+          "eventType": "person_return",
+          "details": "Jamie Smith #12 returned",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-01-17",
+          "eventType": "person_depart",
+          "details": "Morgan Smith #3 departed",
+          "activePeople": 14
+        },
+        {
+          "date": "2020-01-25",
+          "eventType": "generate",
+          "details": "Generated 13 weeks",
+          "activePeople": 14
+        },
+        {
+          "date": "2020-05-02",
+          "eventType": "generate",
+          "details": "Generated 26 weeks",
+          "activePeople": 14
+        },
+        {
+          "date": "2020-11-03",
+          "eventType": "person_return",
+          "details": "Morgan Smith #3 returned",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-11-08",
+          "eventType": "generate",
+          "details": "Generated 22 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2021-04-11",
+          "eventType": "regenerate",
+          "details": "Regenerated 14 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2021-04-19",
+          "eventType": "generate",
+          "details": "Generated 20 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2021-09-11",
+          "eventType": "delete_schedule",
+          "details": "Deleted schedule with 26 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2021-09-15",
+          "eventType": "delete_week",
+          "details": "Deleted 9 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2021-09-15",
+          "eventType": "regenerate",
+          "details": "Regenerated 3 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2021-09-19",
+          "eventType": "person_arrive",
+          "details": "Skyler Smith #16 joined",
+          "activePeople": 16
+        },
+        {
+          "date": "2021-09-29",
+          "eventType": "generate",
+          "details": "Generated 21 weeks",
+          "activePeople": 16
+        },
+        {
+          "date": "2022-03-01",
+          "eventType": "mass_arrival",
+          "details": "8 people joined simultaneously",
+          "activePeople": 24
+        },
+        {
+          "date": "2022-03-17",
+          "eventType": "generate",
+          "details": "Generated 23 weeks",
+          "activePeople": 24
+        },
+        {
+          "date": "2022-08-29",
+          "eventType": "delete_schedule",
+          "details": "Deleted schedule with 13 weeks",
+          "activePeople": 24
+        },
+        {
+          "date": "2022-09-05",
+          "eventType": "generate",
+          "details": "Generated 14 weeks",
+          "activePeople": 24
+        },
+        {
+          "date": "2022-12-30",
+          "eventType": "person_depart",
+          "details": "Avery Smith #8 departed",
+          "activePeople": 23
+        },
+        {
+          "date": "2023-01-03",
+          "eventType": "person_arrive",
+          "details": "Riley Johnson #25 joined",
+          "activePeople": 24
+        },
+        {
+          "date": "2023-01-09",
+          "eventType": "person_depart",
+          "details": "Drew Smith #10 departed",
+          "activePeople": 23
+        },
+        {
+          "date": "2023-01-14",
+          "eventType": "generate",
+          "details": "Generated 13 weeks",
+          "activePeople": 23
+        },
+        {
+          "date": "2023-04-19",
+          "eventType": "person_depart",
+          "details": "Casey Smith #4 departed",
+          "activePeople": 22
+        },
+        {
+          "date": "2023-04-26",
+          "eventType": "mass_departure",
+          "details": "8 people left simultaneously",
+          "activePeople": 22
+        },
+        {
+          "date": "2023-05-05",
+          "eventType": "delete_week",
+          "details": "Deleted 8 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2023-05-11",
+          "eventType": "delete_schedule",
+          "details": "Deleted schedule with 22 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2023-05-11",
+          "eventType": "regenerate",
+          "details": "Regenerated 17 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2023-05-20",
+          "eventType": "person_depart",
+          "details": "Morgan Smith #3 departed",
+          "activePeople": 14
+        },
+        {
+          "date": "2023-05-26",
+          "eventType": "delete_week",
+          "details": "Deleted 6 weeks",
+          "activePeople": 14
+        },
+        {
+          "date": "2023-06-03",
+          "eventType": "person_arrive",
+          "details": "Taylor Johnson #26 joined",
+          "activePeople": 15
+        },
+        {
+          "date": "2023-06-07",
+          "eventType": "generate",
+          "details": "Generated 14 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2023-09-21",
+          "eventType": "person_return",
+          "details": "Reese Smith #13 returned",
+          "activePeople": 16
+        },
+        {
+          "date": "2023-09-30",
+          "eventType": "generate",
+          "details": "Generated 14 weeks",
+          "activePeople": 16
+        },
+        {
+          "date": "2024-01-06",
+          "eventType": "regenerate",
+          "details": "Regenerated 6 weeks",
+          "activePeople": 16
+        },
+        {
+          "date": "2024-01-13",
+          "eventType": "generate",
+          "details": "Generated 17 weeks",
+          "activePeople": 16
+        },
+        {
+          "date": "2024-05-19",
+          "eventType": "delete_schedule",
+          "details": "Deleted schedule with 3 weeks",
+          "activePeople": 16
+        },
+        {
+          "date": "2024-05-25",
+          "eventType": "generate",
+          "details": "Generated 26 weeks",
+          "activePeople": 16
+        },
+        {
+          "date": "2024-11-23",
+          "eventType": "regenerate",
+          "details": "Regenerated 6 weeks",
+          "activePeople": 16
+        },
+        {
+          "date": "2024-11-30",
+          "eventType": "person_arrive",
+          "details": "Quinn Johnson #27 joined",
+          "activePeople": 17
+        },
+        {
+          "date": "2024-12-03",
+          "eventType": "person_depart",
+          "details": "Sage Smith #17 departed",
+          "activePeople": 16
+        },
+        {
+          "date": "2024-12-08",
+          "eventType": "person_depart",
+          "details": "Morgan Johnson #23 departed",
+          "activePeople": 15
+        },
+        {
+          "date": "2024-12-13",
+          "eventType": "generate",
+          "details": "Generated 31 weeks",
+          "activePeople": 15
+        }
+      ],
+      "finalStats": {
+        "totalWeeks": 213,
+        "totalAssignments": 426,
+        "activePeopleStats": [
+          {
+            "name": "Quinn Johnson #27",
+            "count": 1,
+            "tenure": 235
+          },
+          {
+            "name": "Taylor Johnson #26",
+            "count": 6,
+            "tenure": 781
+          },
+          {
+            "name": "Rowan Smith #19",
+            "count": 16,
+            "tenure": 1240
+          },
+          {
+            "name": "Alex Johnson #21",
+            "count": 16,
+            "tenure": 1240
+          },
+          {
+            "name": "Jordan Johnson #22",
+            "count": 16,
+            "tenure": 1240
+          },
+          {
+            "name": "Casey Johnson #24",
+            "count": 16,
+            "tenure": 1240
+          },
+          {
+            "name": "Reese Smith #13",
+            "count": 27,
+            "tenure": 2031
+          },
+          {
+            "name": "Jordan Smith #2",
+            "count": 30,
+            "tenure": 2031
+          },
+          {
+            "name": "Riley Smith #5",
+            "count": 30,
+            "tenure": 2031
+          },
+          {
+            "name": "Quinn Smith #7",
+            "count": 32,
+            "tenure": 2031
+          },
+          {
+            "name": "Alex Smith #1",
+            "count": 33,
+            "tenure": 2031
+          },
+          {
+            "name": "Sam Smith #9",
+            "count": 33,
+            "tenure": 2031
+          },
+          {
+            "name": "Charlie Smith #11",
+            "count": 33,
+            "tenure": 2031
+          },
+          {
+            "name": "Jamie Smith #12",
+            "count": 33,
+            "tenure": 2031
+          },
+          {
+            "name": "Blake Smith #14",
+            "count": 33,
+            "tenure": 2031
+          }
+        ],
+        "allPeopleStats": [
+          {
+            "name": "Alex Smith #1",
+            "count": 33,
+            "status": "active"
+          },
+          {
+            "name": "Sam Smith #9",
+            "count": 33,
+            "status": "active"
+          },
+          {
+            "name": "Charlie Smith #11",
+            "count": 33,
+            "status": "active"
+          },
+          {
+            "name": "Jamie Smith #12",
+            "count": 33,
+            "status": "active"
+          },
+          {
+            "name": "Blake Smith #14",
+            "count": 33,
+            "status": "active"
+          },
+          {
+            "name": "Quinn Smith #7",
+            "count": 32,
+            "status": "active"
+          },
+          {
+            "name": "Jordan Smith #2",
+            "count": 30,
+            "status": "active"
+          },
+          {
+            "name": "Riley Smith #5",
+            "count": 30,
+            "status": "active"
+          },
+          {
+            "name": "Reese Smith #13",
+            "count": 27,
+            "status": "active"
+          },
+          {
+            "name": "Rowan Smith #19",
+            "count": 16,
+            "status": "active"
+          },
+          {
+            "name": "Alex Johnson #21",
+            "count": 16,
+            "status": "active"
+          },
+          {
+            "name": "Jordan Johnson #22",
+            "count": 16,
+            "status": "active"
+          },
+          {
+            "name": "Casey Johnson #24",
+            "count": 16,
+            "status": "active"
+          },
+          {
+            "name": "Sage Smith #17",
+            "count": 11,
+            "status": "departed"
+          },
+          {
+            "name": "Casey Smith #4",
+            "count": 9,
+            "status": "departed"
+          },
+          {
+            "name": "Taylor Smith #6",
+            "count": 9,
+            "status": "departed"
+          },
+          {
+            "name": "Avery Smith #8",
+            "count": 9,
+            "status": "departed"
+          },
+          {
+            "name": "Drew Smith #10",
+            "count": 9,
+            "status": "departed"
+          },
+          {
+            "name": "Cameron Smith #15",
+            "count": 8,
+            "status": "departed"
+          },
+          {
+            "name": "Morgan Smith #3",
+            "count": 6,
+            "status": "departed"
+          },
+          {
+            "name": "Taylor Johnson #26",
+            "count": 6,
+            "status": "active"
+          },
+          {
+            "name": "Skyler Smith #16",
+            "count": 5,
+            "status": "departed"
+          },
+          {
+            "name": "Emerson Smith #18",
+            "count": 2,
+            "status": "departed"
+          },
+          {
+            "name": "Parker Smith #20",
+            "count": 2,
+            "status": "departed"
+          },
+          {
+            "name": "Riley Johnson #25",
+            "count": 1,
+            "status": "departed"
+          },
+          {
+            "name": "Quinn Johnson #27",
+            "count": 1,
+            "status": "active"
+          },
+          {
+            "name": "Morgan Johnson #23",
+            "count": 0,
+            "status": "departed"
+          }
+        ],
+        "standardDeviation": 12.044157438154889,
+        "mean": 16.384615384615383,
+        "min": 1,
+        "max": 33,
+        "range": 32
+      },
+      "stressMetrics": {
+        "maxStdDev": 10.02356619605488,
+        "minStdDev": 0.573488351136175,
+        "avgStdDev": 5.36606705660948,
+        "criticalMoments": 0,
+        "recoveryCount": 0
+      }
+    },
+    {
+      "runId": 2,
+      "totalOperations": 34,
+      "schedulesCreated": 15,
+      "schedulesDeleted": 0,
+      "weeksDeleted": 4,
+      "peopleAdded": 10,
+      "peopleDeparted": 14,
+      "peopleReturned": 0,
+      "maxActivePeople": 20,
+      "minActivePeople": 12,
+      "avgActivePeople": 14.470588235294118,
+      "finalActivePeople": 12,
+      "totalPeopleEver": 25,
+      "timelineEvents": [
+        {
+          "date": "2020-01-14",
+          "eventType": "generate",
+          "details": "Generated 19 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-05-29",
+          "eventType": "generate",
+          "details": "Generated 27 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-12-04",
+          "eventType": "regenerate",
+          "details": "Regenerated 6 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-12-07",
+          "eventType": "generate",
+          "details": "Generated 5 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2021-01-11",
+          "eventType": "regenerate",
+          "details": "Regenerated 5 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2021-01-19",
+          "eventType": "person_arrive",
+          "details": "Skyler Smith #16 joined",
+          "activePeople": 16
+        },
+        {
+          "date": "2021-01-22",
+          "eventType": "delete_week",
+          "details": "Deleted 3 weeks",
+          "activePeople": 16
+        },
+        {
+          "date": "2021-01-29",
+          "eventType": "person_depart",
+          "details": "Cameron Smith #15 departed",
+          "activePeople": 15
+        },
+        {
+          "date": "2021-02-03",
+          "eventType": "mass_arrival",
+          "details": "4 people joined simultaneously",
+          "activePeople": 19
+        },
+        {
+          "date": "2021-02-11",
+          "eventType": "generate",
+          "details": "Generated 5 weeks",
+          "activePeople": 19
+        },
+        {
+          "date": "2021-03-22",
+          "eventType": "person_arrive",
+          "details": "Alex Johnson #21 joined",
+          "activePeople": 20
+        },
+        {
+          "date": "2021-03-22",
+          "eventType": "regenerate",
+          "details": "Regenerated 13 weeks",
+          "activePeople": 19
+        },
+        {
+          "date": "2021-03-26",
+          "eventType": "person_depart",
+          "details": "Blake Smith #14 departed",
+          "activePeople": 19
+        },
+        {
+          "date": "2021-03-26",
+          "eventType": "regenerate",
+          "details": "Regenerated 3 weeks",
+          "activePeople": 20
+        },
+        {
+          "date": "2021-04-01",
+          "eventType": "mass_departure",
+          "details": "7 people left simultaneously",
+          "activePeople": 19
+        },
+        {
+          "date": "2021-04-08",
+          "eventType": "delete_week",
+          "details": "Deleted 1 weeks",
+          "activePeople": 13
+        },
+        {
+          "date": "2021-04-14",
+          "eventType": "generate",
+          "details": "Generated 7 weeks",
+          "activePeople": 13
+        },
+        {
+          "date": "2021-06-05",
+          "eventType": "generate",
+          "details": "Generated 23 weeks",
+          "activePeople": 13
+        },
+        {
+          "date": "2021-11-22",
+          "eventType": "generate",
+          "details": "Generated 34 weeks",
+          "activePeople": 13
+        },
+        {
+          "date": "2022-07-17",
+          "eventType": "regenerate",
+          "details": "Regenerated 7 weeks",
+          "activePeople": 13
+        },
+        {
+          "date": "2022-07-26",
+          "eventType": "person_arrive",
+          "details": "Jordan Johnson #22 joined",
+          "activePeople": 14
+        },
+        {
+          "date": "2022-08-02",
+          "eventType": "generate",
+          "details": "Generated 18 weeks",
+          "activePeople": 14
+        },
+        {
+          "date": "2022-12-10",
+          "eventType": "generate",
+          "details": "Generated 18 weeks",
+          "activePeople": 14
+        },
+        {
+          "date": "2023-04-21",
+          "eventType": "person_arrive",
+          "details": "Morgan Johnson #23 joined",
+          "activePeople": 15
+        },
+        {
+          "date": "2023-04-28",
+          "eventType": "person_depart",
+          "details": "Morgan Smith #3 departed",
+          "activePeople": 14
+        },
+        {
+          "date": "2023-05-02",
+          "eventType": "generate",
+          "details": "Generated 13 weeks",
+          "activePeople": 14
+        },
+        {
+          "date": "2023-08-05",
+          "eventType": "person_depart",
+          "details": "Emerson Smith #18 departed",
+          "activePeople": 13
+        },
+        {
+          "date": "2023-08-08",
+          "eventType": "generate",
+          "details": "Generated 34 weeks",
+          "activePeople": 13
+        },
+        {
+          "date": "2024-04-11",
+          "eventType": "person_depart",
+          "details": "Sam Smith #9 departed",
+          "activePeople": 12
+        },
+        {
+          "date": "2024-04-17",
+          "eventType": "person_arrive",
+          "details": "Casey Johnson #24 joined",
+          "activePeople": 13
+        },
+        {
+          "date": "2024-04-25",
+          "eventType": "generate",
+          "details": "Generated 6 weeks",
+          "activePeople": 13
+        },
+        {
+          "date": "2024-06-06",
+          "eventType": "regenerate",
+          "details": "Regenerated 11 weeks",
+          "activePeople": 13
+        },
+        {
+          "date": "2024-06-09",
+          "eventType": "generate",
+          "details": "Generated 12 weeks",
+          "activePeople": 13
+        },
+        {
+          "date": "2024-09-06",
+          "eventType": "person_arrive",
+          "details": "Riley Johnson #25 joined",
+          "activePeople": 14
+        },
+        {
+          "date": "2024-09-06",
+          "eventType": "regenerate",
+          "details": "Regenerated 9 weeks",
+          "activePeople": 13
+        },
+        {
+          "date": "2024-09-10",
+          "eventType": "person_depart",
+          "details": "Jordan Johnson #22 departed",
+          "activePeople": 13
+        },
+        {
+          "date": "2024-09-18",
+          "eventType": "person_depart",
+          "details": "Rowan Smith #19 departed",
+          "activePeople": 12
+        },
+        {
+          "date": "2024-09-21",
+          "eventType": "generate",
+          "details": "Generated 8 weeks",
+          "activePeople": 12
+        },
+        {
+          "date": "2024-11-20",
+          "eventType": "generate",
+          "details": "Generated 10 weeks",
+          "activePeople": 12
+        }
+      ],
+      "finalStats": {
+        "totalWeeks": 289,
+        "totalAssignments": 578,
+        "activePeopleStats": [
+          {
+            "name": "Riley Johnson #25",
+            "count": 1,
+            "tenure": 148
+          },
+          {
+            "name": "Casey Johnson #24",
+            "count": 3,
+            "tenure": 290
+          },
+          {
+            "name": "Morgan Johnson #23",
+            "count": 5,
+            "tenure": 652
+          },
+          {
+            "name": "Alex Johnson #21",
+            "count": 21,
+            "tenure": 1412
+          },
+          {
+            "name": "Sage Smith #17",
+            "count": 24,
+            "tenure": 1459
+          },
+          {
+            "name": "Parker Smith #20",
+            "count": 24,
+            "tenure": 1459
+          },
+          {
+            "name": "Skyler Smith #16",
+            "count": 25,
+            "tenure": 1474
+          },
+          {
+            "name": "Riley Smith #5",
+            "count": 65,
+            "tenure": 1859
+          },
+          {
+            "name": "Taylor Smith #6",
+            "count": 65,
+            "tenure": 1859
+          },
+          {
+            "name": "Alex Smith #1",
+            "count": 66,
+            "tenure": 1859
+          },
+          {
+            "name": "Jordan Smith #2",
+            "count": 66,
+            "tenure": 1859
+          },
+          {
+            "name": "Charlie Smith #11",
+            "count": 71,
+            "tenure": 1859
+          }
+        ],
+        "allPeopleStats": [
+          {
+            "name": "Charlie Smith #11",
+            "count": 71,
+            "status": "active"
+          },
+          {
+            "name": "Alex Smith #1",
+            "count": 66,
+            "status": "active"
+          },
+          {
+            "name": "Jordan Smith #2",
+            "count": 66,
+            "status": "active"
+          },
+          {
+            "name": "Riley Smith #5",
+            "count": 65,
+            "status": "active"
+          },
+          {
+            "name": "Taylor Smith #6",
+            "count": 65,
+            "status": "active"
+          },
+          {
+            "name": "Morgan Smith #3",
+            "count": 25,
+            "status": "departed"
+          },
+          {
+            "name": "Skyler Smith #16",
+            "count": 25,
+            "status": "active"
+          },
+          {
+            "name": "Sage Smith #17",
+            "count": 24,
+            "status": "active"
+          },
+          {
+            "name": "Parker Smith #20",
+            "count": 24,
+            "status": "active"
+          },
+          {
+            "name": "Alex Johnson #21",
+            "count": 21,
+            "status": "active"
+          },
+          {
+            "name": "Sam Smith #9",
+            "count": 18,
+            "status": "departed"
+          },
+          {
+            "name": "Emerson Smith #18",
+            "count": 15,
+            "status": "departed"
+          },
+          {
+            "name": "Casey Smith #4",
+            "count": 10,
+            "status": "departed"
+          },
+          {
+            "name": "Quinn Smith #7",
+            "count": 10,
+            "status": "departed"
+          },
+          {
+            "name": "Avery Smith #8",
+            "count": 10,
+            "status": "departed"
+          },
+          {
+            "name": "Drew Smith #10",
+            "count": 10,
+            "status": "departed"
+          },
+          {
+            "name": "Jamie Smith #12",
+            "count": 9,
+            "status": "departed"
+          },
+          {
+            "name": "Reese Smith #13",
+            "count": 9,
+            "status": "departed"
+          },
+          {
+            "name": "Blake Smith #14",
+            "count": 9,
+            "status": "departed"
+          },
+          {
+            "name": "Cameron Smith #15",
+            "count": 9,
+            "status": "departed"
+          },
+          {
+            "name": "Jordan Johnson #22",
+            "count": 8,
+            "status": "departed"
+          },
+          {
+            "name": "Morgan Johnson #23",
+            "count": 5,
+            "status": "active"
+          },
+          {
+            "name": "Casey Johnson #24",
+            "count": 3,
+            "status": "active"
+          },
+          {
+            "name": "Riley Johnson #25",
+            "count": 1,
+            "status": "active"
+          },
+          {
+            "name": "Rowan Smith #19",
+            "count": 0,
+            "status": "departed"
+          }
+        ],
+        "standardDeviation": 22.851380702268298,
+        "mean": 24.083333333333332,
+        "min": 1,
+        "max": 71,
+        "range": 70
+      },
+      "stressMetrics": {
+        "maxStdDev": 21.94305357054938,
+        "minStdDev": 0.2494438257849294,
+        "avgStdDev": 10.90554491454873,
+        "criticalMoments": 0,
+        "recoveryCount": 0
+      }
+    },
+    {
+      "runId": 3,
+      "totalOperations": 68,
+      "schedulesCreated": 14,
+      "schedulesDeleted": 6,
+      "weeksDeleted": 0,
+      "peopleAdded": 33,
+      "peopleDeparted": 42,
+      "peopleReturned": 7,
+      "maxActivePeople": 30,
+      "minActivePeople": 8,
+      "avgActivePeople": 14.808823529411764,
+      "finalActivePeople": 21,
+      "totalPeopleEver": 48,
+      "timelineEvents": [
+        {
+          "date": "2020-01-06",
+          "eventType": "mass_departure",
+          "details": "6 people left simultaneously",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-01-17",
+          "eventType": "generate",
+          "details": "Generated 7 weeks",
+          "activePeople": 10
+        },
+        {
+          "date": "2020-03-09",
+          "eventType": "person_return",
+          "details": "Charlie Smith #11 returned",
+          "activePeople": 11
+        },
+        {
+          "date": "2020-03-17",
+          "eventType": "person_arrive",
+          "details": "Skyler Smith #16 joined",
+          "activePeople": 12
+        },
+        {
+          "date": "2020-03-23",
+          "eventType": "delete_schedule",
+          "details": "Deleted schedule with 7 weeks",
+          "activePeople": 12
+        },
+        {
+          "date": "2020-03-31",
+          "eventType": "mass_arrival",
+          "details": "7 people joined simultaneously",
+          "activePeople": 19
+        },
+        {
+          "date": "2020-04-05",
+          "eventType": "mass_departure",
+          "details": "7 people left simultaneously",
+          "activePeople": 19
+        },
+        {
+          "date": "2020-04-09",
+          "eventType": "person_arrive",
+          "details": "Casey Johnson #24 joined",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-04-15",
+          "eventType": "generate",
+          "details": "Generated 12 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-07-08",
+          "eventType": "regenerate",
+          "details": "Regenerated 6 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-07-14",
+          "eventType": "person_return",
+          "details": "Alex Smith #1 returned",
+          "activePeople": 16
+        },
+        {
+          "date": "2020-07-17",
+          "eventType": "person_depart",
+          "details": "Cameron Smith #15 departed",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-07-21",
+          "eventType": "person_depart",
+          "details": "Taylor Smith #6 departed",
+          "activePeople": 14
+        },
+        {
+          "date": "2020-07-24",
+          "eventType": "person_arrive",
+          "details": "Riley Johnson #25 joined",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-07-28",
+          "eventType": "generate",
+          "details": "Generated 12 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-10-20",
+          "eventType": "regenerate",
+          "details": "Regenerated 11 weeks",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-10-26",
+          "eventType": "mass_departure",
+          "details": "6 people left simultaneously",
+          "activePeople": 15
+        },
+        {
+          "date": "2020-10-29",
+          "eventType": "regenerate",
+          "details": "Regenerated 2 weeks",
+          "activePeople": 11
+        },
+        {
+          "date": "2020-11-04",
+          "eventType": "generate",
+          "details": "Generated 9 weeks",
+          "activePeople": 11
+        },
+        {
+          "date": "2021-01-16",
+          "eventType": "person_return",
+          "details": "Jamie Smith #12 returned",
+          "activePeople": 12
+        },
+        {
+          "date": "2021-01-21",
+          "eventType": "person_return",
+          "details": "Morgan Johnson #23 returned",
+          "activePeople": 13
+        },
+        {
+          "date": "2021-01-26",
+          "eventType": "person_depart",
+          "details": "Casey Johnson #24 departed",
+          "activePeople": 12
+        },
+        {
+          "date": "2021-01-29",
+          "eventType": "person_arrive",
+          "details": "Taylor Johnson #26 joined",
+          "activePeople": 13
+        },
+        {
+          "date": "2021-01-29",
+          "eventType": "regenerate",
+          "details": "Regenerated 2 weeks",
+          "activePeople": 12
+        },
+        {
+          "date": "2021-02-06",
+          "eventType": "mass_departure",
+          "details": "5 people left simultaneously",
+          "activePeople": 13
+        },
+        {
+          "date": "2021-02-12",
+          "eventType": "generate",
+          "details": "Generated 17 weeks",
+          "activePeople": 9
+        },
+        {
+          "date": "2021-06-11",
+          "eventType": "regenerate",
+          "details": "Regenerated 11 weeks",
+          "activePeople": 9
+        },
+        {
+          "date": "2021-07-01",
+          "eventType": "person_depart",
+          "details": "Morgan Johnson #23 departed",
+          "activePeople": 8
+        },
+        {
+          "date": "2021-07-10",
+          "eventType": "person_arrive",
+          "details": "Quinn Johnson #27 joined",
+          "activePeople": 9
+        },
+        {
+          "date": "2021-07-16",
+          "eventType": "person_arrive",
+          "details": "Avery Johnson #28 joined",
+          "activePeople": 10
+        },
+        {
+          "date": "2021-07-21",
+          "eventType": "person_return",
+          "details": "Taylor Johnson #26 returned",
+          "activePeople": 11
+        },
+        {
+          "date": "2021-07-21",
+          "eventType": "regenerate",
+          "details": "Regenerated 6 weeks",
+          "activePeople": 10
+        },
+        {
+          "date": "2021-07-27",
+          "eventType": "generate",
+          "details": "Generated 4 weeks",
+          "activePeople": 11
+        },
+        {
+          "date": "2021-09-01",
+          "eventType": "generate",
+          "details": "Generated 1 weeks",
+          "activePeople": 11
+        },
+        {
+          "date": "2021-09-16",
+          "eventType": "delete_schedule",
+          "details": "Deleted schedule with 11 weeks",
+          "activePeople": 11
+        },
+        {
+          "date": "2021-09-19",
+          "eventType": "person_arrive",
+          "details": "Sam Johnson #29 joined",
+          "activePeople": 12
+        },
+        {
+          "date": "2021-09-30",
+          "eventType": "generate",
+          "details": "Generated 15 weeks",
+          "activePeople": 12
+        },
+        {
+          "date": "2022-01-19",
+          "eventType": "generate",
+          "details": "Generated 20 weeks",
+          "activePeople": 12
+        },
+        {
+          "date": "2022-06-12",
+          "eventType": "person_arrive",
+          "details": "Drew Johnson #30 joined",
+          "activePeople": 13
+        },
+        {
+          "date": "2022-06-12",
+          "eventType": "regenerate",
+          "details": "Regenerated 13 weeks",
+          "activePeople": 12
+        },
+        {
+          "date": "2022-06-18",
+          "eventType": "person_arrive",
+          "details": "Charlie Johnson #31 joined",
+          "activePeople": 14
+        },
+        {
+          "date": "2022-06-21",
+          "eventType": "generate",
+          "details": "Generated 17 weeks",
+          "activePeople": 14
+        },
+        {
+          "date": "2022-10-25",
+          "eventType": "delete_schedule",
+          "details": "Deleted schedule with 12 weeks",
+          "activePeople": 14
+        },
+        {
+          "date": "2022-11-10",
+          "eventType": "person_arrive",
+          "details": "Jamie Johnson #32 joined",
+          "activePeople": 15
+        },
+        {
+          "date": "2022-11-10",
+          "eventType": "regenerate",
+          "details": "Regenerated 11 weeks",
+          "activePeople": 14
+        },
+        {
+          "date": "2022-11-13",
+          "eventType": "person_arrive",
+          "details": "Reese Johnson #33 joined",
+          "activePeople": 16
+        },
+        {
+          "date": "2022-11-29",
+          "eventType": "delete_schedule",
+          "details": "Deleted schedule with 1 weeks",
+          "activePeople": 16
+        },
+        {
+          "date": "2022-12-02",
+          "eventType": "mass_arrival",
+          "details": "4 people joined simultaneously",
+          "activePeople": 20
+        },
+        {
+          "date": "2022-12-11",
+          "eventType": "person_depart",
+          "details": "Sam Smith #9 departed",
+          "activePeople": 19
+        },
+        {
+          "date": "2022-12-11",
+          "eventType": "regenerate",
+          "details": "Regenerated 1 weeks",
+          "activePeople": 20
+        },
+        {
+          "date": "2022-12-14",
+          "eventType": "person_return",
+          "details": "Emerson Smith #18 returned",
+          "activePeople": 20
+        },
+        {
+          "date": "2022-12-22",
+          "eventType": "person_arrive",
+          "details": "Emerson Johnson #38 joined",
+          "activePeople": 21
+        },
+        {
+          "date": "2022-12-29",
+          "eventType": "person_arrive",
+          "details": "Rowan Johnson #39 joined",
+          "activePeople": 22
+        },
+        {
+          "date": "2023-01-04",
+          "eventType": "person_arrive",
+          "details": "Parker Johnson #40 joined",
+          "activePeople": 23
+        },
+        {
+          "date": "2023-01-11",
+          "eventType": "person_arrive",
+          "details": "Alex Brown #41 joined",
+          "activePeople": 24
+        },
+        {
+          "date": "2023-01-19",
+          "eventType": "mass_arrival",
+          "details": "6 people joined simultaneously",
+          "activePeople": 30
+        },
+        {
+          "date": "2023-01-22",
+          "eventType": "mass_departure",
+          "details": "12 people left simultaneously",
+          "activePeople": 30
+        },
+        {
+          "date": "2023-01-30",
+          "eventType": "delete_schedule",
+          "details": "Deleted schedule with 11 weeks",
+          "activePeople": 20
+        },
+        {
+          "date": "2023-02-06",
+          "eventType": "generate",
+          "details": "Generated 24 weeks",
+          "activePeople": 20
+        },
+        {
+          "date": "2023-07-27",
+          "eventType": "generate",
+          "details": "Generated 12 weeks",
+          "activePeople": 20
+        },
+        {
+          "date": "2023-10-26",
+          "eventType": "person_arrive",
+          "details": "Avery Brown #48 joined",
+          "activePeople": 21
+        },
+        {
+          "date": "2023-11-03",
+          "eventType": "generate",
+          "details": "Generated 30 weeks",
+          "activePeople": 21
+        },
+        {
+          "date": "2024-05-31",
+          "eventType": "regenerate",
+          "details": "Regenerated 6 weeks",
+          "activePeople": 21
+        },
+        {
+          "date": "2024-06-06",
+          "eventType": "person_return",
+          "details": "Avery Smith #8 returned",
+          "activePeople": 22
+        },
+        {
+          "date": "2024-06-14",
+          "eventType": "person_depart",
+          "details": "Reese Smith #13 departed",
+          "activePeople": 21
+        },
+        {
+          "date": "2024-06-21",
+          "eventType": "delete_schedule",
+          "details": "Deleted schedule with 13 weeks",
+          "activePeople": 21
+        },
+        {
+          "date": "2024-06-25",
+          "eventType": "generate",
+          "details": "Generated 30 weeks",
+          "activePeople": 21
+        }
+      ],
+      "finalStats": {
+        "totalWeeks": 224,
+        "totalAssignments": 448,
+        "activePeopleStats": [
+          {
+            "name": "Avery Brown #48",
+            "count": 2,
+            "tenure": 460
+          },
+          {
+            "name": "Charlie Johnson #31",
+            "count": 3,
+            "tenure": 955
+          },
+          {
+            "name": "Jamie Johnson #32",
+            "count": 3,
+            "tenure": 810
+          },
+          {
+            "name": "Cameron Johnson #35",
+            "count": 3,
+            "tenure": 788
+          },
+          {
+            "name": "Skyler Johnson #36",
+            "count": 3,
+            "tenure": 788
+          },
+          {
+            "name": "Rowan Johnson #39",
+            "count": 3,
+            "tenure": 761
+          },
+          {
+            "name": "Parker Johnson #40",
+            "count": 3,
+            "tenure": 755
+          },
+          {
+            "name": "Casey Brown #44",
+            "count": 3,
+            "tenure": 740
+          },
+          {
+            "name": "Riley Brown #45",
+            "count": 3,
+            "tenure": 740
+          },
+          {
+            "name": "Quinn Brown #47",
+            "count": 3,
+            "tenure": 740
+          },
+          {
+            "name": "Drew Johnson #30",
+            "count": 4,
+            "tenure": 961
+          },
+          {
+            "name": "Sam Johnson #29",
+            "count": 13,
+            "tenure": 1227
+          },
+          {
+            "name": "Avery Johnson #28",
+            "count": 16,
+            "tenure": 1292
+          },
+          {
+            "name": "Avery Smith #8",
+            "count": 17,
+            "tenure": 1855
+          },
+          {
+            "name": "Quinn Johnson #27",
+            "count": 17,
+            "tenure": 1298
+          },
+          {
+            "name": "Taylor Johnson #26",
+            "count": 24,
+            "tenure": 1460
+          },
+          {
+            "name": "Emerson Smith #18",
+            "count": 27,
+            "tenure": 1764
+          },
+          {
+            "name": "Jamie Smith #12",
+            "count": 53,
+            "tenure": 1855
+          },
+          {
+            "name": "Riley Smith #5",
+            "count": 54,
+            "tenure": 1855
+          },
+          {
+            "name": "Alex Johnson #21",
+            "count": 54,
+            "tenure": 1764
+          },
+          {
+            "name": "Quinn Smith #7",
+            "count": 55,
+            "tenure": 1855
+          }
+        ],
+        "allPeopleStats": [
+          {
+            "name": "Quinn Smith #7",
+            "count": 55,
+            "status": "active"
+          },
+          {
+            "name": "Riley Smith #5",
+            "count": 54,
+            "status": "active"
+          },
+          {
+            "name": "Alex Johnson #21",
+            "count": 54,
+            "status": "active"
+          },
+          {
+            "name": "Jamie Smith #12",
+            "count": 53,
+            "status": "active"
+          },
+          {
+            "name": "Emerson Smith #18",
+            "count": 27,
+            "status": "active"
+          },
+          {
+            "name": "Taylor Johnson #26",
+            "count": 24,
+            "status": "active"
+          },
+          {
+            "name": "Alex Smith #1",
+            "count": 19,
+            "status": "departed"
+          },
+          {
+            "name": "Sam Smith #9",
+            "count": 18,
+            "status": "departed"
+          },
+          {
+            "name": "Avery Smith #8",
+            "count": 17,
+            "status": "active"
+          },
+          {
+            "name": "Sage Smith #17",
+            "count": 17,
+            "status": "departed"
+          },
+          {
+            "name": "Quinn Johnson #27",
+            "count": 17,
+            "status": "active"
+          },
+          {
+            "name": "Avery Johnson #28",
+            "count": 16,
+            "status": "active"
+          },
+          {
+            "name": "Sam Johnson #29",
+            "count": 13,
+            "status": "active"
+          },
+          {
+            "name": "Morgan Johnson #23",
+            "count": 7,
+            "status": "departed"
+          },
+          {
+            "name": "Taylor Smith #6",
+            "count": 4,
+            "status": "departed"
+          },
+          {
+            "name": "Drew Smith #10",
+            "count": 4,
+            "status": "departed"
+          },
+          {
+            "name": "Drew Johnson #30",
+            "count": 4,
+            "status": "active"
+          },
+          {
+            "name": "Cameron Smith #15",
+            "count": 3,
+            "status": "departed"
+          },
+          {
+            "name": "Charlie Johnson #31",
+            "count": 3,
+            "status": "active"
+          },
+          {
+            "name": "Jamie Johnson #32",
+            "count": 3,
+            "status": "active"
+          },
+          {
+            "name": "Cameron Johnson #35",
+            "count": 3,
+            "status": "active"
+          },
+          {
+            "name": "Skyler Johnson #36",
+            "count": 3,
+            "status": "active"
+          },
+          {
+            "name": "Rowan Johnson #39",
+            "count": 3,
+            "status": "active"
+          },
+          {
+            "name": "Parker Johnson #40",
+            "count": 3,
+            "status": "active"
+          },
+          {
+            "name": "Casey Brown #44",
+            "count": 3,
+            "status": "active"
+          },
+          {
+            "name": "Riley Brown #45",
+            "count": 3,
+            "status": "active"
+          },
+          {
+            "name": "Quinn Brown #47",
+            "count": 3,
+            "status": "active"
+          },
+          {
+            "name": "Skyler Smith #16",
+            "count": 2,
+            "status": "departed"
+          },
+          {
+            "name": "Rowan Smith #19",
+            "count": 2,
+            "status": "departed"
+          },
+          {
+            "name": "Jordan Johnson #22",
+            "count": 2,
+            "status": "departed"
+          },
+          {
+            "name": "Casey Johnson #24",
+            "count": 2,
+            "status": "departed"
+          },
+          {
+            "name": "Avery Brown #48",
+            "count": 2,
+            "status": "active"
+          },
+          {
+            "name": "Riley Johnson #25",
+            "count": 1,
+            "status": "departed"
+          },
+          {
+            "name": "Reese Johnson #33",
+            "count": 1,
+            "status": "departed"
+          },
+          {
+            "name": "Blake Johnson #34",
+            "count": 1,
+            "status": "departed"
+          },
+          {
+            "name": "Sage Johnson #37",
+            "count": 1,
+            "status": "departed"
+          },
+          {
+            "name": "Emerson Johnson #38",
+            "count": 1,
+            "status": "departed"
+          },
+          {
+            "name": "Jordan Smith #2",
+            "count": 0,
+            "status": "departed"
+          },
+          {
+            "name": "Morgan Smith #3",
+            "count": 0,
+            "status": "departed"
+          },
+          {
+            "name": "Casey Smith #4",
+            "count": 0,
+            "status": "departed"
+          },
+          {
+            "name": "Charlie Smith #11",
+            "count": 0,
+            "status": "departed"
+          },
+          {
+            "name": "Reese Smith #13",
+            "count": 0,
+            "status": "departed"
+          },
+          {
+            "name": "Blake Smith #14",
+            "count": 0,
+            "status": "departed"
+          },
+          {
+            "name": "Parker Smith #20",
+            "count": 0,
+            "status": "departed"
+          },
+          {
+            "name": "Alex Brown #41",
+            "count": 0,
+            "status": "departed"
+          },
+          {
+            "name": "Jordan Brown #42",
+            "count": 0,
+            "status": "departed"
+          },
+          {
+            "name": "Morgan Brown #43",
+            "count": 0,
+            "status": "departed"
+          },
+          {
+            "name": "Taylor Brown #46",
+            "count": 0,
+            "status": "departed"
+          }
+        ],
+        "standardDeviation": 15.123565129367558,
+        "mean": 12.108108108108109,
+        "min": 1,
+        "max": 55,
+        "range": 54
+      },
+      "stressMetrics": {
+        "maxStdDev": 15.829330634405656,
+        "minStdDev": 0.7717224601860151,
+        "avgStdDev": 8.254537423122299,
+        "criticalMoments": 0,
+        "recoveryCount": 0
+      }
+    }
+  ],
+  "aggregateStats": {
+    "avgStdDev": 16.67303442326358,
+    "minStdDev": 12.044157438154889,
+    "maxStdDev": 22.851380702268298,
+    "avgRange": 52,
+    "minRange": 32,
+    "maxRange": 70,
+    "totalOperations": 145,
+    "totalPeopleCreated": 100,
+    "avgTurnoverRate": 0.5694444444444444,
+    "systemBreaks": 0
+  }
+}

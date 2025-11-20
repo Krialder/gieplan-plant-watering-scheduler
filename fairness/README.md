@@ -11,6 +11,72 @@ This module implements four mathematical frameworks for ensuring long-term fairn
 3. **Fairness Constraints** - Mathematical bounds with violation detection
 4. **Softmax Selection** - Probability-based selection with temperature control
 
+## Critical Fairness Principle: Rate-Based, Not Cumulative
+
+**The system prevents "catch-up" behavior for new people by measuring fairness as RATE, not cumulative totals.**
+
+### The Problem with Cumulative Fairness
+
+Traditional fairness systems measure cumulative deficits:
+```
+deficit = expected_total_assignments - actual_total_assignments
+```
+
+This creates unfair "catch-up" pressure:
+- Alice has been here 100 days, has 10 assignments
+- Bob (new) has been here 10 days, has 0 assignments
+- System sees Bob is "behind" by 1 assignment
+- Bob gets over-scheduled to "catch up" to Alice's cumulative total
+
+### The Solution: Rate-Based Fairness
+
+This system measures assignment RATE (assignments per time in pool):
+```
+rate = total_assignments / days_in_scheduling_pool
+deficit = average_rate - person_rate
+```
+
+Fair outcome:
+- Alice: 10 assignments / 100 days = 0.1 per day
+- Bob: 1 assignment / 10 days = 0.1 per day
+- **Both have equal rates → both are treated fairly**
+
+No catch-up needed! New people integrate smoothly.
+
+## Virtual History System
+
+When a person joins after schedules have already been generated, they need a fair starting point.
+
+### Without Virtual History (OLD - causes catch-up)
+```
+Person A: 100 days, 10 real assignments → rate = 0.1
+Person B (new): 1 day, 0 assignments → rate = 0.0
+System sees B as "behind" → over-schedules B to catch up
+```
+
+### With Virtual History (CURRENT - prevents catch-up)
+```
+Person B joins when average rate = 0.1 per day
+Person B's initial Bayesian state: prior_mean = 0.1 (baseline from existing members)
+Person B starts with same expected rate as everyone else
+No catch-up pressure - smooth integration
+```
+
+### Implementation
+
+The `initializeBayesianStateWithBaseline()` function in `bayesianState.ts` sets new people's initial rate to match the current average:
+
+```typescript
+// New person joins existing system
+const avgRate = calculateAverageRate(existingPeople);
+const state = initializeBayesianStateWithBaseline(
+  newPersonId,
+  avgRate,  // Start at current average, not zero
+  joinDate,
+  true      // High uncertainty since no observations yet
+);
+```
+
 ## Installation
 
 ```typescript

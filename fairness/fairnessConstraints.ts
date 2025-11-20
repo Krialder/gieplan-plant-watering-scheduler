@@ -36,13 +36,20 @@ export function checkFairnessConstraints(
   rates: number[],
   deficits: number[],
   tenures: number[],
-  constraints: FairnessConstraints
+  constraints: FairnessConstraints,
+  personIds: string[] = [] // Optional parameter for proper person ID tracking
 ): { satisfied: boolean; violations: FairnessViolation[] } {
   const violations: FairnessViolation[] = [];
   const timestamp = new Date().toISOString();
   
   if (rates.length === 0) {
     return { satisfied: true, violations: [] };
+  }
+  
+  // Validate input arrays match in length
+  if (deficits.length !== tenures.length || 
+      (personIds.length > 0 && personIds.length !== deficits.length)) {
+    console.warn('Array length mismatch in checkFairnessConstraints');
   }
   
   // Check individual cumulative deficit constraints
@@ -54,9 +61,11 @@ export function checkFairnessConstraints(
     const bound = constraints.maxCumulativeDeficit * Math.sqrt(tenure);
     
     if (Math.abs(deficit) > bound) {
+      // FIXED: Use actual person IDs from the function parameter instead of placeholder
+      const personId = i < personIds.length ? personIds[i] : `person${i}`;
       violations.push({
         type: 'cumulative_deficit',
-        personId: `person${i}`,
+        personId,
         value: deficit,
         bound,
         severity: Math.abs(deficit) / bound,

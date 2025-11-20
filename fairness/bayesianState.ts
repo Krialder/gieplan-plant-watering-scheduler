@@ -41,6 +41,42 @@ export function initializeBayesianState(
 }
 
 /**
+ * Initialize Bayesian state for a new person joining an existing system
+ * 
+ * This function allows new people to start with a baseline rate (from existing members)
+ * rather than starting at zero. This prevents the "catch-up" problem where new people
+ * get over-selected to match the cumulative assignments of long-term members.
+ * 
+ * The new person's initial rate is set to match the current average rate, and their
+ * variance reflects uncertainty (higher than existing members who have more data).
+ * 
+ * @param personId - Person identifier
+ * @param baselineRate - Average rate of existing members (assignments per day)
+ * @param date - Initialization date
+ * @param highUncertainty - Whether to use higher initial variance (default true)
+ * @returns Initialized Bayesian state with baseline
+ */
+export function initializeBayesianStateWithBaseline(
+  personId: string,
+  baselineRate: number,
+  date: string,
+  highUncertainty: boolean = true
+): BayesianState {
+  // New people have higher uncertainty since we have no observations
+  const variance = highUncertainty ? INITIAL_VARIANCE * 2 : INITIAL_VARIANCE;
+  
+  return {
+    personId,
+    priorMean: baselineRate,
+    priorVariance: variance,
+    observedRate: 0,
+    posteriorMean: baselineRate,
+    posteriorVariance: variance,
+    lastUpdateDate: date
+  };
+}
+
+/**
  * Update Bayesian state using Kalman filter
  * 
  * Mathematical model:

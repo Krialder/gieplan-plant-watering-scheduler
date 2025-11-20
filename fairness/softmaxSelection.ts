@@ -23,7 +23,12 @@ export const TEMPERATURE_DEFAULT = 1.0;
  * 
  * Uses numerical stability trick: subtract max before exp
  * 
- * @param deficits - Array of deficit values
+ * Edge cases:
+ * - All deficits equal → uniform distribution
+ * - All deficits negative → still proportional (least negative gets highest prob)
+ * - Mixed positive/negative → exponential weighting favors positive
+ * 
+ * @param deficits - Array of deficit values (can be positive, negative, or zero)
  * @param temperature - Temperature parameter (default 1.0)
  * @returns Array of probabilities (sum = 1)
  */
@@ -35,16 +40,33 @@ export function calculateSoftmaxProbabilities(
     return [];
   }
   
+  // Handle single person case
+  if (deficits.length === 1) {
+    return [1.0];
+  }
+  
+  // Ensure temperature is positive to avoid division by zero
+  const T = Math.max(0.01, temperature);
+  
   // Numerical stability: subtract max before exp
+  // This prevents overflow for large positive deficits
   const maxDeficit = Math.max(...deficits);
   
   // Calculate exp(deficit / temperature) for each
+  // Subtracting max ensures all exponents are ≤ 0, preventing overflow
   const expValues = deficits.map(deficit => 
-    Math.exp((deficit - maxDeficit) / temperature)
+    Math.exp((deficit - maxDeficit) / T)
   );
   
   // Normalize to sum to 1
   const sumExp = expValues.reduce((sum, val) => sum + val, 0);
+  
+  // Handle edge case: if all exp values are 0 (extremely negative deficits)
+  // Fall back to uniform distribution
+  if (sumExp === 0 || !isFinite(sumExp)) {
+    const uniform = 1.0 / deficits.length;
+    return deficits.map(() => uniform);
+  }
   
   return expValues.map(val => val / sumExp);
 }
@@ -157,6 +179,13 @@ export function selectWithSoftmax(
  * - High variance → lower temperature (more deterministic, fix unfairness faster)
  * - Low variance → higher temperature (more exploration, prevent monotony)
  * 
+ * Temperature formula:
+ *   T = T_base / (1 + variance * scale)
+ * 
+ * This creates adaptive behavior:
+ * - When system is unfair (high variance), be more aggressive in fixing it
+ * - When system is fair (low variance), allow more randomness for variety
+ * 
  * @param personIds - Array of person IDs
  * @param deficits - Array of deficit values
  * @param variance - Current variance in assignment rates
@@ -174,9 +203,15 @@ export function selectWithAdaptiveTemperature(
   // Low variance → high temperature (more random)
   const baseTemp = 1.0;
   const varianceScale = 10.0; // Tuning parameter
-  const temperature = baseTemp / (1 + variance * varianceScale);
+  
+  // Ensure variance is non-negative
+  const safeVariance = Math.max(0, variance);
+  
+  const temperature = baseTemp / (1 + safeVariance * varianceScale);
   
   // Clamp temperature to reasonable range
+  // Too low (≤0.1): almost deterministic, no exploration
+  // Too high (≥5.0): almost random, ignores fairness
   const clampedTemp = Math.max(0.2, Math.min(5.0, temperature));
   
   return selectWithSoftmax(personIds, deficits, clampedTemp, teamSize);

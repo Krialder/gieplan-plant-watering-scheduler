@@ -1,0 +1,793 @@
+{
+  "runs": [
+    {
+      "runId": 1,
+      "totalOperations": 19,
+      "schedulesCreated": 12,
+      "schedulesDeleted": 3,
+      "weeksDeleted": 7,
+      "finalStats": {
+        "totalWeeks": 121,
+        "totalAssignments": 242,
+        "assignmentCounts": [
+          {
+            "name": "Person_A",
+            "count": 24
+          },
+          {
+            "name": "Person_B",
+            "count": 24
+          },
+          {
+            "name": "Person_D",
+            "count": 24
+          },
+          {
+            "name": "Person_E",
+            "count": 24
+          },
+          {
+            "name": "Person_F",
+            "count": 24
+          },
+          {
+            "name": "Person_H",
+            "count": 24
+          },
+          {
+            "name": "Person_I",
+            "count": 24
+          },
+          {
+            "name": "Person_J",
+            "count": 24
+          },
+          {
+            "name": "Person_C",
+            "count": 25
+          },
+          {
+            "name": "Person_G",
+            "count": 25
+          }
+        ],
+        "standardDeviation": 0.4,
+        "mean": 24.2,
+        "min": 24,
+        "max": 25,
+        "range": 1
+      },
+      "operations": [
+        {
+          "type": "generate",
+          "timestamp": "2023-01-18",
+          "details": "Generated 17 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-06-03",
+          "details": "Generated 18 weeks"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2023-10-27",
+          "details": "Deleted 2 weeks from schedule"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-11-16",
+          "details": "Generated 10 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2024-01-25",
+          "details": "Regenerated 6 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-02-13",
+          "details": "Generated 11 weeks"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2024-05-10",
+          "details": "Deleted 1 weeks from schedule"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2024-05-10",
+          "details": "Regenerated 7 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-05-20",
+          "details": "Generated 12 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-08-28",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "delete_schedule",
+          "timestamp": "2024-10-02",
+          "details": "Deleted schedule with 10 weeks"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2024-10-15",
+          "details": "Deleted 4 weeks from schedule"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-10-25",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "delete_schedule",
+          "timestamp": "2024-12-03",
+          "details": "Deleted schedule with 7 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-12-20",
+          "details": "Generated 9 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2025-02-21",
+          "details": "Regenerated 10 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-03-03",
+          "details": "Generated 3 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-04-03",
+          "details": "Generated 17 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-08-07",
+          "details": "Generated 5 weeks"
+        },
+        {
+          "type": "delete_schedule",
+          "timestamp": "2025-09-25",
+          "details": "Deleted schedule with 13 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-10-02",
+          "details": "Generated 19 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2026-02-12",
+          "details": "Regenerated 6 weeks (gap fill)"
+        }
+      ]
+    },
+    {
+      "runId": 2,
+      "totalOperations": 13,
+      "schedulesCreated": 11,
+      "schedulesDeleted": 0,
+      "weeksDeleted": 2,
+      "finalStats": {
+        "totalWeeks": 155,
+        "totalAssignments": 310,
+        "assignmentCounts": [
+          {
+            "name": "Person_A",
+            "count": 31
+          },
+          {
+            "name": "Person_B",
+            "count": 31
+          },
+          {
+            "name": "Person_C",
+            "count": 31
+          },
+          {
+            "name": "Person_D",
+            "count": 31
+          },
+          {
+            "name": "Person_E",
+            "count": 31
+          },
+          {
+            "name": "Person_F",
+            "count": 31
+          },
+          {
+            "name": "Person_G",
+            "count": 31
+          },
+          {
+            "name": "Person_H",
+            "count": 31
+          },
+          {
+            "name": "Person_I",
+            "count": 31
+          },
+          {
+            "name": "Person_J",
+            "count": 31
+          }
+        ],
+        "standardDeviation": 0,
+        "mean": 31,
+        "min": 31,
+        "max": 31,
+        "range": 0
+      },
+      "operations": [
+        {
+          "type": "generate",
+          "timestamp": "2023-01-19",
+          "details": "Generated 8 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2023-03-16",
+          "details": "Regenerated 7 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-03-28",
+          "details": "Generated 20 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2023-08-15",
+          "details": "Regenerated 8 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-09-01",
+          "details": "Generated 11 weeks"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2023-12-02",
+          "details": "Deleted 2 weeks from schedule"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-12-20",
+          "details": "Generated 3 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2024-01-10",
+          "details": "Regenerated 5 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-01-19",
+          "details": "Generated 6 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-03-18",
+          "details": "Generated 15 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2024-06-30",
+          "details": "Regenerated 4 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-07-12",
+          "details": "Generated 16 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-11-17",
+          "details": "Generated 12 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-02-19",
+          "details": "Generated 19 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-07-14",
+          "details": "Generated 6 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-09-08",
+          "details": "Generated 17 weeks"
+        }
+      ]
+    },
+    {
+      "runId": 3,
+      "totalOperations": 17,
+      "schedulesCreated": 11,
+      "schedulesDeleted": 2,
+      "weeksDeleted": 11,
+      "finalStats": {
+        "totalWeeks": 97,
+        "totalAssignments": 194,
+        "assignmentCounts": [
+          {
+            "name": "Person_A",
+            "count": 19
+          },
+          {
+            "name": "Person_B",
+            "count": 19
+          },
+          {
+            "name": "Person_D",
+            "count": 19
+          },
+          {
+            "name": "Person_G",
+            "count": 19
+          },
+          {
+            "name": "Person_H",
+            "count": 19
+          },
+          {
+            "name": "Person_J",
+            "count": 19
+          },
+          {
+            "name": "Person_C",
+            "count": 20
+          },
+          {
+            "name": "Person_E",
+            "count": 20
+          },
+          {
+            "name": "Person_F",
+            "count": 20
+          },
+          {
+            "name": "Person_I",
+            "count": 20
+          }
+        ],
+        "standardDeviation": 0.4898979485566356,
+        "mean": 19.4,
+        "min": 19,
+        "max": 20,
+        "range": 1
+      },
+      "operations": [
+        {
+          "type": "generate",
+          "timestamp": "2023-01-15",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-03-04",
+          "details": "Generated 16 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-07-02",
+          "details": "Generated 10 weeks"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2023-09-28",
+          "details": "Deleted 4 weeks from schedule"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-10-14",
+          "details": "Generated 17 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-02-29",
+          "details": "Generated 20 weeks"
+        },
+        {
+          "type": "delete_schedule",
+          "timestamp": "2024-08-01",
+          "details": "Deleted schedule with 10 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-08-09",
+          "details": "Generated 14 weeks"
+        },
+        {
+          "type": "delete_schedule",
+          "timestamp": "2024-11-29",
+          "details": "Deleted schedule with 17 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-12-08",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-01-15",
+          "details": "Generated 15 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2025-04-30",
+          "details": "Regenerated 8 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-05-19",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-07-01",
+          "details": "Generated 8 weeks"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2025-09-08",
+          "details": "Deleted 3 weeks from schedule"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2025-09-22",
+          "details": "Deleted 4 weeks from schedule"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-10-06",
+          "details": "Generated 15 weeks"
+        }
+      ]
+    },
+    {
+      "runId": 4,
+      "totalOperations": 21,
+      "schedulesCreated": 14,
+      "schedulesDeleted": 3,
+      "weeksDeleted": 5,
+      "finalStats": {
+        "totalWeeks": 109,
+        "totalAssignments": 218,
+        "assignmentCounts": [
+          {
+            "name": "Person_A",
+            "count": 21
+          },
+          {
+            "name": "Person_B",
+            "count": 21
+          },
+          {
+            "name": "Person_D",
+            "count": 21
+          },
+          {
+            "name": "Person_F",
+            "count": 21
+          },
+          {
+            "name": "Person_G",
+            "count": 21
+          },
+          {
+            "name": "Person_E",
+            "count": 22
+          },
+          {
+            "name": "Person_J",
+            "count": 22
+          },
+          {
+            "name": "Person_C",
+            "count": 23
+          },
+          {
+            "name": "Person_H",
+            "count": 23
+          },
+          {
+            "name": "Person_I",
+            "count": 23
+          }
+        ],
+        "standardDeviation": 0.8717797887081348,
+        "mean": 21.8,
+        "min": 21,
+        "max": 23,
+        "range": 2
+      },
+      "operations": [
+        {
+          "type": "generate",
+          "timestamp": "2023-01-17",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2023-03-03",
+          "details": "Deleted 2 weeks from schedule"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2023-03-03",
+          "details": "Regenerated 4 weeks (gap fill)"
+        },
+        {
+          "type": "delete_schedule",
+          "timestamp": "2023-03-20",
+          "details": "Deleted schedule with 4 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-04-06",
+          "details": "Generated 7 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-06-04",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-07-14",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2023-08-18",
+          "details": "Deleted 2 weeks from schedule"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-08-26",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2023-09-23",
+          "details": "Regenerated 4 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-10-05",
+          "details": "Generated 15 weeks"
+        },
+        {
+          "type": "delete_schedule",
+          "timestamp": "2024-02-08",
+          "details": "Deleted schedule with 15 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2024-02-08",
+          "details": "Regenerated 6 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-02-28",
+          "details": "Generated 5 weeks"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2024-04-10",
+          "details": "Deleted 1 weeks from schedule"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2024-04-10",
+          "details": "Regenerated 4 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-04-23",
+          "details": "Generated 8 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-06-27",
+          "details": "Generated 11 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-09-24",
+          "details": "Generated 11 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-12-23",
+          "details": "Generated 14 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-04-07",
+          "details": "Generated 13 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-07-17",
+          "details": "Generated 7 weeks"
+        },
+        {
+          "type": "delete_schedule",
+          "timestamp": "2025-09-16",
+          "details": "Deleted schedule with 5 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-10-06",
+          "details": "Generated 13 weeks"
+        }
+      ]
+    },
+    {
+      "runId": 5,
+      "totalOperations": 17,
+      "schedulesCreated": 14,
+      "schedulesDeleted": 0,
+      "weeksDeleted": 5,
+      "finalStats": {
+        "totalWeeks": 129,
+        "totalAssignments": 258,
+        "assignmentCounts": [
+          {
+            "name": "Person_H",
+            "count": 25
+          },
+          {
+            "name": "Person_J",
+            "count": 25
+          },
+          {
+            "name": "Person_A",
+            "count": 26
+          },
+          {
+            "name": "Person_B",
+            "count": 26
+          },
+          {
+            "name": "Person_C",
+            "count": 26
+          },
+          {
+            "name": "Person_D",
+            "count": 26
+          },
+          {
+            "name": "Person_E",
+            "count": 26
+          },
+          {
+            "name": "Person_F",
+            "count": 26
+          },
+          {
+            "name": "Person_G",
+            "count": 26
+          },
+          {
+            "name": "Person_I",
+            "count": 26
+          }
+        ],
+        "standardDeviation": 0.39999999999999997,
+        "mean": 25.8,
+        "min": 25,
+        "max": 26,
+        "range": 1
+      },
+      "operations": [
+        {
+          "type": "generate",
+          "timestamp": "2023-01-21",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-03-10",
+          "details": "Generated 6 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-05-08",
+          "details": "Generated 5 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-06-26",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-08-01",
+          "details": "Generated 15 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2023-11-23",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "delete_week",
+          "timestamp": "2024-01-03",
+          "details": "Deleted 5 weeks from schedule"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-01-19",
+          "details": "Generated 10 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-04-16",
+          "details": "Generated 9 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-07-06",
+          "details": "Generated 5 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-08-29",
+          "details": "Generated 13 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2024-11-29",
+          "details": "Regenerated 8 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2024-12-07",
+          "details": "Generated 4 weeks"
+        },
+        {
+          "type": "regenerate",
+          "timestamp": "2025-01-19",
+          "details": "Regenerated 1 weeks (gap fill)"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-01-31",
+          "details": "Generated 16 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-06-04",
+          "details": "Generated 13 weeks"
+        },
+        {
+          "type": "generate",
+          "timestamp": "2025-09-15",
+          "details": "Generated 17 weeks"
+        }
+      ]
+    }
+  ],
+  "aggregateStats": {
+    "avgStdDev": 0.43233554745295405,
+    "minStdDev": 0,
+    "maxStdDev": 0.8717797887081348,
+    "avgRange": 1,
+    "minRange": 0,
+    "maxRange": 2,
+    "totalOperations": 87
+  }
+}

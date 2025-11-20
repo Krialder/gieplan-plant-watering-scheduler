@@ -122,9 +122,9 @@ export function getPersonAssignmentCount(
  */
 export function isExperienced(person: Person, schedules: Schedule[], evaluationDate: string = getTodayString()): boolean {
   const daysPresent = calculateTotalDaysPresent(person, evaluationDate);
-  const assignmentCount = getPersonAssignmentCount(person, schedules);
+  const assignments = getPersonAssignmentCount(person, schedules);
   
-  return daysPresent >= EXPERIENCE_DAYS_THRESHOLD || assignmentCount >= EXPERIENCE_ASSIGNMENTS_THRESHOLD;
+  return daysPresent >= EXPERIENCE_DAYS_THRESHOLD || assignments >= EXPERIENCE_ASSIGNMENTS_THRESHOLD;
 }
 
 /**
@@ -156,7 +156,9 @@ export function initializeRunningState(
   
   for (const person of people) {
     state.accumulatedAssignments.set(person.id, 0);
-    state.historicalAssignments.set(person.id, getPersonAssignmentCount(person, schedules));
+    // Real assignments only
+    const assignments = getPersonAssignmentCount(person, schedules);
+    state.historicalAssignments.set(person.id, assignments);
     state.historicalDaysPresent.set(person.id, calculateTotalDaysPresent(person, evaluationDate));
   }
   
@@ -259,7 +261,7 @@ export function calculateFairnessWithState(
   person: Person,
   state: RunningFairnessState,
   idealRate: number,
-  k: number = 20
+  teamSize?: number
 ): number {
   const historicalAssignments = state.historicalAssignments.get(person.id) || 0;
   const accumulatedAssignments = state.accumulatedAssignments.get(person.id) || 0;
@@ -277,6 +279,11 @@ export function calculateFairnessWithState(
   const currentRate = effectiveAssignments / effectiveDays;
   const deficit = idealRate - currentRate;
   
+  // Adaptive k-parameter depending on team size
+  // Larger teams → smaller k (gentler sigmoid) for more stable selection
+  // Smaller teams → larger k (steeper sigmoid) for more decisive selection
+  const k = teamSize !== undefined ? Math.max(10, 20 - (teamSize / 10)) : 20;
+  
   const score = sigmoid(k * deficit);
   
   return score;
@@ -292,8 +299,9 @@ export function calculateFairnessScore(
   medianRate?: number
 ): FairnessCalculation {
   const daysPresent = calculateTotalDaysPresent(person, evaluationDate);
-  const totalAssignments = getPersonAssignmentCount(person, schedules);
-  const assignmentsPerDay = daysPresent > 0 ? totalAssignments / daysPresent : 0;
+  // Real assignments only
+  const assignments = getPersonAssignmentCount(person, schedules);
+  const assignmentsPerDay = daysPresent > 0 ? assignments / daysPresent : 0;
   
   const experienced = isExperienced(person, schedules, evaluationDate);
   const mentorshipLoad = person.mentorshipAssignments.length;
@@ -309,7 +317,7 @@ export function calculateFairnessScore(
     //        if diff = -medianRate, score = 0.0 (has too many)
     fairnessScore = 0.5 + (diff / (medianRate * 2));
     fairnessScore = Math.max(0, Math.min(1, fairnessScore));
-  } else if (totalAssignments === 0 && daysPresent > 0) {
+  } else if (assignments === 0 && daysPresent > 0) {
     // New person with 0 assignments when no median exists yet
     // They're at the same state as everyone else (all have 0)
     fairnessScore = 0.5;
@@ -319,7 +327,7 @@ export function calculateFairnessScore(
     personId: person.id,
     personName: person.name,
     daysPresent,
-    totalAssignments,
+    totalAssignments: assignments,
     assignmentsPerDay,
     fairnessScore,
     experienceLevel: experienced ? 'experienced' : 'new',
@@ -404,7 +412,7 @@ export function selectTeamsAndSubstitutesWithState(
   const idealRate = totalPersonDays > 0 ? totalSlots / totalPersonDays : 0;
   
   const withPriority: PersonWithPriority[] = available.map(person => {
-    const fairnessScore = calculateFairnessWithState(person, state, idealRate);
+    const fairnessScore = calculateFairnessWithState(person, state, idealRate, available.length);
     return {
       person,
       priority: fairnessScore,
@@ -463,7 +471,9 @@ export function selectTeamsAndSubstitutes(
     };
   }
   
-  const assignmentCounts = available.map(p => getPersonAssignmentCount(p, schedules));
+  const assignmentCounts = available.map(p => {
+    return getPersonAssignmentCount(p, schedules);
+  });
   const sortedCounts = [...assignmentCounts].sort((a, b) => a - b);
   const medianAssignments = sortedCounts.length > 0 
     ? (sortedCounts.length % 2 === 0

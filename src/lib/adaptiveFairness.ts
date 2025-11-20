@@ -84,11 +84,8 @@ export class AdaptiveFairnessManager {
       // Real assignments from schedules
       const realCount = getPersonAssignmentCount(person, schedules);
       
-      // Add virtual assignments (one-time baseline set at person creation)
-      const virtualCount = person.virtualHistory?.virtualAssignments || 0;
-      
-      // Total historical = real + virtual (virtual is permanent baseline)
-      this.historicalAssignments.set(person.id, realCount + virtualCount);
+      // Total assignments = real assignments only (no virtual history)
+      this.historicalAssignments.set(person.id, realCount);
       this.accumulatedAssignments.set(person.id, 0);
       
       // First scheduling date logic:
@@ -114,12 +111,9 @@ export class AdaptiveFairnessManager {
         this.firstSchedulingDate.set(person.id, 
           personEarliestAssignment < joinDate ? joinDate : personEarliestAssignment
         );
-      } else {
-        // No assignments - use earliest schedule or join date
-        const joinDate = person.arrivalDate;
-        const firstAvailable = joinDate > earliestScheduleDate ? joinDate : earliestScheduleDate;
-        this.firstSchedulingDate.set(person.id, firstAvailable);
       }
+      // For people without assignments, don't set firstSchedulingDate yet
+      // It will be set by markPersonAvailableForScheduling() when they first enter the selection pool
     }
     
     // Initialize Bayesian states (using Bayesian Random Walks)
@@ -140,13 +134,11 @@ export class AdaptiveFairnessManager {
       for (const person of people) {
         const schedulingDays = this.calculateSchedulingDays(person.id, evaluationDate);
         const realAssignments = getPersonAssignmentCount(person, schedules);
-        const virtualAssignments = person.virtualHistory?.virtualAssignments || 0;
-        const totalAssignments = realAssignments + virtualAssignments;
         
         // New people with no history start at average rate (fair starting point)
-        const initialRate = totalAssignments === 0 && schedulingDays === 0
+        const initialRate = realAssignments === 0 && schedulingDays === 0
           ? averageRate
-          : (schedulingDays > 0 ? totalAssignments / schedulingDays : averageRate);
+          : (schedulingDays > 0 ? realAssignments / schedulingDays : averageRate);
         
         this.engine.initializePerson(person.id, initialRate, evaluationDate);
       }
@@ -156,8 +148,19 @@ export class AdaptiveFairnessManager {
   
   /**
    * Calculate "scheduling days" - days since person first became eligible for scheduling
-   * This counts from the first generation run where they could have been selected,
-   * NOT from when they were actually selected
+   * 
+   * CRITICAL LOGIC FOR PREVENTING CATCH-UP:
+   * New people should NOT have to "catch up" to the cumulative totals of existing members.
+   * Instead, fairness is measured by RATE (assignments per week in pool).
+   * 
+   * This function calculates how many days the person has been in the "selection pool"
+   * (eligible to be scheduled). This denominator is used to calculate their rate.
+   * 
+   * Key principle: Everyone should converge to the same RATE, not the same TOTAL.
+   * - Existing person with 100 days and 10 assignments: rate = 0.1 per day
+   * - New person with 10 days and 1 assignment: rate = 0.1 per day (EQUAL fairness)
+   * 
+   * We do NOT multiply deficits by tenure. That would create catch-up pressure.
    */
   private calculateSchedulingDays(
     personId: string,
@@ -170,7 +173,6 @@ export class AdaptiveFairnessManager {
     if (!person) return 0;
     
     // Calculate days between first scheduling opportunity and evaluation date
-    // Only count days when person was actually present (in program periods)
     const daysBetween = getDaysBetween(firstDate, evaluationDate);
     
     // Verify person was actually present during this time
@@ -188,6 +190,8 @@ export class AdaptiveFairnessManager {
    */
   markPersonAvailableForScheduling(personId: string, date: string): void {
     if (!this.firstSchedulingDate.has(personId)) {
+      const person = this.people.find(p => p.id === personId);
+      console.log(`[FirstScheduling] Setting firstSchedulingDate for ${person?.name}: ${date}`);
       this.firstSchedulingDate.set(personId, date);
     }
   }
@@ -236,11 +240,10 @@ export class AdaptiveFairnessManager {
       }
     }
     
-    // Update historical assignments (real + virtual)
+    // Update historical assignments (real only)
     for (const person of this.people) {
       const realCount = getPersonAssignmentCount(person, schedules);
-      const virtualCount = person.virtualHistory?.virtualAssignments || 0;
-      this.historicalAssignments.set(person.id, realCount + virtualCount);
+      this.historicalAssignments.set(person.id, realCount);
     }
   }
   
@@ -358,9 +361,25 @@ export class AdaptiveFairnessManager {
   }
   
   /**
-   * Calculate enhanced priority using Penalized Regression if enabled
-   * Uses scheduling days (relative to first opportunity) not absolute tenure
-   * CRITICAL: Uses accumulated assignments from current generation run
+   * Calculate enhanced priority
+   * 
+   * RELATIVE FAIRNESS SYSTEM - NO CATCH-UP BEHAVIOR:
+   * 
+   * Key principle: All people should converge to the same RATE (assignments per week in pool),
+   * NOT the same cumulative total. This prevents new people from being over-scheduled.
+   * 
+   * Example:
+   * - Alice: 100 days in pool, 10 assignments → rate = 0.1 per day (0.7 per week)
+   * - Bob (new): 10 days in pool, 1 assignment → rate = 0.1 per day (0.7 per week)
+   * - Both have EQUAL fairness despite different totals
+   * 
+   * Priority calculation:
+   * 1. Calculate each person's assignment RATE (assignments per week in pool)
+   * 2. Compare to average rate across all active people
+   * 3. Priority = rate deficit (how far below average)
+   * 4. DO NOT multiply by time in pool (that creates catch-up pressure)
+   * 
+   * This ensures new people integrate smoothly without over-selection.
    */
   calculateEnhancedPriority(
     person: Person,
@@ -369,59 +388,56 @@ export class AdaptiveFairnessManager {
     evaluationDate: string
   ): number {
     const schedulingDays = this.calculateSchedulingDays(person.id, evaluationDate);
-    const realAssignments = getPersonAssignmentCount(person, schedules);
-    const virtualAssignments = person.virtualHistory?.virtualAssignments || 0;
-    const accumulatedAssignments = this.accumulatedAssignments.get(person.id) || 0;
-    const totalAssignments = realAssignments + virtualAssignments + accumulatedAssignments;
     
-    // Calculate expected assignments (Fairness-over-time Framework)
-    // Proportional to scheduling days, not absolute tenure
-    // IMPORTANT: Include accumulated assignments from all people in current generation
-    const totalSchedulingDays = allPeople.reduce((sum, p) => 
-      sum + this.calculateSchedulingDays(p.id, evaluationDate), 0);
-    const allRealAssignments = allPeople.reduce((sum, p) => 
-      sum + getPersonAssignmentCount(p, schedules), 0);
-    const allVirtualAssignments = allPeople.reduce((sum, p) => 
-      sum + (p.virtualHistory?.virtualAssignments || 0), 0);
-    const allAccumulatedAssignments = allPeople.reduce((sum, p) => 
-      sum + (this.accumulatedAssignments.get(p.id) || 0), 0);
-    const systemTotalAssignments = allRealAssignments + allVirtualAssignments + allAccumulatedAssignments;
-    
-    const expected = totalSchedulingDays > 0 
-      ? (schedulingDays / totalSchedulingDays) * systemTotalAssignments 
-      : 0;
-    
-    const deficit = expected - totalAssignments;
-    
-    // Special handling for people with very few scheduling days (< 14 days = 2 weeks)
-    // They should converge to system rate, not historical average
-    if (schedulingDays < 14 && schedulingDays > 0) {
-      // Calculate system rate (assignments per day across all people)
-      const systemRate = totalSchedulingDays > 0 
-        ? systemTotalAssignments / totalSchedulingDays 
-        : 0;
-      
-      // New person's target: match the system rate
-      const targetAssignments = schedulingDays * systemRate;
-      const adjustedDeficit = targetAssignments - totalAssignments;
-      
-      // Use adjusted deficit for priority
-      if (this.flags.usePenalizedPriority) {
-        const result = calculatePenalizedPriority(adjustedDeficit, schedulingDays);
-        return result.finalPriority;
-      }
-      
-      return adjustedDeficit / (schedulingDays + 1);
+    // If person hasn't entered the pool yet, no priority
+    if (schedulingDays <= 0) {
+      return 0;
     }
     
-    // Use Penalized Regression for priority calculation
+    const realAssignments = getPersonAssignmentCount(person, schedules);
+    const accumulatedAssignments = this.accumulatedAssignments.get(person.id) || 0;
+    const totalAssignments = realAssignments + accumulatedAssignments;
+    
+    // Calculate this person's assignment RATE (assignments per week in pool)
+    const weeksInPool = schedulingDays / 7;
+    const personRate = weeksInPool > 0 ? totalAssignments / weeksInPool : 0;
+    
+    // Get all people who are currently active (have started)
+    const activePeople = allPeople.filter(p => {
+      const days = this.calculateSchedulingDays(p.id, evaluationDate);
+      return days > 0;
+    });
+    
+    if (activePeople.length === 0) {
+      return 0;
+    }
+    
+    // Calculate average RATE across all active people (assignments per week in pool)
+    const rates = activePeople.map(p => {
+      const days = this.calculateSchedulingDays(p.id, evaluationDate);
+      const weeks = days / 7;
+      const real = getPersonAssignmentCount(p, schedules);
+      const accumulated = this.accumulatedAssignments.get(p.id) || 0;
+      const total = real + accumulated;
+      return weeks > 0 ? total / weeks : 0;
+    });
+    
+    const averageRate = rates.reduce((sum, r) => sum + r, 0) / rates.length;
+    
+    // Priority = rate deficit (how far below average rate)
+    // CRITICAL: DO NOT multiply by weeks - that causes catch-up behavior!
+    // We want people to converge to same RATE, not same TOTAL
+    const rateDeficit = averageRate - personRate;
+    
+    // Use Penalized Priority for aggressive correction of large deviations
     if (this.flags.usePenalizedPriority) {
-      const result = calculatePenalizedPriority(deficit, schedulingDays);
+      const result = calculatePenalizedPriority(rateDeficit, Math.max(1, schedulingDays));
       return result.finalPriority;
     }
     
-    // Fallback to simple priority (Random Variable Theory)
-    return deficit / (schedulingDays + 1);
+    // Fallback to simple priority normalized by scheduling days
+    // Still using rate-based comparison (no catch-up)
+    return rateDeficit / (Math.max(1, weeksInPool) + 1);
   }
   
   /**
@@ -444,6 +460,7 @@ export class AdaptiveFairnessManager {
   
   /**
    * Check fairness constraints and get warnings
+   * Uses RELATIVE rates: each person compared to their time in pool
    */
   checkFairness(
     people: Person[],
@@ -461,20 +478,25 @@ export class AdaptiveFairnessManager {
     const schedulingDays: number[] = [];
     const personIds: string[] = [];
     
+    // Calculate average rate (assignments per week in pool)
+    const allRates = activePeople.map(p => {
+      const days = this.calculateSchedulingDays(p.id, evaluationDate);
+      const weeks = days / 7;
+      const assignments = getPersonAssignmentCount(p, schedules);
+      return weeks > 0 ? assignments / weeks : 0;
+    });
+    
+    const averageRate = allRates.reduce((sum, r) => sum + r, 0) / allRates.length;
+    
     for (const person of activePeople) {
       const days = this.calculateSchedulingDays(person.id, evaluationDate);
+      const weeks = days / 7;
       const assignments = getPersonAssignmentCount(person, schedules);
-      const rate = days > 0 ? assignments / days : 0;
+      const rate = weeks > 0 ? assignments / weeks : 0;
       
-      const totalSchedulingDays = activePeople.reduce((sum, p) => 
-        sum + this.calculateSchedulingDays(p.id, evaluationDate), 0);
-      const totalAssignments = activePeople.reduce((sum, p) => 
-        sum + getPersonAssignmentCount(p, schedules), 0);
-      
-      const expected = totalSchedulingDays > 0 
-        ? (days / totalSchedulingDays) * totalAssignments 
-        : 0;
-      const deficit = expected - assignments;
+      // Deficit = rate deficit (assignments per week difference)
+      // DO NOT multiply by weeks - that creates catch-up pressure
+      const deficit = averageRate - rate;
       
       rates.push(rate);
       deficits.push(deficit);
@@ -516,6 +538,7 @@ export class AdaptiveFairnessManager {
   
   /**
    * Select team using softmax if enabled, otherwise return null
+   * Uses RELATIVE rates: each person's rate per week in pool
    */
   selectTeamSoftmax(
     people: Person[],
@@ -532,38 +555,37 @@ export class AdaptiveFairnessManager {
     
     if (available.length === 0) return null;
     
-    // Calculate deficits
+    // Calculate average rate (assignments per week in pool)
+    const allRates = available.map(p => {
+      const days = this.calculateSchedulingDays(p.id, evaluationDate);
+      const weeks = days / 7;
+      const assignments = getPersonAssignmentCount(p, schedules);
+      return weeks > 0 ? assignments / weeks : 0;
+    });
+    
+    const averageRate = allRates.reduce((sum, r) => sum + r, 0) / allRates.length;
+    
+    // Calculate deficits based on RATE only
     const personIds: string[] = [];
     const deficits: number[] = [];
     
-    const totalSchedulingDays = available.reduce((sum, p) => 
-      sum + this.calculateSchedulingDays(p.id, evaluationDate), 0);
-    const totalAssignments = available.reduce((sum, p) => 
-      sum + getPersonAssignmentCount(p, schedules), 0);
-    
     for (const person of available) {
       const days = this.calculateSchedulingDays(person.id, evaluationDate);
+      const weeks = days / 7;
       const assignments = getPersonAssignmentCount(person, schedules);
+      const rate = weeks > 0 ? assignments / weeks : 0;
       
-      const expected = totalSchedulingDays > 0 
-        ? (days / totalSchedulingDays) * totalAssignments 
-        : 0;
-      const deficit = expected - assignments;
+      // Deficit = rate difference (no multiplication by weeks!)
+      const deficit = averageRate - rate;
       
       personIds.push(person.id);
       deficits.push(deficit);
     }
     
-    // Calculate current variance
-    const rates = available.map(p => {
-      const daysPresent = calculateTotalDaysPresent(p, evaluationDate);
-      const assignments = getPersonAssignmentCount(p, schedules);
-      return daysPresent > 0 ? assignments / daysPresent : 0;
-    });
-    
-    const mean = rates.reduce((sum, r) => sum + r, 0) / rates.length;
-    const variance = rates.reduce((sum, r) => 
-      sum + Math.pow(r - mean, 2), 0) / rates.length;
+    // Calculate current variance using relative rates
+    const mean = allRates.reduce((sum, r) => sum + r, 0) / allRates.length;
+    const variance = allRates.reduce((sum, r) => 
+      sum + Math.pow(r - mean, 2), 0) / allRates.length;
     
     // Use adaptive temperature selection
     return this.engine.selectTeam(personIds, deficits, variance, teamSize);
@@ -583,6 +605,7 @@ export class AdaptiveFairnessManager {
   
   /**
    * Get fairness metrics for UI display
+   * Uses RELATIVE rates: assignments per week in pool
    */
   getFairnessMetrics(
     people: Person[],
@@ -591,10 +614,12 @@ export class AdaptiveFairnessManager {
   ): any {
     const activePeople = people.filter(p => isPersonActive(p, evaluationDate));
     
+    // Calculate rates per week in pool (relative system)
     const rates = activePeople.map(p => {
       const days = this.calculateSchedulingDays(p.id, evaluationDate);
+      const weeks = days / 7;
       const assignments = getPersonAssignmentCount(p, schedules);
-      return days > 0 ? assignments / days : 0;
+      return weeks > 0 ? assignments / weeks : 0;
     });
     
     if (rates.length === 0) return null;

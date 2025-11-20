@@ -36,6 +36,7 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
   // Form state for schedule generation parameters
   const [startDate, setStartDate] = useState(getTodayString());
   const [weeks, setWeeks] = useState(6);
+  const [includeFutureArrivals, setIncludeFutureArrivals] = useState(true);
   const [generating, setGenerating] = useState(false);
   
   // Use a ref for immediate lock (not dependent on React state updates)
@@ -83,7 +84,8 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
         people: yearData.people,
         existingSchedules: yearData.schedules,
         enforceNoConsecutive: true, // Prevent consecutive assignments
-        requireMentor: true // Ensure at least one experienced person per week
+        requireMentor: true, // Ensure at least one experienced person per week
+        includeFutureArrivals // Include people with future arrival dates if enabled
       });
       
       console.log('Generation result:', result);
@@ -104,10 +106,11 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
         });
       }
       
-      // Save the generated schedule
+      // Save the generated schedule and updated people (with virtual history)
       if (result.schedule) {
         updateYearData((current) => ({
-          schedules: [...(current?.schedules || []), result.schedule!]
+          schedules: [...(current?.schedules || []), result.schedule!],
+          people: result.updatedPeople || current?.people || []
         }));
         toast.success('Zeitplan erfolgreich erstellt');
       }
@@ -125,8 +128,10 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
   // Delete a schedule with confirmation
   const handleDeleteSchedule = (scheduleId: string) => {
     if (confirm('Zeitplan wirklich löschen?')) {
+      const updatedSchedules = yearData.schedules.filter(s => s.id !== scheduleId);
+      
       updateYearData({
-        schedules: yearData.schedules.filter(s => s.id !== scheduleId)
+        schedules: updatedSchedules
       });
       toast.success('Zeitplan gelöscht');
     }
@@ -179,6 +184,20 @@ export default function ScheduleTab({ yearData, updateYearData }: ScheduleTabPro
                 onChange={(e) => setWeeks(Number(e.target.value))}
               />
             </div>
+          </div>
+          
+          {/* Option to include future arrivals */}
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="includeFutureArrivals"
+              checked={includeFutureArrivals}
+              onChange={(e) => setIncludeFutureArrivals(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <Label htmlFor="includeFutureArrivals" className="text-sm font-normal cursor-pointer">
+              Personen mit zukünftigen Ankunftsdaten einbeziehen
+            </Label>
           </div>
           
           {/* Warning when no people are available */}

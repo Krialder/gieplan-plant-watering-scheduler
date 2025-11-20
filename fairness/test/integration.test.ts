@@ -50,10 +50,14 @@ describe('Dynamic Fairness Engine - Integration', () => {
       expect(state?.observedRate).toBeGreaterThan(0);
     });
 
-    it('should throw error updating non-existent person', () => {
-      expect(() => {
-        engine.updateAfterAssignment('nonexistent', true, 7, 0.1);
-      }).toThrow();
+    it('should gracefully handle updating non-existent person', () => {
+      // UPDATED: Engine now gracefully initializes missing persons instead of throwing
+      // This prevents crashes in edge cases
+      engine.updateAfterAssignment('nonexistent', true, 7, 0.1);
+      
+      // Person should now exist (auto-initialized)
+      const states = engine.getAllBayesianStates();
+      expect(states.has('nonexistent')).toBe(true);
     });
   });
 
@@ -95,7 +99,8 @@ describe('Dynamic Fairness Engine - Integration', () => {
       const result = engine.checkAndCorrect(rates, deficits, tenures, personIds);
       
       expect(result.actions.length).toBeGreaterThan(0);
-      expect(result.actions[0].personId).toBe('person0');
+      // FIXED: Now uses actual person IDs from parameter, not placeholder
+      expect(result.actions[0].personId).toBe('p1');
     });
 
     it('should store corrective actions', () => {
@@ -305,6 +310,57 @@ describe('Dynamic Fairness Engine - Integration', () => {
       
       // Variance should decrease (or at least not increase significantly)
       expect(lateMean).toBeLessThanOrEqual(earlyMean * 1.2);
+    });
+    
+    it('should track convergence with new API methods', () => {
+      const personIds = ['p1', 'p2', 'p3'];
+      
+      // Initialize
+      for (const id of personIds) {
+        engine.initializePerson(id, 0.1, '2025-01-01');
+      }
+      
+      // Simulate 30 weeks
+      for (let week = 0; week < 30; week++) {
+        const rates = personIds.map(id => {
+          const state = engine.getAllBayesianStates().get(id);
+          return state?.posteriorMean || 0.1;
+        });
+        
+        const deficits = rates.map(r => 0.1 - r);
+        const tenures = personIds.map(() => (week + 1) * 7);
+        
+        // This updates variance history
+        engine.checkAndCorrect(rates, deficits, tenures, personIds);
+        
+        // Simulate assignments
+        const variance = rates.reduce((sum, r) => {
+          const mean = rates.reduce((a, b) => a + b, 0) / rates.length;
+          return sum + Math.pow(r - mean, 2);
+        }, 0) / rates.length;
+        
+        const team = engine.selectTeam(personIds, deficits, variance, 2);
+        
+        for (const id of personIds) {
+          const assigned = team.includes(id);
+          engine.updateAfterAssignment(id, assigned, 7, 0.1);
+        }
+      }
+      
+      // Check new API methods
+      const varianceHistory = engine.getVarianceHistory();
+      expect(varianceHistory.length).toBeGreaterThan(0);
+      expect(varianceHistory.length).toBeLessThanOrEqual(30);
+      
+      const metricsHistory = engine.getMetricsHistory();
+      expect(metricsHistory.length).toBe(varianceHistory.length);
+      
+      // Convergence detection
+      const isConverging = engine.isConverging(5);
+      expect(typeof isConverging).toBe('boolean');
+      
+      const convergenceRate = engine.getConvergenceRate(10);
+      expect(typeof convergenceRate).toBe('number');
     });
   });
 });

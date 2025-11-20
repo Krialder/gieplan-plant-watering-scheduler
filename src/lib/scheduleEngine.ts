@@ -17,7 +17,7 @@
  */
 
 import type { Person, Schedule, WeekAssignment } from '@/types';
-import { formatDate, addWeeks, getMonday, parseDate, formatDateGerman, getWeekNumber } from './dateUtils';
+import { formatDate, addWeeks, getMonday, parseDate, formatDateGerman, getWeekNumber, getDaysBetween } from './dateUtils';
 import { 
   selectTeamsAndSubstitutes,
   isPersonActive, 
@@ -36,6 +36,7 @@ export interface ScheduleGenerationOptions {
   existingSchedules: Schedule[];
   enforceNoConsecutive: boolean;
   requireMentor: boolean;
+  includeFutureArrivals?: boolean; // Include people whose arrival date is in the future
 }
 
 export interface ScheduleGenerationResult {
@@ -47,7 +48,7 @@ export interface ScheduleGenerationResult {
 
 // Generate a complete schedule based on fairness algorithms and constraints
 export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGenerationResult {
-  const { startDate, weeks, people, existingSchedules, enforceNoConsecutive, requireMentor } = options;
+  const { startDate, weeks, people, existingSchedules, enforceNoConsecutive, requireMentor, includeFutureArrivals = false } = options;
   
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -133,8 +134,20 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
     warnings.push(`Generiere ${weeksToGenerate.length} fehlende Woche(n)`);
   }
   
-  // Filter to only active people at the start date
-  const activePeople = people.filter(p => isPersonActive(p, startDate));
+  // Filter to active people, optionally including future arrivals
+  const activePeople = people.filter(p => {
+    // Always check if currently active
+    if (isPersonActive(p, startDate)) return true;
+    
+    // If includeFutureArrivals is enabled, also include people who will arrive during the schedule period
+    if (includeFutureArrivals) {
+      const scheduleEndDate = formatDate(addWeeks(monday, weeks - 1));
+      // Include if their arrival is between start and end of schedule
+      return p.arrivalDate >= startDate && p.arrivalDate <= scheduleEndDate;
+    }
+    
+    return false;
+  });
   
   // Validate we have people to assign
   if (activePeople.length === 0) {
@@ -161,7 +174,8 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
   let lastAssignment: WeekAssignment | null = null;
   let lastSubstitutes: string[] = [];
   
-  // Initialize adaptive fairness manager with new dynamic fairness system
+  // Initialize adaptive fairness manager directly with active people
+  // No virtual history - everyone competes equally from their join date
   const fairnessManager = new AdaptiveFairnessManager(
     activePeople,
     existingSchedules,
@@ -187,6 +201,14 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
   for (const weekInfo of weeksToGenerate) {
     const weekStart = weekInfo.weekStart;
     const weekStartString = formatDate(weekStart);
+    
+    // Mark people who are becoming active for the first time this week
+    // This ensures their firstSchedulingDate is set to when they actually enter the selection pool
+    for (const person of activePeople) {
+      if (isPersonActive(person, weekStartString)) {
+        fairnessManager.markPersonAvailableForScheduling(person.id, weekStartString);
+      }
+    }
     
     // Get excluded IDs from last week based on number of available people
     // With 10+ people: exclude both assigned pair AND substitutes (4 people total)
@@ -324,7 +346,7 @@ export function generateSchedule(options: ScheduleGenerationOptions): ScheduleGe
   return {
     success: true,
     schedule,
-    errors: [],
+    errors,
     warnings
   };
 }
