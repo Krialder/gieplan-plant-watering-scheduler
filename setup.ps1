@@ -61,7 +61,7 @@ Write-Host ""
 Write-Host "[4/5] Running verification tests..." -ForegroundColor Yellow
 
 try {
-    npm run test -- --run --silent
+    npm run test
     if ($LASTEXITCODE -ne 0) {
         Write-Host "WARNING: Some tests failed, but the application should still work" -ForegroundColor Yellow
         Write-Host "You can investigate later with: npm run test" -ForegroundColor Cyan
