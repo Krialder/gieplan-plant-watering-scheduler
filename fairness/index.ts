@@ -10,6 +10,18 @@ export * from './bayesianState';
 export * from './fairnessConstraints';
 export * from './softmaxSelection';
 
+// Export random utilities (selective to avoid conflicts)
+export {
+  SeededRandom,
+  getGlobalRandom,
+  seedGlobalRandom,
+  random,
+  sampleGumbel,
+  gumbelMaxSample,
+  gumbelSoftmax,
+  chiSquareTest
+} from './random';
+
 import type { Person, Schedule } from '../src/types';
 import type { 
   BayesianState, 
@@ -31,13 +43,21 @@ import {
 } from './fairnessConstraints';
 import { 
   selectWithSoftmax,
-  selectWithAdaptiveTemperature 
+  selectWithAdaptiveTemperature,
+  calculateNormalizedEntropy
 } from './softmaxSelection';
+import { SeededRandom, getGlobalRandom } from './random';
 
 /**
  * Dynamic Fairness Engine
  * 
  * Main class that coordinates all fairness subsystems
+ * 
+ * OPTIMIZATIONS:
+ * - Seeded PRNG for reproducible randomness
+ * - Entropy tracking for quality monitoring
+ * - Recent selection history for diversity
+ * - Advanced temperature scheduling
  */
 export class DynamicFairnessEngine {
   private bayesianStates: Map<string, BayesianState>;
@@ -45,11 +65,18 @@ export class DynamicFairnessEngine {
   private constraints: FairnessConstraints;
   private varianceHistory: number[] = []; // Track variance over time for convergence analysis
   private metricsHistory: FairnessMetrics[] = []; // Track all metrics over time
+  private entropyHistory: number[] = []; // Track selection entropy over time
+  private recentSelections: string[][] = []; // Recent team selections for diversity
+  private rng: SeededRandom; // Seeded random number generator
   
-  constructor(constraints: FairnessConstraints = DEFAULT_CONSTRAINTS) {
+  constructor(
+    constraints: FairnessConstraints = DEFAULT_CONSTRAINTS,
+    seed?: number
+  ) {
     this.bayesianStates = new Map();
     this.correctiveActions = new Map();
     this.constraints = constraints;
+    this.rng = seed !== undefined ? new SeededRandom(seed) : getGlobalRandom();
   }
   
   /**
@@ -143,39 +170,93 @@ export class DynamicFairnessEngine {
   }
   
   /**
-   * Select team using adaptive softmax selection
+   * Select team using adaptive softmax selection (OPTIMIZED)
+   * 
+   * Uses seeded PRNG, diversity penalties, and entropy tracking
+   * 
+   * @param personIds - Array of person IDs
+   * @param deficits - Array of deficit values
+   * @param variance - Current variance
+   * @param teamSize - Number of people to select
+   * @param useGumbel - Use Gumbel-Max sampling
+   * @returns Selected person IDs
    */
   selectTeam(
     personIds: string[],
     deficits: number[],
     variance: number,
-    teamSize: number = 2
+    teamSize: number = 2,
+    useGumbel: boolean = false
   ): string[] {
     const result = selectWithAdaptiveTemperature(
       personIds,
       deficits,
       variance,
-      teamSize
+      teamSize,
+      this.recentSelections,
+      useGumbel,
+      this.rng
     );
+    
+    // Track entropy of selection probabilities
+    const probArray = Array.from(result.probabilities.values());
+    const entropy = calculateNormalizedEntropy(probArray);
+    this.entropyHistory.push(entropy);
+    
+    // Keep only recent history
+    if (this.entropyHistory.length > 100) {
+      this.entropyHistory.shift();
+    }
+    
+    // Store selection for diversity tracking
+    this.recentSelections.unshift(result.selectedIds);
+    if (this.recentSelections.length > 10) {
+      this.recentSelections.pop();
+    }
     
     return result.selectedIds;
   }
   
   /**
-   * Select team with fixed temperature
+   * Select team with fixed temperature (OPTIMIZED)
+   * 
+   * @param personIds - Array of person IDs
+   * @param deficits - Array of deficit values
+   * @param temperature - Fixed temperature
+   * @param teamSize - Number of people to select
+   * @param useGumbel - Use Gumbel-Max sampling
+   * @returns Selected person IDs
    */
   selectTeamWithTemperature(
     personIds: string[],
     deficits: number[],
     temperature: number,
-    teamSize: number = 2
+    teamSize: number = 2,
+    useGumbel: boolean = false
   ): string[] {
     const result = selectWithSoftmax(
       personIds,
       deficits,
       temperature,
-      teamSize
+      teamSize,
+      useGumbel,
+      this.rng
     );
+    
+    // Track entropy
+    const probArray = Array.from(result.probabilities.values());
+    const entropy = calculateNormalizedEntropy(probArray);
+    this.entropyHistory.push(entropy);
+    
+    if (this.entropyHistory.length > 100) {
+      this.entropyHistory.shift();
+    }
+    
+    // Store selection for diversity
+    this.recentSelections.unshift(result.selectedIds);
+    if (this.recentSelections.length > 10) {
+      this.recentSelections.pop();
+    }
     
     return result.selectedIds;
   }
@@ -281,6 +362,49 @@ export class DynamicFairnessEngine {
   }
   
   /**
+   * Get entropy history for monitoring randomness quality
+   */
+  getEntropyHistory(): number[] {
+    return [...this.entropyHistory];
+  }
+  
+  /**
+   * Get recent selections for diversity analysis
+   */
+  getRecentSelections(): string[][] {
+    return [...this.recentSelections];
+  }
+  
+  /**
+   * Get current average entropy
+   * 
+   * High entropy (close to 1) = healthy randomness
+   * Low entropy (close to 0) = too deterministic
+   */
+  getAverageEntropy(windowSize: number = 10): number {
+    if (this.entropyHistory.length === 0) return 0;
+    
+    const window = this.entropyHistory.slice(-windowSize);
+    return window.reduce((a, b) => a + b, 0) / window.length;
+  }
+  
+  /**
+   * Seed the random number generator for reproducible results
+   * 
+   * @param seed - Seed value
+   */
+  seedRandom(seed: number): void {
+    this.rng = new SeededRandom(seed);
+  }
+  
+  /**
+   * Get current RNG state (for serialization/debugging)
+   */
+  getRandomState(): number {
+    return this.rng.getState();
+  }
+  
+  /**
    * Reset engine state
    */
   reset(): void {
@@ -288,14 +412,20 @@ export class DynamicFairnessEngine {
     this.correctiveActions.clear();
     this.varianceHistory = [];
     this.metricsHistory = [];
+    this.entropyHistory = [];
+    this.recentSelections = [];
   }
 }
 
 /**
  * Create and initialize fairness engine
+ * 
+ * @param constraints - Fairness constraints
+ * @param seed - Random seed for reproducibility (optional)
  */
 export function createFairnessEngine(
-  constraints?: FairnessConstraints
+  constraints?: FairnessConstraints,
+  seed?: number
 ): DynamicFairnessEngine {
-  return new DynamicFairnessEngine(constraints);
+  return new DynamicFairnessEngine(constraints, seed);
 }

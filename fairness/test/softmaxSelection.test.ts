@@ -7,10 +7,46 @@ import {
   selectWithSoftmax,
   calculateSoftmaxProbabilities,
   weightedRandomSelection,
+  weightedRandomSelectionGumbel,
+  logSumExp,
+  applyDiversityPenalty,
+  calculateAdaptiveTemperature,
   TEMPERATURE_DEFAULT
 } from '../softmaxSelection';
+import { SeededRandom } from '../random';
 
 describe('Softmax Selection System', () => {
+  let rng: SeededRandom;
+  
+  beforeEach(() => {
+    rng = new SeededRandom(12345); // Use consistent seed for tests
+  });
+  
+  describe('logSumExp', () => {
+    it('should compute log-sum-exp correctly', () => {
+      const values = [1, 2, 3];
+      const result = logSumExp(values);
+      
+      const expected = Math.log(Math.exp(1) + Math.exp(2) + Math.exp(3));
+      expect(result).toBeCloseTo(expected, 10);
+    });
+    
+    it('should handle large values without overflow', () => {
+      const values = [100, 200, 300];
+      const result = logSumExp(values);
+      
+      expect(isFinite(result)).toBe(true);
+      expect(result).toBeCloseTo(300.0000453999, 5);
+    });
+    
+    it('should handle negative values', () => {
+      const values = [-100, -200, -300];
+      const result = logSumExp(values);
+      
+      expect(isFinite(result)).toBe(true);
+    });
+  });
+  
   describe('calculateSoftmaxProbabilities', () => {
     it('should normalize probabilities to sum to 1', () => {
       const deficits = [1, 2, 3, 0, -1];
@@ -104,7 +140,7 @@ describe('Softmax Selection System', () => {
     it('should select specified number of items', () => {
       const probabilities = [0.2, 0.3, 0.3, 0.2];
       
-      const selected = weightedRandomSelection(probabilities, 2);
+      const selected = weightedRandomSelection(probabilities, 2, rng);
       
       expect(selected).toHaveLength(2);
     });
@@ -112,7 +148,7 @@ describe('Softmax Selection System', () => {
     it('should not select duplicates', () => {
       const probabilities = [0.25, 0.25, 0.25, 0.25];
       
-      const selected = weightedRandomSelection(probabilities, 3);
+      const selected = weightedRandomSelection(probabilities, 3, rng);
       
       const uniqueSelected = new Set(selected);
       expect(uniqueSelected.size).toBe(3);
@@ -125,7 +161,8 @@ describe('Softmax Selection System', () => {
       
       // Run many trials selecting 1 item each time
       for (let i = 0; i < trials; i++) {
-        const selected = weightedRandomSelection(probabilities, 1);
+        const testRng = new SeededRandom(12345 + i);
+        const selected = weightedRandomSelection(probabilities, 1, testRng);
         counts[selected[0]]++;
       }
       
@@ -137,7 +174,7 @@ describe('Softmax Selection System', () => {
     it('should handle edge case of selecting all items', () => {
       const probabilities = [0.25, 0.25, 0.25, 0.25];
       
-      const selected = weightedRandomSelection(probabilities, 4);
+      const selected = weightedRandomSelection(probabilities, 4, rng);
       
       expect(selected).toHaveLength(4);
       expect(new Set(selected).size).toBe(4);
@@ -146,7 +183,7 @@ describe('Softmax Selection System', () => {
     it('should handle selecting zero items', () => {
       const probabilities = [0.5, 0.5];
       
-      const selected = weightedRandomSelection(probabilities, 0);
+      const selected = weightedRandomSelection(probabilities, 0, rng);
       
       expect(selected).toHaveLength(0);
     });
@@ -155,10 +192,50 @@ describe('Softmax Selection System', () => {
       const probabilities = [0.5, 0.3, 0.2];
       
       // Select 2 items - this requires renormalization after first selection
-      const selected = weightedRandomSelection(probabilities, 2);
+      const selected = weightedRandomSelection(probabilities, 2, rng);
       
       expect(selected).toHaveLength(2);
       expect(new Set(selected).size).toBe(2);
+    });
+    
+    it('should be reproducible with same seed', () => {
+      const probabilities = [0.2, 0.3, 0.5];
+      
+      const rng1 = new SeededRandom(999);
+      const rng2 = new SeededRandom(999);
+      
+      const selected1 = weightedRandomSelection(probabilities, 2, rng1);
+      const selected2 = weightedRandomSelection(probabilities, 2, rng2);
+      
+      expect(selected1).toEqual(selected2);
+    });
+  });
+  
+  describe('weightedRandomSelectionGumbel', () => {
+    it('should select specified number of items', () => {
+      const probabilities = [0.2, 0.3, 0.5];
+      
+      const selected = weightedRandomSelectionGumbel(probabilities, 2, rng);
+      
+      expect(selected).toHaveLength(2);
+      expect(new Set(selected).size).toBe(2);
+    });
+    
+    it('should respect probabilities statistically', () => {
+      const probabilities = [0.7, 0.2, 0.1];
+      const counts = [0, 0, 0];
+      const trials = 1000;
+      
+      for (let i = 0; i < trials; i++) {
+        const testRng = new SeededRandom(777 + i);
+        const selected = weightedRandomSelectionGumbel(probabilities, 1, testRng);
+        counts[selected[0]]++;
+      }
+      
+      // Should approximate probabilities
+      expect(counts[0] / trials).toBeCloseTo(0.7, 1);
+      expect(counts[1] / trials).toBeCloseTo(0.2, 1);
+      expect(counts[2] / trials).toBeCloseTo(0.1, 1);
     });
   });
 
@@ -316,4 +393,128 @@ describe('Softmax Selection System', () => {
       expect(result.selectedIds).toHaveLength(1);
     });
   });
+  
+  describe('Diversity Mechanisms', () => {
+    describe('applyDiversityPenalty', () => {
+      it('should penalize recently selected people', () => {
+        const deficits = [2, 2, 2];
+        const personIds = ['p1', 'p2', 'p3'];
+        const recentSelections = [
+          ['p1', 'p2'], // Most recent
+          ['p1', 'p3']
+        ];
+        
+        const adjusted = applyDiversityPenalty(deficits, personIds, recentSelections);
+        
+        // p1 selected twice, should have largest penalty
+        // p2 and p3 selected once each
+        expect(adjusted[0]).toBeLessThan(adjusted[1]);
+        expect(adjusted[0]).toBeLessThan(adjusted[2]);
+      });
+      
+      it('should weight recent selections more heavily', () => {
+        const deficits = [2, 2];
+        const personIds = ['p1', 'p2'];
+        const recentSelections = [
+          ['p1'], // Very recent
+          ['p2'], // Less recent
+          ['p2']
+        ];
+        
+        const adjusted = applyDiversityPenalty(deficits, personIds, recentSelections);
+        
+        // p1 selected more recently should have bigger impact than p2's older selections
+        expect(adjusted[0]).toBeLessThan(deficits[0]);
+      });
+      
+      it('should not modify deficits with empty history', () => {
+        const deficits = [1, 2, 3];
+        const personIds = ['p1', 'p2', 'p3'];
+        const recentSelections: string[][] = [];
+        
+        const adjusted = applyDiversityPenalty(deficits, personIds, recentSelections);
+        
+        expect(adjusted).toEqual(deficits);
+      });
+    });
+  });
+  
+  describe('Temperature Scheduling', () => {
+    describe('calculateAdaptiveTemperature', () => {
+      it('should decrease temperature with high variance', () => {
+        const lowVarianceTemp = calculateAdaptiveTemperature(0.01);
+        const highVarianceTemp = calculateAdaptiveTemperature(0.1);
+        
+        expect(highVarianceTemp).toBeLessThan(lowVarianceTemp);
+      });
+      
+      it('should increase temperature when converging', () => {
+        const notConvergingTemp = calculateAdaptiveTemperature(0.05, 0.1);
+        const convergingTemp = calculateAdaptiveTemperature(0.05, -0.1);
+        
+        expect(convergingTemp).toBeGreaterThan(notConvergingTemp);
+      });
+      
+      it('should increase temperature with low entropy', () => {
+        const highEntropyTemp = calculateAdaptiveTemperature(0.05, 0, 0.9);
+        const lowEntropyTemp = calculateAdaptiveTemperature(0.05, 0, 0.3);
+        
+        expect(lowEntropyTemp).toBeGreaterThan(highEntropyTemp);
+      });
+      
+      it('should stay within bounds', () => {
+        const extremeTemp1 = calculateAdaptiveTemperature(100, -1, 0.01);
+        const extremeTemp2 = calculateAdaptiveTemperature(0.001, 1, 1.0);
+        
+        expect(extremeTemp1).toBeGreaterThanOrEqual(0.1);
+        expect(extremeTemp1).toBeLessThanOrEqual(5.0);
+        expect(extremeTemp2).toBeGreaterThanOrEqual(0.1);
+        expect(extremeTemp2).toBeLessThanOrEqual(5.0);
+      });
+    });
+  });
+  
+  describe('Reproducibility', () => {
+    it('should produce same results with same seed', () => {
+      const deficits = [1, 2, 3, 4];
+      const personIds = ['p1', 'p2', 'p3', 'p4'];
+      
+      const rng1 = new SeededRandom(42);
+      const rng2 = new SeededRandom(42);
+      
+      const result1 = selectWithSoftmax(personIds, deficits, 1.0, 2, false, rng1);
+      const result2 = selectWithSoftmax(personIds, deficits, 1.0, 2, false, rng2);
+      
+      expect(result1.selectedIds).toEqual(result2.selectedIds);
+    });
+    
+    it('should produce different results with different seeds', () => {
+      const deficits = [1, 2, 3, 4];
+      const personIds = ['p1', 'p2', 'p3', 'p4'];
+      
+      const rng1 = new SeededRandom(42);
+      const rng2 = new SeededRandom(99);
+      
+      const result1 = selectWithSoftmax(personIds, deficits, 1.0, 2, false, rng1);
+      const result2 = selectWithSoftmax(personIds, deficits, 1.0, 2, false, rng2);
+      
+      // Very unlikely to be the same with different seeds
+      const same = result1.selectedIds.every((id, i) => id === result2.selectedIds[i]);
+      expect(same).toBe(false);
+    });
+    
+    it('should work with Gumbel-Max sampling', () => {
+      const deficits = [1, 2, 3, 4];
+      const personIds = ['p1', 'p2', 'p3', 'p4'];
+      
+      const rng1 = new SeededRandom(123);
+      const rng2 = new SeededRandom(123);
+      
+      const result1 = selectWithSoftmax(personIds, deficits, 1.0, 2, true, rng1);
+      const result2 = selectWithSoftmax(personIds, deficits, 1.0, 2, true, rng2);
+      
+      expect(result1.selectedIds).toEqual(result2.selectedIds);
+    });
+  });
 });
+

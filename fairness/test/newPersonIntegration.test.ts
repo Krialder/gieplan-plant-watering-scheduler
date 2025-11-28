@@ -178,7 +178,7 @@ describe('New Person Integration - No Catch-Up', () => {
       // Dave should get close to expected
       // Allow for randomness (softmax selection introduces variance)
       // The key is that over many iterations, it converges
-      // For this short simulation, we allow wider bounds (within 60% deviation)
+      // For this short simulation, wider bounds are allowed (within 60% deviation)
       expect(daveCount).toBeGreaterThan(expectedCount * 0.4);
       expect(daveCount).toBeLessThan(expectedCount * 1.6);
       

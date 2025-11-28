@@ -160,7 +160,7 @@ export class AdaptiveFairnessManager {
    * - Existing person with 100 days and 10 assignments: rate = 0.1 per day
    * - New person with 10 days and 1 assignment: rate = 0.1 per day (EQUAL fairness)
    * 
-   * We do NOT multiply deficits by tenure. That would create catch-up pressure.
+   * deficits by tenure are NOT multiplied. That would create catch-up pressure.
    */
   private calculateSchedulingDays(
     personId: string,
@@ -426,7 +426,7 @@ export class AdaptiveFairnessManager {
     
     // Priority = rate deficit (how far below average rate)
     // CRITICAL: DO NOT multiply by weeks - that causes catch-up behavior!
-    // We want people to converge to same RATE, not same TOTAL
+    // people are converging to same RATE, not same TOTAL
     const rateDeficit = averageRate - personRate;
     
     // Use Penalized Priority for aggressive correction of large deviations
