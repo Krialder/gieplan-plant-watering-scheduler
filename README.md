@@ -4,12 +4,8 @@
 [![React](https://img.shields.io/badge/React-19.0-61dafb.svg)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.3-646cff.svg)](https://vitejs.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![IHK](https://img.shields.io/badge/IHK-Abschlussprojekt-success.svg)](docs/IHK_PROJECT.md)
 
 A sophisticated scheduling system for managing fair weekly plant watering assignments in high-turnover vocational rehabilitation programs. Features Bayesian fairness algorithms, mentor-mentee pairing, and adaptive workload distribution.
-
-**IHK Abschlussprojekt** für **Fachinformatiker/-in für Anwendungsentwicklung**  
-📄 [Complete Project Documentation](docs/IHK_PROJECT.md)
 
 ---
 
@@ -22,7 +18,6 @@ A sophisticated scheduling system for managing fair weekly plant watering assign
 - [Architecture](#architecture)
 - [Documentation](#documentation)
 - [Testing](#testing)
-- [IHK Project](#ihk-project)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -65,39 +60,106 @@ A sophisticated scheduling system for managing fair weekly plant watering assign
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18.0.0+ • npm 8.0.0+ • Modern browser
 
-### Installation & Run
+**Required Software:**
+- **Node.js 18.0.0 or higher** ([Download here](https://nodejs.org/))
+  - During installation, check "Automatically install necessary tools"
+- **Modern web browser** (Chrome, Edge, or Firefox recommended)
 
-**Automated Setup (Windows):**
-```powershell
-.\setup.ps1  # PowerShell
-setup.bat    # Command Prompt
-.\run.ps1    # Start dev server
-```
+**Download Project:**
+- Option 1: Download ZIP from GitHub → Extract to folder
+- Option 2: Clone with Git: `git clone https://github.com/Krialder/gieplan-plant-watering-scheduler.git`
 
-**Manual Setup:**
-```bash
-git clone https://github.com/Krialder/gieplan-plant-watering-scheduler.git
-cd gieplan-plant-watering-scheduler
-npm install
-npm run dev  # Opens at http://localhost:5173
-```
+---
 
-**Production Build:**
+### Installation (Windows - Easiest)
+
+1. **Open Project Folder**
+   - Navigate to extracted/cloned folder
+   - You should see `setup.bat`, `run.bat`, and other files
+
+2. **Run Setup**
+   ```cmd
+   setup.bat
+   ```
+   - Installs all required dependencies
+   - **Note:** Some tests may fail initially - this is expected and okay!
+   - Wait until you see "Setup complete!"
+
+3. **Start Application**
+   ```cmd
+   run.bat
+   ```
+   - Starts development server
+   - Browser opens automatically at `http://localhost:5173`
+   - Keep this window open while using the app
+
+4. **First-Time Configuration**
+   - Click **"Select Data Folder"** button in the app
+   - Browser asks for folder permission - click **"View files"** → **"Allow"**
+   - Choose/create a folder where your schedule data will be saved
+   - ✅ You're ready to use GießPlan!
+
+---
+
+### Installation (Manual Method)
+
+If automated setup doesn't work:
+
+1. **Install Node.js**
+   - Download from [nodejs.org](https://nodejs.org/)
+   - Run installer (use default settings)
+   - Restart computer
+
+2. **Open Command Prompt in Project Folder**
+   - Hold Shift + Right-click in folder → "Open PowerShell window here"
+
+3. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+   - Wait 1-3 minutes for completion
+
+4. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
+   - Browser opens at `http://localhost:5173`
+
+5. **Select Data Folder** (in the app)
+   - Click "Select Data Folder"
+   - Grant browser permission
+   - Choose storage location
+
+---
+
+### Production Build
+
 ```bash
 npm run build
 npm run preview
 ```
 
-### Troubleshooting
+---
 
-**Port conflict:**
-```bash
-# Change port in vite.config.ts or kill process
-```
+### Troubleshooting First Run
 
-**Module errors:**
+**"setup.bat not recognized"**
+→ Make sure you're in the correct folder (contains package.json)
+
+**Tests fail during setup**
+→ This is normal! Some tests are expected to fail initially. Continue if you see "Setup complete!"
+
+**Browser doesn't open automatically**
+→ Manually open `http://localhost:5173`
+
+**"Select Data Folder" button doesn't work**
+→ Use Chrome or Edge browser (Firefox has limited File System API support)
+
+**Port 5173 already in use**
+→ Close other applications using that port, or change port in `vite.config.ts`
+
+**Module errors**
 ```bash
 rm -rf node_modules package-lock.json; npm install
 ```
@@ -172,12 +234,6 @@ See [Architecture Guide](docs/ARCHITECTURE.md) for detailed design and algorithm
 - 🧪 **[Testing Guide](docs/TESTING.md)** - Testing strategies and examples
 - 🤝 **[Contributing Guide](CONTRIBUTING.md)** - How to contribute
 
-### For IHK Examiners
-
-- 📄 **[IHK Project Documentation](docs/IHK_PROJECT.md)** - Complete German IHK Abschlussprojekt documentation
-- 📋 **[Documentation Index](docs/README.md)** - Overview and navigation
-- 📝 **[Changelog](CHANGELOG.md)** - Version history and releases
-
 ---
 
 ## 🧪 Testing
@@ -200,34 +256,6 @@ npm run test:coverage # Coverage report
 **Key Scenarios**: New person integration • Cross-year fairness • Emergency handling • Bayesian convergence
 
 See [Testing Guide](docs/TESTING.md) for comprehensive documentation.
-
----
-
-## 🎓 IHK Project
-
-**IHK Abschlussprojekt** for **Fachinformatiker/-in für Anwendungsentwicklung**
-
-- **Organization**: Rotkreuz-Institut BBW
-- **Duration**: 70 hours (IHK requirement)
-- **Completion**: December 2, 2025
-- **Scope**: 15,000+ LOC • 100+ tests • 85%+ coverage
-
-### For IHK Examiners
-
-📄 **[Complete German Documentation](docs/IHK_PROJECT.md)** includes:
-- Project overview & objectives
-- Requirements analysis (functional & non-functional)
-- System architecture & design decisions
-- Implementation with code examples
-- Testing strategy & results
-- 70-hour project timeline
-- Lessons learned & future outlook
-
-### Technical Highlights
-
-**Algorithms**: Bayesian Random Walk • Penalized Priority • Gumbel-Softmax • Constraint Checking  
-**Quality**: TypeScript strict mode • 100+ tests • Stress tested (100 people, 52 weeks)  
-**Standards**: Clean architecture • JSDoc documentation • TDD • Git (150+ commits)
 
 ---
 
@@ -257,7 +285,6 @@ MIT License - see [LICENSE](LICENSE)
 
 - **Repository**: [github.com/Krialder/gieplan-plant-watering-scheduler](https://github.com/Krialder/gieplan-plant-watering-scheduler)
 - **Issues**: [GitHub Issues](https://github.com/Krialder/gieplan-plant-watering-scheduler/issues)
-- **IHK Documentation**: [IHK_PROJECT.md](docs/IHK_PROJECT.md)
 
 ---
 
@@ -273,21 +300,17 @@ MIT License - see [LICENSE](LICENSE)
 
 ## 📊 Project Stats
 
-- **Type**: IHK Abschlussprojekt - Fachinformatiker/-in Anwendungsentwicklung
 - **Code**: 15,000+ lines
 - **Tests**: 100+ cases • 85%+ coverage
 - **Components**: 30+
 - **Documentation**: 650+ pages
 - **Tested**: Up to 100 people, 52 weeks
-- **Duration**: 70 hours (IHK requirement)
 
 ---
 
 <div align="center">
 
 **Made with ❤️ for fair workload distribution**
-
-**IHK Abschlussprojekt 2025** | Fachinformatiker/-in für Anwendungsentwicklung
 
 [⬆ Back to Top](#gießplan---plant-watering-schedule-management-system)
 

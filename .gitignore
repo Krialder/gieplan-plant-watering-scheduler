@@ -32,3 +32,6 @@ pids
 .devcontainer/
 
 .spark-workbench-id
+
+# IHK project documentation (exclude from main branch)
+IHK/

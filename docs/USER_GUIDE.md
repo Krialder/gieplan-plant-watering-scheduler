@@ -2,7 +2,6 @@
 
 Practical guide for program coordinators and end users.
 
-**IHK Abschlussprojekt**: Fachinformatiker/-in für Anwendungsentwicklung  
 📄 [Technical Documentation](README.md)
 
 ---
@@ -11,20 +10,123 @@ Practical guide for program coordinators and end users.
 
 ### First Time Setup
 
-1. **Download & Install**
-   - Ensure Node.js 18+ is installed
-   - Download project or run: `npm install`
+#### Step 1: Install Node.js
 
-2. **Start Application**
-   ```bash
-   npm run dev
-   ```
-   - Opens at `http://localhost:5173`
+1. Visit [https://nodejs.org/](https://nodejs.org/)
+2. Download **LTS version** (recommended)
+3. Run installer
+   - Accept default settings
+   - Check "Automatically install necessary tools"
+4. Restart computer after installation
 
-3. **Select Data Folder**
-   - Click "Select Data Folder" button
-   - Choose a folder to store schedule data
-   - Application creates `yearData_YYYY.json` files here
+**Verify installation:**
+```bash
+node --version  # Should show v18.x.x or higher
+npm --version   # Should show 8.x.x or higher
+```
+
+---
+
+#### Step 2: Get GießPlan
+
+**Option A: Download ZIP**
+1. Go to [GitHub Repository](https://github.com/Krialder/gieplan-plant-watering-scheduler)
+2. Click green "Code" button → "Download ZIP"
+3. Extract to folder (e.g., `C:\Users\YourName\gieplan`)
+
+**Option B: Clone with Git**
+```bash
+git clone https://github.com/Krialder/gieplan-plant-watering-scheduler.git
+cd gieplan-plant-watering-scheduler
+```
+
+---
+
+#### Step 3: Run Setup (Windows)
+
+1. Open folder in File Explorer
+2. Double-click `setup.bat`
+   - Command window opens
+   - Dependencies install (1-3 minutes)
+   - **Some tests may fail - this is okay!**
+   - Wait for "Setup complete!"
+
+---
+
+#### Step 4: Start Application
+
+1. Double-click `run.bat`
+   - Development server starts
+   - Browser opens automatically
+   - You'll see GießPlan interface
+
+2. **Keep command window open** while using app
+   - Closing it stops the server
+
+---
+
+#### Step 5: Configure Data Storage
+
+**First time you open GießPlan:**
+
+1. Click **"Select Data Folder"** button
+
+2. Browser shows permission dialog:
+   - "gieplan wants to access files"
+   - Click **"View files"**
+   - Click **"Allow"**
+
+3. Choose where to save data:
+   - Create new folder: `C:\Users\YourName\GießPlan-Data`
+   - Or select existing folder
+   - Click **"Select Folder"**
+
+4. ✅ **Setup complete!** GießPlan creates `yearData_2025.json` automatically
+
+---
+
+### What Each File Does
+
+- `setup.bat` - Installs dependencies (run once)
+- `run.bat` - Starts application (run every time)
+- `package.json` - Project configuration
+- `src/` - Application code
+- `Test/` - Automated tests
+
+**Data files** are created in your chosen folder:
+- `yearData_2025.json` - All schedules and people for 2025
+- `yearData_2026.json` - Data for 2026 (created when needed)
+
+---
+
+### Expected Behavior
+
+**When running setup.bat:**
+```
+✓ Node.js found
+✓ Installing dependencies...
+✓ Running tests...
+  ⚠ Some tests failed (expected)
+✓ Setup complete!
+```
+
+**When running run.bat:**
+```
+> gieplan@1.0.0 dev
+> vite
+
+  VITE v6.3.0  ready in 450 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+```
+
+**Browser opens showing:**
+- GießPlan logo
+- Four tabs: People, Schedule, Manual, Data
+- "Select Data Folder" button (if first run)
+
+---
 
 **You're ready to use GießPlan!**
 
@@ -44,6 +146,8 @@ Practical guide for program coordinators and end users.
 4. Click **Save**
 
 **Automatic**: System tracks experience level (experienced after 90 days + 4 assignments)
+
+⚠️ **Important**: Add people BEFORE generating schedules. If you add someone after generating a schedule that starts on their arrival date, their fairness tracking will be inaccurate until you regenerate. See "Important Timing Considerations" below for details.
 
 #### Edit Person Details
 1. Find person in list
@@ -218,6 +322,38 @@ When normal scheduling isn't possible:
 ❌ **Avoid**: Deleting people (breaks history)  
 ❌ **Avoid**: Duplicate entries for same person  
 
+### ⚠️ Important Timing Considerations
+
+**Critical: Adding People After Schedule Generation**
+
+If you generate a schedule FIRST, then add a person with an arrival date matching the schedule's start date, their fairness scores will be incorrect until the next schedule generation.
+
+**Why this happens:**
+- The system tracks when each person first becomes "eligible for scheduling" (`firstSchedulingDate`)
+- This date is only set when a person enters the selection pool during schedule generation
+- If you add someone retroactively with an arrival date that matches an existing schedule week, the system doesn't know they were "available" during those weeks
+- Their fairness calculations will show 0 days present until they're included in a new generation
+
+**Example Problem:**
+1. Dec 2: Generate schedule for weeks starting Dec 2, Dec 9, Dec 16
+2. Dec 3: Add new person "Dave" with arrival date = Dec 2
+3. Dave's fairness score shows incorrectly because system thinks he has 0 scheduling days
+4. Dec 9: Generate new schedule → Dave's `firstSchedulingDate` is now set to Dec 9 (not Dec 2!)
+5. Dave is now missing 7 days of fairness tracking
+
+**Best Practice:**
+- ✅ **Add all people BEFORE generating schedules**
+- ✅ **If you must add someone retroactively:**
+  1. Delete the existing schedule(s) that overlap their arrival date
+  2. Add the person
+  3. Regenerate the schedule from their arrival date forward
+  4. This ensures their fairness tracking is accurate from day one
+
+**Alternative (if you can't delete schedules):**
+- Accept that the person's fairness score will be slightly off
+- The system will correct itself over time as new schedules are generated
+- The impact diminishes as more weeks pass  
+
 ### Data Safety
 
 ✅ **Regular backups**: Export JSON monthly  
@@ -245,6 +381,17 @@ When normal scheduling isn't possible:
 ### "Fairness constraint violation"
 **Cause**: Generated schedule too unequal  
 **Fix**: System automatically adjusts - review and accept
+
+### "Person shows 0 fairness score / assignments per day incorrect"
+**Cause**: Person was added AFTER schedule generation with arrival date matching an existing schedule week  
+**Root issue**: System sets `firstSchedulingDate` only during generation, not retroactively  
+**Fix**: 
+1. **Recommended**: Delete overlapping schedules, then regenerate from person's arrival date
+2. **Alternative**: Accept temporary inaccuracy - will self-correct over 2-3 schedule generations
+3. **Prevention**: Always add people BEFORE generating schedules (see "Important Timing Considerations" above)
+
+**Technical explanation**: 
+The fairness engine tracks how many "scheduling days" each person has been in the selection pool. When you add someone after generating a schedule, even if their arrival date is Dec 2 and a schedule exists starting Dec 2, the system doesn't retroactively mark them as "available" for those weeks. Their `firstSchedulingDate` stays unset (0 days) until they're included in a generation. This makes their assignment rate calculation (assignments ÷ scheduling days) incorrect.
 
 ### Schedule looks unbalanced
 **Cause**: Recent changes, new people  
@@ -282,8 +429,6 @@ When normal scheduling isn't possible:
 ---
 
 <div align="center">
-
-**IHK Abschlussprojekt 2025** | Fachinformatiker/-in für Anwendungsentwicklung
 
 [⬆ Back to Top](#user-guide)
 
