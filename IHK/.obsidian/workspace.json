@@ -1,0 +1,220 @@
+{
+  "main": {
+    "id": "9e272bb2a1aa64bc",
+    "type": "split",
+    "children": [
+      {
+        "id": "d02e8249aa377759",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7d5e95932f1af47e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "02_Dokumentation/Projektdokumentation.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Projektdokumentation"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "1f7c691216a5acd7",
+    "type": "split",
+    "children": [
+      {
+        "id": "ea02bc2ad900eda6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "80dbed2bb15e2a6e",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "fac48cab1c0d7d29",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "bf02551acd200530",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "7784f5b59d4a993e",
+    "type": "split",
+    "children": [
+      {
+        "id": "359e7452133e12c1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7bde6ac1a6c2152f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "README.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for README"
+            }
+          },
+          {
+            "id": "bbfd3700210d99b2",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "README.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from README"
+            }
+          },
+          {
+            "id": "ec487175698dd918",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "1f76d2af50281063",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "f9cc8785b3cabe8f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "README.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of README"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "7d5e95932f1af47e",
+  "lastOpenFiles": [
+    "03_Anhaenge/A1_Zeit_und_Kostenplanung.md",
+    "02_Dokumentation/Projektdokumentation_Vollstaendig.md",
+    "03_Anhaenge/A6_Test_Dokumentation.md",
+    "03_Anhaenge/A4_Datenmodell.md",
+    "02_Dokumentation/Projektdokumentation.md",
+    "03_Anhaenge/A5_Code_Beispiele.md",
+    "01_Antrag/Projektantrag_GiePlan.md",
+    "03_Anhaenge/A3_UML_Diagramme.md",
+    "03_Anhaenge/A2_Anforderungskatalog.md",
+    "Projektdokumentation_Vollstaendig.pdf",
+    "03_Anhaenge/A7_Amortisationsrechnung.md",
+    "02_Dokumentation/Literaturverzeichnis.md",
+    "Projektantrag_GiePlan.pdf",
+    "Untitled 2.base",
+    "Untitled 1.base",
+    "Untitled.md",
+    "Untitled.base",
+    "03_Anhaenge/Test_Dokumentation.md",
+    "03_Anhaenge/Datenmodell.md",
+    "03_Anhaenge/Code_Beispiele.md",
+    "03_Anhaenge/Amortisationsrechnung.md",
+    "01_Antrag/Anforderungskatalog.md",
+    "01_Antrag/Zeit_und_Kostenplanung.md",
+    "03_Anhaenge/UML_Diagramme.md",
+    "Vorlagen_Beispiele/ProjektdokumentationFachinformatikerAnwendungsentwicklung2015MarkusAmshove.pdf",
+    "Vorlagen_Beispiele/ProjektantragFachinformatikerAnwendungsentwicklung2015MarkusAmshove.pdf",
+    "Vorlagen_Beispiele/projektantrag-fachinformatiker-anwendungsentwicklung-pdf--data.pdf",
+    "Vorlagen_Beispiele/LibreOffice_Vorlage_Projektdokumentation_ITBerufe.pdf",
+    "04_Praesentation/Praesentation.md",
+    "README.md",
+    "04_Praesentation/Handout.md"
+  ]
+}

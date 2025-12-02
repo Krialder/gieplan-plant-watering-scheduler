@@ -1,0 +1,27 @@
+.markdown-preview-view h1{
+  border-bottom: 3px solid #808080;
+  padding-bottom: 0.3em;
+  margin-bottom: 16px;
+}
+.markdown-preview-view h2{
+  border-bottom: 2px solid #808080;
+  padding-bottom: 0.3em;
+  margin-bottom: 16px;
+}
+.markdown-preview-view h3 {
+  /*border-bottom: 1px solid #808080;*/
+  padding-bottom: 0.3em;
+  margin-bottom: 16px;
+}
+
+.markdown-preview-view h1 {
+  font-size: 2em;
+}
+
+.markdown-preview-view h2 {
+  font-size: 1.5em;
+}
+
+.markdown-preview-view h3 {
+  font-size: 1.25em;
+}

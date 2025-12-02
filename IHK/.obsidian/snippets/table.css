@@ -1,0 +1,10 @@
+table {
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+.markdown-preview-view th{
+  font-size: 10px;
+}
+.markdown-preview-view td{
+  font-size: 12px;
+}
