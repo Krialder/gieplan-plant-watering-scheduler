@@ -3,7 +3,7 @@
 System architecture, design decisions, and fairness algorithms for GießPlan Plant Watering Schedule Management System.
 
 **IHK Abschlussprojekt**: Fachinformatiker/-in für Anwendungsentwicklung  
-📄 [Project Documentation](IHK_PROJECT.md)
+📄 [Project Documentation](../IHK/02_Dokumentation/Projektdokumentation.md)
 
 ---
 
@@ -47,7 +47,9 @@ GießPlan is a single-page React/TypeScript application solving a complex schedu
 2. **Immutability**: Functional programming style, all updates return new objects
 3. **Type Safety**: Comprehensive TypeScript typing throughout
 4. **Testability**: Pure functions preferred, seeded randomness for reproducibility
-5. **Progressive Enhancement**: Fairness features with feature flags
+5. **Progressive Enhancement**: Fairness features with feature flags for gradual rollout
+6. **Modular Fairness**: Standalone `fairness/` module, independently testable
+7. **Dual Storage Strategy**: FileSystem Access API for data, LocalStorage for preferences
 
 ---
 
@@ -87,10 +89,35 @@ createPerson(name, arrivalDate) {
   // Generate UUID → Create period → Init metrics → Return
 }
 
-// adaptiveFairness.ts - Fairness subsystem coordination
+// adaptiveFairness.ts - Fairness subsystem coordination with feature flags
 class AdaptiveFairnessManager {
+  constructor(
+    people, schedules, evaluationDate,
+    flags = DEFAULT_FEATURE_FLAGS,  // Feature flag system
+    constraints = DEFAULT_CONSTRAINTS
+  )
   // Coordinates: Bayesian state, priority, selection, constraints
 }
+
+// Feature flags for gradual rollout
+export const DEFAULT_FEATURE_FLAGS: FairnessFeatureFlags = {
+  usePenalizedPriority: true,      // Priority with mentor penalties
+  useBayesianUpdates: true,        // Bayesian state tracking
+  useConstraintChecking: true,     // Fairness constraint validation
+  useSoftmaxSelection: false       // Gumbel-Softmax (gradual rollout)
+};
+
+// fairnessEngine.ts - Fairness utilities and compatibility layer
+// Provides backward compatibility and helper functions
+
+// fileStorage.ts - File System Access API persistence
+// Handles JSON file storage in user-selected folder
+
+// storage.ts - LocalStorage utilities
+// Provides useLocalStorage hook for preferences (theme, folder name)
+
+// legacy/ - Previous fairnessEngine implementation
+// Maintained for backwards compatibility during migration
 ```
 
 ---
@@ -130,19 +157,22 @@ DynamicFairnessEngine
 
 ### Layer 4: Data Persistence
 
-**Location:** `src/lib/fileStorage.ts`
+**Dual Storage Architecture:**
+
+#### File-Based Storage (`src/lib/fileStorage.ts`)
 
 **Responsibilities:**
-- File system interaction
+- Long-term data persistence (people, schedules, fairness metrics)
+- File system interaction via File System Access API
 - JSON serialization/deserialization
-- Export format conversion
-- Backup/restore
+- Export format conversion (JSON, CSV, Excel)
+- Backup/restore capabilities
 
 **Storage Strategy:**
 - **File-based JSON**: One file per year (`yearData_2025.json`)
-- **User-selected folder**: Via File System Access API
+- **User-selected folder**: Via File System Access API (browser permission required)
 - **No cloud dependency**: Fully local, privacy-first
-- **Human-readable**: JSON for transparency
+- **Human-readable**: JSON for transparency and manual editing
 
 **File Structure:**
 
@@ -154,6 +184,53 @@ DynamicFairnessEngine
   "lastModified": "2025-12-02T10:30:00Z"
 }
 ```
+
+#### LocalStorage (`src/lib/storage.ts`)
+
+**Responsibilities:**
+- Lightweight preference storage
+- Theme selection (light/dark/twilight)
+- Last selected data folder name
+- UI state preservation
+
+**Implementation:**
+
+```typescript
+// useLocalStorage hook for React integration
+export function useLocalStorage<T>(key: string, defaultValue: T) {
+  const [value, setValue] = useState<T>(() => {
+    const item = window.localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  });
+  
+  // Automatically sync to localStorage on changes
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+  
+  return [value, setValue];
+}
+
+// Usage example
+const [theme, setTheme] = useLocalStorage('theme', 'light');
+const [folderName, setFolderName] = useLocalStorage('folderName', '');
+```
+
+**Storage Separation Rationale:**
+- `fileStorage.ts`: Large structured data requiring file system persistence
+- `storage.ts`: Small preferences requiring instant access across sessions
+- File System Access API requires user permission; LocalStorage does not
+- LocalStorage limited to ~5-10MB; files can grow larger
+
+---
+
+### Legacy Code (`src/lib/legacy/`)
+
+**Purpose**: Contains previous `fairnessEngine.ts` implementation maintained for backwards compatibility during gradual migration to the new `fairness/` module.
+
+**Current Status**: The main `src/lib/fairnessEngine.ts` now serves as a compatibility layer between the old API and new `fairness/` module, allowing gradual feature rollout via `AdaptiveFairnessManager` feature flags.
+
+**Migration Path**: Once all features are stable and enabled by default, legacy code can be safely removed.
 
 ---
 
@@ -180,7 +257,7 @@ For Each Week:
 │                                      │
 │ 3. Select Team (Softmax)             │
 │    ├─ Apply Temperature              │
-│    ├─ Gumbel-Max Sampling           │
+│    ├─ Gumbel-Max Sampling            │
 │    └─ Ensure Mentor                  │
 │                                      │
 │ 4. Select Substitutes                │
@@ -665,11 +742,55 @@ class DynamicFairnessEngine {
 ```typescript
 class AdaptiveFairnessManager {
   private accumulatedAssignments: Map<string, number>;
+  private flags: FairnessFeatureFlags;
+  
+  constructor(
+    people: Person[],
+    schedules: Schedule[],
+    evaluationDate: string,
+    flags: FairnessFeatureFlags = DEFAULT_FEATURE_FLAGS,
+    constraints: FairnessConstraints = DEFAULT_CONSTRAINTS
+  ) {
+    this.flags = flags;
+    // Initialize engine, historical assignments, etc.
+  }
   
   // Tracks assignments during multi-week generation
   // Prevents same person being selected every week
 }
 ```
+
+**Feature Flags Control:**
+
+```typescript
+export interface FairnessFeatureFlags {
+  usePenalizedPriority: boolean;    // Enable mentor penalty in priority calc
+  useBayesianUpdates: boolean;      // Enable Bayesian state tracking
+  useConstraintChecking: boolean;   // Enable fairness constraint validation
+  useSoftmaxSelection: boolean;     // Enable Gumbel-Softmax selection
+}
+
+// Default configuration (production)
+export const DEFAULT_FEATURE_FLAGS: FairnessFeatureFlags = {
+  usePenalizedPriority: true,
+  useBayesianUpdates: true,
+  useConstraintChecking: true,
+  useSoftmaxSelection: false  // Disabled for gradual rollout
+};
+
+// Testing configuration (experimental features enabled)
+const testFlags: FairnessFeatureFlags = {
+  ...DEFAULT_FEATURE_FLAGS,
+  useSoftmaxSelection: true  // Enable for A/B testing
+};
+```
+
+**Gradual Rollout Strategy:**
+1. New features start with flag disabled (`false`)
+2. Thorough testing in test suite with flag enabled
+3. Monitor performance and fairness metrics
+4. Enable by default once validated
+5. Remove flag after several stable releases
 
 ---
 

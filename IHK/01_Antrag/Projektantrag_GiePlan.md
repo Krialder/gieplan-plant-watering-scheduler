@@ -102,7 +102,7 @@ Die gesamte Anwendung muss client-seitig funktionieren, da keine Server-Infrastr
 
 **Organisatorische Einschränkungen**:
 
-Das Projekt muss innerhalb von 70 Stunden gemäß IHK-Vorgaben abgeschlossen sein. Die Entwicklung erfolgt durch einen einzelnen Auszubildenden ohne dediziertes Entwicklungsteam.
+Das Projekt muss innerhalb von 80 Stunden gemäß IHK-Vorgaben abgeschlossen sein. Die Entwicklung erfolgt durch einen einzelnen Auszubildenden ohne dediziertes Entwicklungsteam.
 
 Benutzer-Tests können nur mit 2-3 Koordinatoren durchgeführt werden, eine umfangreiche Nutzergruppe steht nicht zur Verfügung.
 
@@ -188,13 +188,13 @@ Regelmäßige Code-Reviews werden durchgeführt, um Code-Qualität sicherzustell
 
 | Phase | Dauer in Stunden |
 |-------|------------------|
-| Analyse | 8 |
-| Entwurf | 10 |
-| Implementierung | 35 |
-| Testing | 10 |
+| Analyse | 10 |
+| Entwurf | 12 |
+| Implementierung | 40 |
+| Testing | 11 |
 | Dokumentation | 5 |
 | Abnahme und Deployment | 2 |
-| **Summe** | **70** |
+| **Summe** | **80** |
 
 ---
 
@@ -303,8 +303,8 @@ Meine aktuelle Tätigkeit im Ausbildungsbetrieb umfasst die Entwicklung webbasie
 ## 7. DURCHFÜHRUNGSZEITRAUM
 
 **Projektstart**: Ab Genehmigung durch den IHK-Prüfungsausschuss  
-**Projektende**: 30. April 2026 (spätestens)  
-**Geplante Projektdauer**: 6 Wochen (70 Stunden)
+**Projektende**: xx. Monat Jahr (spätestens)  
+**Geplante Projektdauer**: 6 Wochen (80 Stunden)
 
 ---
 

@@ -20,93 +20,136 @@
 ## 1. Klassendiagramm - Fairness Engine
 
 ```
-┌────────────────────────────────────────────────────────────────┐
-│                  AdaptiveFairnessManager                       │
-├────────────────────────────────────────────────────────────────┤
-│ - people: Person[]                                             │
-│ - bayesianStates: Map<string, BayesianState>                   │
-│ - priorities: Map<string, number>                              │
-│ - constraints: FairnessConstraints                             │
-│ - rng: SeededRandom                                            │
-├────────────────────────────────────────────────────────────────┤
-│ + constructor(config: FairnessConfig)                          │
-│ + selectTeam(options: TeamSelectionOptions): string[]          │
-│ + selectSubstitutes(options: SubstituteOptions): string[]      │
-│ + updateAfterAssignment(teamIds: string[], date: string)       │
-│ + getFairnessScore(personId: string): number                   │
-│ + checkConstraints(): ConstraintViolation[]                    │
-└────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                «class» AdaptiveFairnessManager                  │
+│                (src/lib/adaptiveFairness.ts)                    │
+├─────────────────────────────────────────────────────────────────┤
+│ - engine: DynamicFairnessEngine                                 │
+│ - flags: FairnessFeatureFlags                                   │
+│ - people: Person[]                                              │
+│ - schedules: Schedule[]                                         │
+│ - historicalAssignments: Map<string, number>                    │
+│ - accumulatedAssignments: Map<string, number>                   │
+│ - firstSchedulingDate: Map<string, string>                      │
+├─────────────────────────────────────────────────────────────────┤
+│ + selectTeamsAndSubstitutes(): {teamIds, substituteIds, ...}   │
+│ + updateState(assignedIds: string[]): void                      │
+│ + markPersonAvailableForScheduling(id: string, date: string)    │
+│ + calculatePriority(personId: string, weekStartDate: string)    │
+│ + calculateEnhancedPriority(person, allPeople, schedules, date) │
+│ + checkFairness(people, schedules, date): {warnings, metrics}   │
+│ + getFairnessMetrics(people, schedules, date): any              │
+│ + getPersonConfidenceInterval(id: string, level: number)        │
+│ + updateAfterAssignment(id, assigned, daysElapsed, idealRate)   │
+│ + initializeFromPeople(people, schedules, evaluationDate)       │
+│ + recalculateFirstSchedulingDates(schedules: Schedule[])        │
+│ + getState(): {historicalAssignments, accumulatedAssignments}   │
+│ + reset(): void                                                 │
+└─────────────────────────────────────────────────────────────────┘
                             │
-                            │ uses
-        ┌───────────────────┼───────────────────┐
-        │                   │                   │
-        ▼                   ▼                   ▼
-┌────────────────┐  ┌────────────────┐  ┌────────────────┐
-│ BayesianState  │  │   Priority     │  │ SoftmaxSelect  │
-│    Manager     │  │   Calculator   │  │   ion Engine   │
-├────────────────┤  ├────────────────┤  ├────────────────┤
-│ + update()     │  │ + calculate()  │  │ + select()     │
-│ + get()        │  │ + getPenalty() │  │ + gumbelMax()  │
-│ + initialize() │  │ + getBonus()   │  │ + softmax()    │
-└────────────────┘  └────────────────┘  └────────────────┘
-        │                   │                   │
-        │                   │                   │
-        └───────────────────┴───────────────────┘
-                            │
+                            │ contains
                             ▼
-                ┌────────────────────────┐
-                │  FairnessConstraints   │
-                ├────────────────────────┤
-                │ + maxGini: number      │
-                │ + maxCV: number        │
-                │ + minRateRatio: number │
-                ├────────────────────────┤
-                │ + checkGini()          │
-                │ + checkCV()            │
-                │ + checkRatio()         │
-                └────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                «class» DynamicFairnessEngine                    │
+│                (fairness/index.ts)                              │
+├─────────────────────────────────────────────────────────────────┤
+│ - bayesianStates: Map<string, BayesianState>                    │
+│ - correctiveActions: Map<string, CorrectiveAction>              │
+│ - constraints: FairnessConstraints                              │
+│ - varianceHistory: number[]                                     │
+│ - metricsHistory: FairnessMetrics[]                             │
+│ - rng: SeededRandom                                             │
+├─────────────────────────────────────────────────────────────────┤
+│ + initializePerson(id: string, initialRate: number, date)       │
+│ + updateAfterAssignment(id, assigned, daysElapsed, idealRate)   │
+│ + calculatePersonPriority(deficit: number, tenure: number)       │
+│ + checkAndCorrect(rates, deficits, tenures, personIds)          │
+│ + selectTeam(ids, deficits, variance, teamSize, useGumbel)      │
+│ + selectTeamWithTemperature(ids, deficits, temp, size, gumbel)  │
+│ + getPersonConfidenceInterval(id: string, level: number)         │
+│ + getCorrectiveAction(personId: string): CorrectiveAction       │
+│ + clearExpiredActions(currentWeek: number): void                │
+│ + getAllBayesianStates(): Map<string, BayesianState>            │
+│ + getVarianceHistory(): number[]                                │
+│ + getMetricsHistory(): FairnessMetrics[]                        │
+│ + isConverging(windowSize: number): boolean                     │
+│ + getConvergenceRate(windowSize: number): number                │
+│ + getEntropyHistory(): number[]                                 │
+│ + getRecentSelections(): string[][]                             │
+│ + getAverageEntropy(windowSize: number): number                 │
+│ + seedRandom(seed: number): void                                │
+│ + getRandomState(): number                                      │
+│ + reset(): void                                                 │
+└─────────────────────────────────────────────────────────────────┘
+                            │
+                            │ uses functions from
+        ┌───────────────────┼──────────────────┬─────────────────┐
+        │                   │                  │                 │
+        ▼                   ▼                  ▼                 ▼
+┌──────────────┐  ┌──────────────┐  ┌───────────────┐  ┌──────────────┐
+│   «module»   │  │   «module»   │  │   «module»    │  │  «module»    │
+│ bayesianState│  │ penalized    │  │  softmax      │  │  fairness    │
+│              │  │ Priority     │  │  Selection    │  │ Constraints  │
+├──────────────┤  ├──────────────┤  ├───────────────┤  ├──────────────┤
+│ initialize   │  │ calculate    │  │ calculate     │  │ check        │
+│ BayesianState│  │ Penalized    │  │ Softmax       │  │ Fairness     │
+│ ()           │  │ Priority()   │  │ Probabilities │  │ Constraints()│
+│ update       │  │ calculate    │  │ ()            │  │ calculate    │
+│ BayesianState│  │ PenaltyBoost │  │ selectWith    │  │ Fairness     │
+│ ()           │  │ ()           │  │ Softmax()     │  │ Metrics()    │
+│ getConfidence│  │ calculate    │  │ selectWith    │  │ apply        │
+│ Interval()   │  │ Optimal      │  │ Adaptive      │  │ Corrective   │
+│              │  │ Lambda()     │  │ Temperature() │  │ Actions()    │
+└──────────────┘  └──────────────┘  └───────────────┘  └──────────────┘
 
-┌────────────────────────────────────────────────────────────────┐
-│                        Person                                  │
-├────────────────────────────────────────────────────────────────┤
-│ - id: string                                                   │
-│ - name: string                                                 │
-│ - arrivalDate: string                                          │
-│ - actualDepartureDate: string | null                           │
-│ - programPeriods: TimePeriod[]                                 │
-│ - experienceLevel: 'new' | 'experienced'                       │
-│ - fairnessMetrics: FairnessMetrics                             │
-├────────────────────────────────────────────────────────────────┤
-│ + isActiveOn(date: string): boolean                            │
-│ + getTotalDaysPresent(endDate: string): number                 │
-│ + isExperienced(referenceDate: string): boolean                │
-└────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                «interface» Person                               │
+│                (src/types/index.ts)                             │
+├─────────────────────────────────────────────────────────────────┤
+│ + id: string                                                    │
+│ + name: string                                                  │
+│ + arrivalDate: string                                           │
+│ + expectedDepartureDate: string | null                          │
+│ + actualDepartureDate: string | null                            │
+│ + programPeriods: TimePeriod[]                                  │
+│ + experienceLevel: ExperienceLevel                              │
+│ + mentorshipAssignments: string[]                               │
+│ + fairnessMetrics: FairnessMetrics                              │
+└─────────────────────────────────────────────────────────────────┘
                             │
                             │ has
                             ▼
                 ┌────────────────────────┐
-                │   FairnessMetrics      │
+                │ «interface»            │
+                │  FairnessMetrics       │
                 ├────────────────────────┤
-                │ + temporalScore: float │
+                │ + person: string       │
+                │ + temporalFairness     │
+                │   Score: number        │
                 │ + assignmentsPerDay    │
-                │ + crossYearDebt: float │
-                │ + mentorBurden: float  │
+                │   Present: number      │
+                │ + crossYearFairness    │
+                │   Debt: number         │
+                │ + mentorshipBurden     │
+                │   Score: number        │
                 │ + lastUpdated: string  │
                 └────────────────────────┘
 
-┌────────────────────────────────────────────────────────────────┐
-│                      ScheduleEngine                            │
-├────────────────────────────────────────────────────────────────┤
-│ + generateSchedule(options: ScheduleOptions): ScheduleResult   │
-│ + validateOptions(options: ScheduleOptions): ValidationResult  │
-│ + getActivePeople(people: Person[], date: string): Person[]    │
-│ - createWeekAssignment(...): WeekAssignment                    │
-└────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│           «module» scheduleEngine                               │
+│           (src/lib/scheduleEngine.ts)                           │
+├─────────────────────────────────────────────────────────────────┤
+│ + generateSchedule(options): ScheduleGenerationResult           │
+│ + handlePersonDeletion(person, schedules): Schedule[]           │
+│ + replacePersonInWeek(schedule, weekIndex, oldId, newId)        │
+│ + swapPeopleInSchedules(schedules, id1, id2): Schedule[]        │
+└─────────────────────────────────────────────────────────────────┘
                             │
                             │ creates
                             ▼
                 ┌────────────────────────┐
-                │   WeekAssignment       │
+                │ «interface»            │
+                │  WeekAssignment        │
                 ├────────────────────────┤
                 │ + weekNumber: number   │
                 │ + weekStartDate: string│
@@ -114,103 +157,145 @@
                 │ + substitutes: []      │
                 │ + hasMentor: boolean   │
                 │ + fairnessScores: []   │
+                │ + comment?: string     │
                 └────────────────────────┘
 ```
 
 **Erklärung**:
-- **AdaptiveFairnessManager**: Zentrale Klasse für Fairness-Orchestrierung
-- **BayesianStateManager**: Verwaltet probabilistische Zustände
-- **PriorityCalculator**: Berechnet Penalized Priority Scores
-- **SoftmaxSelectionEngine**: Führt stochastische Team-Auswahl durch
-- **Person**: Kern-Entität mit Fairness-Metriken
-- **ScheduleEngine**: Orchestriert Zeitplan-Generierung
+- **AdaptiveFairnessManager**: Klasse für Fairness-Orchestrierung (wraps DynamicFairnessEngine)
+  - Hauptmethoden: selectTeamsAndSubstitutes(), checkFairness(), getFairnessMetrics()
+  - Verwaltet historische Assignments und First-Scheduling-Dates
+- **DynamicFairnessEngine**: Kern-Klasse mit Bayesian State Tracking und umfangreichen Analyse-Methoden
+  - Methoden für Selection: selectTeam(), selectTeamWithTemperature()
+  - Analyse-Methoden: getAllBayesianStates(), getMetricsHistory(), isConverging(), getConvergenceRate()
+  - Entropy-Tracking: getEntropyHistory(), getAverageEntropy()
+  - State-Management: seedRandom(), reset()
+- **bayesianState, penalizedPriority, softmaxSelection**: Funktionale Module mit reinen Funktionen
+- **fairnessConstraints**: Modul mit checkFairnessConstraints(), calculateFairnessMetrics(), applyCorrectiveActions()
+- **Person, FairnessMetrics, WeekAssignment**: TypeScript-Interfaces (keine Klassen)
+- **scheduleEngine**: Funktionales Modul für Zeitplan-Operationen (keine Klasse)
 
 ---
 
 ## 2. Sequenzdiagramm - Zeitplan-Generierung
 
 ```
-Koordinator    UI Component    ScheduleEngine    FairnessManager    Person[]    FileStorage
-    │               │                │                  │              │               │
-    │ Generate      │                │                  │              │               │
-    │ Schedule      │                │                  │              │               │
-    ├──────────────>│                │                  │              │               │
-    │               │ validate()     │                  │              │               │
-    │               ├───────────────>│                  │              │               │
-    │               │                │ getActivePeople()│              │               │
-    │               │                ├────────────────────────────────>│               │
-    │               │                │                  │              │               │
-    │               │                │ new FairnessManager()           │               │
-    │               │                ├─────────────────>│              │               │
-    │               │                │                  │ initStates() │               │
-    │               │                │                  ├─────────────>│               │
-    │               │                │                  │              │               │
-    │               │                │  ╔═══════════════════════════╗  │               │
-    │               │                │  ║ For Each Week (1..52)     ║  │               │
-    │               │                │  ╚═══════════════════════════╝  │               │
-    │               │                │                  │              │               │
-    │               │                │ selectTeam()     │              │               │
-    │               │                ├─────────────────>│              │               │
-    │               │                │                  │ getPriorities()              │
-    │               │                │                  ├─────────────>│               │
-    │               │                │                  │              │               │
-    │               │                │                  │ gumbelSoftmax()              │
-    │               │                │                  │ (internal)   │               │
-    │               │                │                  │              │               │
-    │               │                │                  │ checkMentor()                │
-    │               │                │                  ├─────────────>│               │
-    │               │                │                  │              │               │
-    │               │                │                  │<─────────────┤               │
-    │               │                │                  │ selectedTeam │               │
-    │               │                │<─────────────────┤              │               │
-    │               │                │ teamIds          │              │               │
-    │               │                │                  │              │               │
-    │               │                │ selectSubstitutes()             │               │
-    │               │                ├─────────────────>│              │               │
-    │               │                │                  │<─────────────┤               │
-    │               │                │ substituteIds    │              │               │
-    │               │                │<─────────────────┤              │               │
-    │               │                │                  │              │               │
-    │               │                │ updateAfterAssignment()         │               │
-    │               │                ├─────────────────>│              │               │
-    │               │                │                  │ updateBayesian()             │
-    │               │                │                  ├─────────────>│               │
-    │               │                │                  │              │               │
-    │               │                │  ╔═══════════════════════════╗  │               │
-    │               │                │  ║ End For Each Week         ║  │               │
-    │               │                │  ╚═══════════════════════════╝  │               │
-    │               │                │                  │              │               │
-    │               │                │ checkConstraints()              │               │
-    │               │                ├─────────────────>│              │               │
-    │               │                │                  │ calculateGini()              │
-    │               │                │                  │ calculateCV()                │
-    │               │                │                  │              │               │
-    │               │                │<─────────────────┤              │               │
-    │               │                │ violations[]     │              │               │
-    │               │                │                  │              │               │
-    │               │<───────────────┤                  │              │               │
-    │               │ schedule       │                  │              │               │
-    │               │                │                  │              │               │
-    │               │ saveSchedule() │                  │              │               │
-    │               ├──────────────────────────────────────────────────────────────>│
-    │               │                │                  │              │               │
-    │<──────────────┤                │                  │              │               │
-    │ Success       │                │                  │              │               │
-    │               │                │                  │              │               │
+User    ScheduleTab.tsx    scheduleEngine    AdaptiveFairness    DynamicFairness    FileStorage
+        (Component)        (Module)          Manager (Class)     Engine (Class)     (async)
+  │           │                │                    │                   │               │
+  │ Click     │                │                    │                   │               │
+  │"Generate" │                │                    │                   │               │
+  ├──────────>│                │                    │                   │               │
+  │           │ generateSchedule()                  │                   │               │
+  │           ├───────────────>│                    │                   │               │
+  │           │                │ validate inputs    │                   │               │
+  │           │                │ (dates, weeks)     │                   │               │
+  │           │                │                    │                   │               │
+  │           │                │ filter active      │                   │               │
+  │           │                │ people for range   │                   │               │
+  │           │                │                    │                   │               │
+  │           │                │ new AdaptiveFairnessManager()          │               │
+  │           │                ├───────────────────>│                   │               │
+  │           │                │                    │ new DynamicFairness│              │
+  │           │                │                    │ Engine()           │               │
+  │           │                │                    ├──────────────────>│               │
+  │           │                │                    │                   │               │
+  │           │                │  ╔════════════════════════════════╗    │               │
+  │           │                │  ║ For Each Week (1..n)           ║    │               │
+  │           │                │  ╚════════════════════════════════╝    │               │
+  │           │                │                    │                   │               │
+  │           │                │ markPersonAvailable│                   │               │
+  │           │                │ ForScheduling()    │                   │               │
+  │           │                ├───────────────────>│                   │               │
+  │           │                │                    │ track entry date  │               │
+  │           │                │                    │                   │               │
+  │           │                │ selectTeamsAnd     │                   │               │
+  │           │                │ Substitutes()      │                   │               │
+  │           │                ├───────────────────>│                   │               │
+  │           │                │                    │ calculateEnhanced │               │
+  │           │                │                    │ Priority()        │               │
+  │           │                │                    │ (for each person) │               │
+  │           │                │                    │                   │               │
+  │           │                │                    │ calculatePerson   │               │
+  │           │                │                    │ Priority()        │               │
+  │           │                │                    ├──────────────────>│               │
+  │           │                │                    │                   │ calculate     │
+  │           │                │                    │                   │ Penalized     │
+  │           │                │                    │                   │ Priority()    │
+  │           │                │                    │<──────────────────┤               │
+  │           │                │                    │ finalPriority     │               │
+  │           │                │                    │                   │               │
+  │           │                │                    │ Sort by priority  │               │
+  │           │                │                    │ (deterministic)   │               │
+  │           │                │<───────────────────┤                   │               │
+  │           │                │ {team, substitutes}│                   │               │
+  │           │                │                    │                   │               │
+  │           │                │ shuffle assigned   │                   │               │
+  │           │                │ people (variety)   │                   │               │
+  │           │                │                    │                   │               │
+  │           │                │ updateState()      │                   │               │
+  │           │                ├───────────────────>│                   │               │
+  │           │                │                    │ update()          │               │
+  │           │                │                    ├──────────────────>│               │
+  │           │                │                    │                   │ updateBayesian│
+  │           │                │                    │                   │ State()       │
+  │           │                │                    │<──────────────────┤               │
+  │           │                │<───────────────────┤                   │               │
+  │           │                │                    │                   │               │
+  │           │                │  ╔════════════════════════════════╗    │               │
+  │           │                │  ║ End For Each Week              ║    │               │
+  │           │                │  ╚════════════════════════════════╝    │               │
+│           │                │                    │                   │               │
+│           │                │ checkFairness()    │                   │               │
+│           │                │ (people, schedules,│                   │               │
+│           │                │  evaluationDate)   │                   │               │
+│           │                ├───────────────────>│                   │               │
+│           │                │                    │ calculateEnhanced │               │
+│           │                │                    │ Priority() for    │               │
+│           │                │                    │ rates & deficits  │               │
+│           │                │                    │                   │               │
+│           │                │                    │ calculate         │               │
+│           │                │                    │ FairnessMetrics() │               │
+│           │                │                    │ (internal)        │               │
+│           │                │                    │                   │               │
+│           │                │<───────────────────┤                   │               │
+│           │                │ {warnings,         │                   │               │
+│           │                │  metrics}          │                   │               │
+  │           │                │                    │                   │               │
+  │           │<───────────────┤                    │                   │               │
+  │           │ ScheduleGenerationResult            │                   │               │
+  │           │                │                    │                   │               │
+  │           │ updateYearData()                    │                   │               │
+  │           │                │                    │                   │               │
+  │           │ saveYearDataToFile()                │                   │               │
+  │           ├────────────────────────────────────────────────────────────────────────>│
+  │           │                │                    │                   │  File System  │
+  │           │                │                    │                   │  Access API   │
+  │           │                │                    │                   │  (async)      │
+  │           │<────────────────────────────────────────────────────────────────────────┤
+  │           │                │                    │                   │               │
+  │<──────────┤                │                    │                   │               │
+  │ Toast:    │                │                    │                   │               │
+  │ Success   │                │                    │                   │               │
+  │           │                │                    │                   │               │
 ```
 
 **Erklärung**:
-1. Nutzer initiiert Zeitplan-Generierung über UI
-2. ScheduleEngine validiert Eingaben
-3. FairnessManager wird mit Personen initialisiert
-4. Für jede Woche:
-   - Prioritäten berechnen
-   - Team via Gumbel-Softmax auswählen
-   - Ersatzpersonen auswählen
-   - Bayesian States aktualisieren
-5. Constraint-Prüfung (Gini, CV)
-6. Zeitplan speichern
-7. Erfolg an Nutzer melden
+1. Nutzer klickt "Zeitplan generieren" in ScheduleTab
+2. scheduleEngine.generateSchedule() validiert Eingaben (Datum, Wochenzahl)
+3. Filtert aktive Personen für den Zeitraum
+4. Erstellt neue AdaptiveFairnessManager-Instanz (enthält DynamicFairnessEngine)
+5. Für jede Woche:
+   - markPersonAvailableForScheduling() trackt Eintrittsdatum
+   - selectTeamsAndSubstitutes() berechnet Enhanced Priority für jede Person
+   - calculatePersonPriority() ruft calculatePenalizedPriority() auf (L4 Regularisierung)
+   - Sortierung nach Priority (deterministisch, höchste Priorität = größter Bedarf)
+   - Top-Prioritäten werden ausgewählt für Team und Ersatz
+   - updateState() aktualisiert akkumulierte Assignments
+6. Fairness-Prüfung mit checkFairness() (berechnet Metriken intern)
+7. Rückgabe ScheduleGenerationResult
+8. **Async** Save via File System Access API
+9. Toast-Benachrichtigung
 
 ---
 
@@ -219,6 +304,14 @@ Koordinator    UI Component    ScheduleEngine    FairnessManager    Person[]    
 ```
                     GießPlan System
     ┌─────────────────────────────────────────────────┐
+    │                                                 │
+    │   ┌─────────────────────────────────────┐       │
+    │   │   Systeminitialisierung             │       │
+    │   │  ┌───────────────────────┐          │       │
+    │   │  │ Ordner auswählen      │          │       │
+    │   │  │ (File System API)     │◄─────────┼───────┼─────  Koordinator
+    │   │  └───────────────────────┘  «include»│      │       (Hauptakteur)
+    │   └─────────────────────────────────────┘       │
     │                                                 │
     │   ┌─────────────────────────────────────┐       │
     │   │   Personenverwaltung                │       │
@@ -238,11 +331,18 @@ Koordinator    UI Component    ScheduleEngine    FairnessManager    Person[]    
     │   │  ┌───────────────────────┐          │       │
     │   │  │ Zeitplan generieren   │◄─────────┼───────┼─────  Koordinator
     │   │  └───────────────────────┘   uses   │       │       (Hauptakteur)
+    │   │         │                            │       │
+    │   │         │ «include»                  │       │
+    │   │         ▼                            │       │
     │   │  ┌───────────────────────┐          │       │
-    │   │  │ Mentor-Pairing        │          │       │
+    │   │  │ Fairness berechnen    │          │       │
     │   │  └───────────────────────┘          │       │
+    │   │         │                            │       │
+    │   │         │ automatic                  │       │
+    │   │         ▼                            │       │
     │   │  ┌───────────────────────┐          │       │
-    │   │  │ Fairness prüfen       │          │       │
+    │   │  │ Mentor-Mentee         │          │       │
+    │   │  │ automatisch pairen    │          │       │
     │   │  └───────────────────────┘          │       │
     │   └─────────────────────────────────────┘       │
     │                                                 │
@@ -256,6 +356,9 @@ Koordinator    UI Component    ScheduleEngine    FairnessManager    Person[]    
     │   │  └───────────────────────┘          │       │
     │   │  ┌───────────────────────┐          │       │
     │   │  │ Kommentar hinzufügen  │          │       │
+    │   │  └───────────────────────┘          │       │
+    │   │  ┌───────────────────────┐          │       │
+    │   │  │ Schedule löschen      │          │       │
     │   │  └───────────────────────┘          │       │
     │   └─────────────────────────────────────┘       │
     │                                                 │
@@ -274,29 +377,27 @@ Koordinator    UI Component    ScheduleEngine    FairnessManager    Person[]    
     │                                                 │
     └─────────────────────────────────────────────────┘
 
-    «include»
-    ┌───────────────────────┐
-    │ Fairness berechnen    │ (von allen Use Cases genutzt)
-    └───────────────────────┘
-
     «extend»
     ┌───────────────────────┐
-    │ Warnung bei Violation │ (optional bei Generierung)
+    │ Warnung bei Constraint│ (optional bei Generierung)
+    │ Violation anzeigen    │
     └───────────────────────┘
 ```
 
 **Akteure**:
-- **Koordinator**: Hauptnutzer, plant Zeitpläne
+- **Koordinator**: Hauptnutzer, plant Zeitpläne und verwaltet Personen
 
 **Use Cases**:
-- **Personenverwaltung**: CRUD für Teilnehmer
-- **Zeitplan-Generierung**: Automatische faire Planung
-- **Manuelle Anpassungen**: Spontane Änderungen
-- **Datenmanagement**: Export, Backup, Statistiken
+- **Systeminitialisierung**: Ordnerauswahl via File System Access API (erforderlich vor Nutzung)
+- **Personenverwaltung**: CRUD für Teilnehmer (Hinzufügen, Abgang, Rückkehr)
+- **Zeitplan-Generierung**: Automatische faire Planung mit Fairness-Berechnung
+- **Manuelle Anpassungen**: Spontane Änderungen (Ersetzen, Tauschen, Kommentare, Löschen)
+- **Datenmanagement**: Export (CSV, JSON), Statistiken
 
 **Beziehungen**:
-- «include»: Fairness-Berechnung wird von allen Use Cases genutzt
-- «extend»: Warnung bei Violations ist optionale Erweiterung
+- «include»: Ordner auswählen ist Voraussetzung; Fairness berechnen wird automatisch eingebunden
+- «extend»: Warnung bei Constraint Violations ist optionale Erweiterung
+- **Mentor-Pairing**: Automatisch in Zeitplan-Generierung integriert (kein separater Use Case)
 
 ---
 
@@ -308,51 +409,74 @@ Koordinator    UI Component    ScheduleEngine    FairnessManager    Person[]    
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │         Presentation Layer (React UI)               │    │
+│  │  ┌────────────┐  ┌────────────────────────────┐     │    │
+│  │  │  App.tsx   │  │   FolderSelector.tsx       │     │    │
+│  │  │ (Main Tab  │  │   (File System Access API) │     │    │
+│  │  │ Container) │  └────────────────────────────┘     │    │
+│  │  └────────────┘                                      │    │
 │  │  ┌────────────┐  ┌────────────┐  ┌────────────┐     │    │
 │  │  │ PeopleTab  │  │ScheduleTab │  │ ManualTab  │     │    │
 │  │  └────────────┘  └────────────┘  └────────────┘     │    │
 │  │  ┌────────────┐  ┌────────────────────────────┐     │    │
 │  │  │  DataTab   │  │   UI Components Library    │     │    │
-│  │  └────────────┘  │   (Radix UI + Custom)      │     │    │
-│  │                  └────────────────────────────┘     │    │
+│  │  └────────────┘  │ (shadcn/ui + Radix UI)     │     │    │
+│  │  ┌──────────────────┐                          │     │    │
+│  │  │ AddPersonDialog  │                          │     │    │
+│  │  │ ErrorFallback    │                          │     │    │
+│  │  └──────────────────┘                          │     │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                            │                                │
-│                            │ Props / Events                 │
+│                            │ Props / Events / State         │
 │                            ▼                                │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │          Business Logic Layer                       │    │
+│  │    Business Logic Layer (src/lib/)                  │    │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────┐   │    │
-│  │  │ Schedule     │  │ Person       │  │ Export   │   │    │
-│  │  │ Engine       │  │ Manager      │  │ Utils    │   │    │
+│  │  │ scheduleEngine│  │ personManager│  │ export   │   │    │
+│  │  │ (module)     │  │ (module)     │  │ Utils    │   │    │
 │  │  └──────────────┘  └──────────────┘  └──────────┘   │    │
 │  │  ┌──────────────┐  ┌──────────────┐                 │    │
-│  │  │ Date Utils   │  │ Adaptive     │                 │    │
+│  │  │ dateUtils    │  │ adaptive     │                 │    │
 │  │  │              │  │ Fairness     │                 │    │
+│  │  │              │  │ (class)      │                 │    │
 │  │  └──────────────┘  └──────────────┘                 │    │
+│  │  ┌──────────────┐                                   │    │
+│  │  │ fairnessEngine│ ← legacy layer with active      │    │
+│  │  │ (utilities + │   functions (selectTeamsAnd     │    │
+│  │  │  helpers)    │   Substitutes, isPersonActive,  │    │
+│  │  │              │   calculateTotalDaysPresent)    │    │
+│  │  └──────────────┘                                   │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                            │                                │
-│                            │ Function Calls                 │
+│                            │ Function Calls / Imports       │
 │                            ▼                                │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │         Fairness Engine (Core Algorithms)           │    │
+│  │    Fairness Engine Core (fairness/ package)         │    │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────┐   │    │
-│  │  │ Bayesian     │  │ Penalized    │  │ Softmax  │   │    │
-│  │  │ State        │  │ Priority     │  │ Selection│   │    │
-│  │  └──────────────┘  └──────────────┘  └──────────┘   │    │
-│  │  ┌──────────────┐  ┌──────────────┐                 │    │
-│  │  │ Fairness     │  │ Random       │                 │    │
-│  │  │ Constraints  │  │ Utils        │                 │    │
+│  │  │ index.ts     │  │ bayesianState│  │ penalized│   │    │
+│  │  │ (Dynamic     │  │ (Kalman      │  │ Priority │   │    │
+│  │  │ Fairness     │  │ filter)      │  │ (L4 reg.)│   │    │
+│  │  │ Engine class)│  └──────────────┘  └──────────┘   │    │
+│  │  └──────────────┘  ┌──────────────┐                 │    │
+│  │  ┌──────────────┐  │ softmax      │                 │    │
+│  │  │ fairness     │  │ Selection    │                 │    │
+│  │  │ Constraints  │  │ (probability)│                 │    │
 │  │  └──────────────┘  └──────────────┘                 │    │
+│  │  ┌──────────────┐                                   │    │
+│  │  │ random.ts    │  (SeededRandom class)             │    │
+│  │  │ types.ts     │  (interfaces)                     │    │
+│  │  └──────────────┘                                   │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                            │                                │
-│                            │ State Updates                  │
+│                            │ State Updates / Persistence    │
 │                            ▼                                │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │           Data Persistence Layer                    │    │
-│  │  ┌──────────────┐  ┌──────────────┐                 │    │
-│  │  │ File Storage │  │ IndexedDB    │                 │    │
-│  │  │ (JSON Files) │  │ (Handle Cache)                 │    │
-│  │  └──────────────┘  └──────────────┘                 │    │
+│  │  ┌──────────────────────┐  ┌──────────────────┐     │    │
+│  │  │ fileStorage.ts       │  │ storage.ts       │     │    │
+│  │  │ (File System Access  │  │ (IndexedDB for   │     │    │
+│  │  │  API integration)    │  │  directory handle│     │    │
+│  │  │                      │  │  caching)        │     │    │
+│  │  └──────────────────────┘  └──────────────────┘     │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                            │                                │
 └────────────────────────────┼────────────────────────────────┘
@@ -361,24 +485,38 @@ Koordinator    UI Component    ScheduleEngine    FairnessManager    Person[]    
                     ┌────────────────┐
                     │  File System   │
                     │  (Local Disk)  │
+                    │  + IndexedDB   │
                     └────────────────┘
 
 External Dependencies:
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│   React 19   │  │ TypeScript 5 │  │ TailwindCSS  │
+│   React 19   │  │ TypeScript 5 │  │ TailwindCSS 4│
 └──────────────┘  └──────────────┘  └──────────────┘
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  Radix UI    │  │   date-fns   │  │   Vitest     │
+│  Radix UI    │  │   date-fns   │  │   Vitest 4   │
 └──────────────┘  └──────────────┘  └──────────────┘
+┌──────────────┐  ┌──────────────┐
+│   uuid lib   │  │   Vite 6     │
+└──────────────┘  └──────────────┘
 ```
 
 **Schichten**:
-1. **Presentation Layer**: React UI-Komponenten
-2. **Business Logic Layer**: Orchestrierung, Validation
-3. **Fairness Engine**: Kern-Algorithmen (mathematisch)
-4. **Data Persistence**: File Storage, Caching
+1. **Presentation Layer**: React UI-Komponenten (App, Tabs, Dialogs, UI Library)
+2. **Business Logic Layer (src/lib/)**: Orchestrierung und Utilities
+   - scheduleEngine, personManager (functional modules)
+   - adaptiveFairness (AdaptiveFairnessManager class)
+   - fairnessEngine (legacy compatibility layer)
+3. **Fairness Engine (fairness/ package)**: Kern-Algorithmen (mathematisch)
+   - DynamicFairnessEngine (class)
+   - Functional modules: bayesianState, penalizedPriority, softmaxSelection, constraints
+4. **Data Persistence**: File System Access API + IndexedDB
 
-**Datenfluss**: Top-Down (UI → Logic → Engine → Storage)
+**Datenfluss**: Top-Down (UI → Business Logic → Fairness Engine → Persistence)
+
+**Wichtige Komponenten**:
+- **FolderSelector**: Kritisch für File System Access API-Zugriff (Ordnerauswahl)
+- **fairness/ package**: Separates Paket mit Kern-Algorithmen (wiederverwendbar)
+- **IndexedDB**: Caching von Directory Handles für persistenten Zugriff
 
 ---
 
@@ -396,6 +534,7 @@ External Dependencies:
          │
          ▼
    ┌──────────────┐
+   │ AddPerson    │
    │ Dialog       │
    │ anzeigen     │
    └──────────────┘
@@ -428,14 +567,24 @@ External Dependencies:
                     │
                     ▼
               ┌──────────────┐
+              │ personManager│
+              │ .createPerson│
+              │ () aufrufen  │
+              └──────────────┘
+                    │
+                    ▼
+              ┌──────────────┐
               │ UUID         │
               │ generieren   │
+              │ (uuid lib)   │
               └──────────────┘
                     │
                     ▼
               ┌──────────────┐
               │ TimePeriod   │
               │ erstellen    │
+              │ (Start: heute│
+              │  End: null)  │
               └──────────────┘
                     │
                     ▼
@@ -443,33 +592,56 @@ External Dependencies:
               │ Fairness-    │
               │ Metriken     │
               │ initialisieren│
+              │ (Defaults)   │
               └──────────────┘
                     │
                     ▼
               ┌──────────────┐
-              │ Virtual      │
-              │ History      │
-              │ berechnen    │
+              │ experienceLevel│
+              │ = 'new'      │
+              │ setzen       │
+              └──────────────┘
+                    │
+                    ▼
+              ┌──────────────┐
+              │ Person-Objekt│
+              │ zurückgeben  │
               └──────────────┘
                     │
                     ▼
               ┌──────────────┐
               │ Person zu    │
-              │ Liste        │
+              │ YearData     │
+              │ .people[]    │
               │ hinzufügen   │
               └──────────────┘
                     │
                     ▼
               ┌──────────────┐
-              │ Daten        │
-              │ speichern    │
-              │ (JSON)       │
+              │ YearData     │
+              │ .lastModified│
+              │ aktualisieren│
               └──────────────┘
                     │
                     ▼
               ┌──────────────┐
-              │ UI           │
+              │ saveYearData │
+              │ ToFile()     │
+              │ (async)      │
+              └──────────────┘
+                    │
+                    ▼
+              ┌──────────────┐
+              │ File System  │
+              │ Access API   │
+              │ write JSON   │
+              └──────────────┘
+                    │
+                    ▼
+              ┌──────────────┐
+              │ UI State     │
               │ aktualisieren│
+              │ (re-render)  │
               └──────────────┘
                     │
                     ▼
@@ -480,37 +652,62 @@ External Dependencies:
               └──────────────┘
                     │
                     ▼
+              ┌──────────────┐
+              │ Dialog       │
+              │ schließen    │
+              └──────────────┘
+                    │
+                    ▼
                 ┌─ Ende ─┐
 ```
 
 **Schritte**:
-1. Dialog öffnen
-2. Daten eingeben
-3. Validierung (Name erforderlich)
-4. Person-Objekt erstellen (UUID, TimePeriod)
-5. Fairness-Metriken initialisieren mit Virtual History
-6. Zur Liste hinzufügen
-7. Speichern (JSON-Datei)
-8. UI aktualisieren
-9. Erfolg-Toast anzeigen
+1. Nutzer öffnet AddPersonDialog
+2. Eingabe von Name und Ankunftsdatum
+3. Validierung: Name erforderlich
+4. Aufruf von `personManager.createPerson()` (functional module)
+5. Person-Objekt erstellen:
+   - UUID generieren (uuid library)
+   - TimePeriod-Array mit einem Eintrag (startDate: heute, endDate: null)
+   - FairnessMetrics mit Default-Werten initialisieren
+   - experienceLevel auf 'new' setzen
+   - **KEINE Virtual History** (deprecated system)
+6. Person zu YearData.people[] hinzufügen
+7. lastModified-Timestamp aktualisieren
+8. **Async** saveYearDataToFile() via File System Access API
+9. UI-State aktualisieren (React re-render)
+10. Success-Toast anzeigen
+11. Dialog schließen
 
 ---
 
 ## Legende
 
 **UML-Symbole**:
-- ┌─┐ Box = Klasse/Komponente
-- ─── Linie = Assoziation
-- ──> Pfeil = Abhängigkeit/Datenfluss
-- ◄─── Pfeil links = Rückgabe
-- ╔═══╗ Doppelbox = Loop/Iteration
-- ◊ Raute = Entscheidung
+- ┌─┐ Box = Klasse/Komponente/Modul
+- «class» = Tatsächliche TypeScript/JavaScript-Klasse
+- «module» = Funktionales Modul (Sammlung von Funktionen)
+- «interface» = TypeScript-Interface (keine Klasse)
+- ─── Linie = Assoziation/Beziehung
+- ──> Pfeil = Abhängigkeit/Datenfluss/Import
+- ◄─── Pfeil links = Rückgabe/Response
+- ╔═══╗ Doppelbox = Loop/Iteration/Schleife
+- ◊ Raute = Entscheidung (if/else)
 
 **Kardinalitäten**:
 - 1 = genau eins
 - 0..1 = null oder eins
 - 0..* = null bis viele
 - 1..* = eins bis viele
+- * = beliebig viele
+
+**Beziehungen**:
+- "contains" = Komposition (Teil-von-Beziehung)
+- "uses" = Abhängigkeit (nutzt Funktionalität)
+- "imports" = Import-Beziehung (ES6 modules)
+- "creates" = Erzeugt Instanzen/Objekte
+- «include» = Immer eingebunden
+- «extend» = Optional erweitert
 
 ---
 
@@ -522,6 +719,6 @@ GießPlan - Plant Watering Schedule Management System
 IHK Abschlussprojekt  
 Fachinformatiker/-in für Anwendungsentwicklung
 
-Monat Jahr
+Dezember 2025
 
 </div>

@@ -53,6 +53,18 @@ A sophisticated scheduling system for managing fair weekly plant watering assign
 - **Bayesian Uncertainty**: Confidence interval quantification
 - **Stress Tested**: Validated for 100+ people, 52 weeks
 
+### Advanced Features & Configuration
+
+- **Feature Flags System**: `AdaptiveFairnessManager` supports gradual rollout of fairness features:
+  - `usePenalizedPriority`: Enable priority calculation with mentor penalties (default: true)
+  - `useBayesianUpdates`: Enable Bayesian state tracking (default: true)
+  - `useConstraintChecking`: Enable fairness constraint validation (default: true)
+  - `useSoftmaxSelection`: Enable stochastic Gumbel-Softmax selection (default: false - gradual rollout)
+- **Dual Storage System**:
+  - `fileStorage.ts`: File System Access API for persistent JSON storage
+  - `storage.ts`: LocalStorage utilities for preferences (theme, folder name)
+- **Legacy Compatibility**: `src/lib/legacy/` contains previous fairness implementation for backwards compatibility
+
 **Key Metrics**: 15,000+ LOC • 100+ Tests • 85%+ Coverage
 
 ---
@@ -198,15 +210,17 @@ rm -rf node_modules package-lock.json; npm install
 ```
 React UI (People/Schedule/Manual/Data Tabs)
            ↓
-Business Logic (scheduleEngine, personManager, fileStorage)
+Business Logic (scheduleEngine, personManager)
            ↓
-Fairness Engine (AdaptiveFairnessManager)
+Fairness Engine (AdaptiveFairnessManager + Feature Flags)
   ├── Bayesian State (Random Walk, Confidence)
   ├── Penalized Priority (Fairness, Mentorship)
-  ├── Softmax Selection (Stochastic, Temperature)
+  ├── Softmax Selection (Stochastic, Temperature - configurable)
   └── Constraint Checking (Gini, CV, Rates)
            ↓
-Data Persistence (JSON: yearData_YYYY.json)
+Data Persistence Layer
+  ├── fileStorage.ts → JSON files (yearData_YYYY.json)
+  └── storage.ts → LocalStorage (theme, preferences)
 ```
 
 ### Technology Stack

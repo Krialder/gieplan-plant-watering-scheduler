@@ -43,49 +43,30 @@ Hiermit versichere ich, dass ich die vorliegende Projektdokumentation selbststä
 - 1.1 [Projektbeschreibung](#11-projektbeschreibung)
 - 1.2 [Projektziel](#12-projektziel)
 - 1.3 [Projektumfeld](#13-projektumfeld)
-- 1.4 [Projektbegründung](#14-projektbegründung)
-- 1.5 [Projektschnittstellen](#15-projektschnittstellen)
 
 **2. [Projektplanung](#2-projektplanung)**
 - 2.1 [Projektphasen](#21-projektphasen)
-- 2.2 [Ressourcenplanung](#22-ressourcenplanung)
-- 2.3 [Entwicklungsprozess](#23-entwicklungsprozess)
+- 2.2 [Entwicklungsprozess](#22-entwicklungsprozess)
 
 **3. [Analysephase](#3-analysephase)**
 - 3.1 [Ist-Analyse](#31-ist-analyse)
 - 3.2 [Wirtschaftlichkeitsanalyse](#32-wirtschaftlichkeitsanalyse)
-  - 3.2.1 [„Make or Buy"-Entscheidung](#321-make-or-buy-entscheidung)
-  - 3.2.2 [Projektkosten](#322-projektkosten)
-  - 3.2.3 [Amortisationsdauer](#323-amortisationsdauer)
-- 3.3 [Anwendungsfälle](#33-anwendungsfälle)
-- 3.4 [Anforderungsanalyse](#34-anforderungsanalyse)
+- 3.3 [Anforderungsanalyse](#33-anforderungsanalyse)
 
 **4. [Entwurfsphase](#4-entwurfsphase)**
-- 4.1 [Auswahl des Technologie-Stacks](#41-auswahl-des-technologie-stacks)
+- 4.1 [Technologie-Stack](#41-technologie-stack)
 - 4.2 [Systemarchitektur](#42-systemarchitektur)
-- 4.3 [Datenmodell](#43-datenmodell)
-- 4.4 [Entwurf der Fairness-Algorithmen](#44-entwurf-der-fairness-algorithmen)
-- 4.5 [UI-Konzept](#45-ui-konzept)
-- 4.6 [Pflichtenheft](#46-pflichtenheft)
+- 4.3 [Datenmodell und Fairness-Algorithmen](#43-datenmodell-und-fairness-algorithmen)
 
 **5. [Implementierungsphase](#5-implementierungsphase)**
-- 5.1 [Iterationsplanung](#51-iterationsplanung)
-- 5.2 [Implementierung des Datenmodells](#52-implementierung-des-datenmodells)
-- 5.3 [Implementierung der Fairness-Algorithmen](#53-implementierung-der-fairness-algorithmen)
-- 5.4 [Implementierung der Schedule Engine](#54-implementierung-der-schedule-engine)
-- 5.5 [Implementierung der UI-Komponenten](#55-implementierung-der-ui-komponenten)
-- 5.6 [Implementierung der File Storage](#56-implementierung-der-file-storage)
+- 5.1 [Iterative Entwicklung](#51-iterative-entwicklung)
+- 5.2 [Kernkomponenten](#52-kernkomponenten)
 
 **6. [Testphase](#6-testphase)**
-- 6.1 [Unit-Tests](#61-unit-tests)
-- 6.2 [Integration-Tests](#62-integration-tests)
-- 6.3 [Performance-Tests](#63-performance-tests)
-- 6.4 [Benutzer-Tests](#64-benutzer-tests)
+- 6.1 [Test-Strategie](#61-test-strategie)
+- 6.2 [Ergebnisse](#62-ergebnisse)
 
 **7. [Einführung und Übergabe](#7-einführung-und-übergabe)**
-- 7.1 [Deployment](#71-deployment)
-- 7.2 [Übergabe an den Betrieb](#72-übergabe-an-den-betrieb)
-- 7.3 [Schulung der Anwender](#73-schulung-der-anwender)
 
 **8. [Fazit](#8-fazit)**
 - 8.1 [Soll-/Ist-Vergleich](#81-soll-ist-vergleich)
@@ -94,14 +75,7 @@ Hiermit versichere ich, dass ich die vorliegende Projektdokumentation selbststä
 
 **[Literaturverzeichnis](#literaturverzeichnis)**
 
-**[A Anhang](#a-anhang)**
-- A.1 [Zeit- und Kostenplanung](#a1-zeit-und-kostenplanung)
-- A.2 [Anforderungskatalog](#a2-anforderungskatalog)
-- A.3 [UML-Diagramme](#a3-uml-diagramme)
-- A.4 [Datenmodell](#a4-datenmodell)
-- A.5 [Code-Beispiele](#a5-code-beispiele)
-- A.6 [Test-Dokumentation](#a6-test-dokumentation)
-- A.7 [Amortisationsrechnung](#a7-amortisationsrechnung)
+**[Anhang](#anhang)**
 
 ---
 
@@ -109,32 +83,22 @@ Hiermit versichere ich, dass ich die vorliegende Projektdokumentation selbststä
 
 | Abkürzung | Bedeutung |
 |-----------|-----------|
-| AO | Alte Oldenburger Krankenversicherung AG (Referenz) |
 | API | Application Programming Interface |
 | BBW | Berufsbildungswerk |
 | CSV | Comma-Separated Values |
 | CV | Coefficient of Variation (Variationskoeffizient) |
-| DSL | Domain Specific Language |
 | DSGVO | Datenschutz-Grundverordnung |
-| ER | Entity-Relationship |
-| HMR | Hot Module Replacement |
 | IHK | Industrie- und Handelskammer |
 | JSON | JavaScript Object Notation |
-| JSDoc | JavaScript Documentation |
-| LOC | Lines of Code |
-| MoSCoW | Must have, Should have, Could have, Won't have |
 | SPA | Single-Page Application |
-| SUS | System Usability Scale |
 | TDD | Test-Driven Development |
 | UI | User Interface |
-| UML | Unified Modeling Language |
-| UUID | Universally Unique Identifier |
 
 ---
 
 ## 1. Einleitung
 
-Die folgende Projektdokumentation schildert den Ablauf des IHK-Abschlussprojektes, welches der Autor im Rahmen seiner Ausbildung zum Fachinformatiker mit Fachrichtung Anwendungsentwicklung durchgeführt hat. Ausbildungsbetrieb ist das Rotkreuz-Institut BBW, ein Berufsbildungswerk für berufliche Rehabilitation. Das Institut betreut jährlich ca. 50 Teilnehmer in verschiedenen beruflichen Rehabilitationsmaßnahmen.
+Die folgende Projektdokumentation beschreibt den Ablauf des IHK-Abschlussprojektes im Rahmen der Ausbildung zum Fachinformatiker für Anwendungsentwicklung beim Rotkreuz-Institut BBW, einem Berufsbildungswerk für berufliche Rehabilitation mit ca. 50 Teilnehmern jährlich.
 
 ### 1.1 Projektbeschreibung
 
@@ -142,34 +106,36 @@ Das Rotkreuz-Institut BBW betreut Teilnehmer in beruflichen Rehabilitationsmaßn
 
 Derzeit treten folgende Probleme auf:
 
-**Unfaire Verteilung**: Die Aufgabenverteilung berücksichtigt nicht die individuelle Anwesenheitsdauer der Teilnehmer. Wer länger anwesend ist, erhält proportional nicht mehr Aufgaben als Kurzzeit-Teilnehmer, was zu Ungerechtigkeiten führt.
+**Unfaire Verteilung**: Die Aufgabenverteilung berücksichtigt nicht die individuelle Anwesenheitsdauer der Teilnehmer. Wer länger anwesend ist, erhält proportional nicht mehr Aufgaben als Kurzzeit-Teilnehmer, was zu Ungerechtigkeiten führt. Aktuelle Fairness-Metriken liegen bei Gini-Koeffizient ~0.35 (Ziel: < 0.25).
 
 **Fehlende Mentor-Systematik**: Neue Teilnehmer werden nicht systematisch mit erfahrenen Teilnehmern gepaart, was zu Unsicherheiten bei der Aufgabenausführung führt.
 
 **Intransparenz**: Es existieren keine nachvollziehbaren Fairness-Metriken. Bei Rückfragen, warum bestimmte Teilnehmer häufiger eingeteilt wurden als andere, kann keine objektive Begründung gegeben werden.
 
-**Fehlende Automatisierung**: Abwesenheitszeiten werden nicht automatisch berücksichtigt, und die Erstellung von Auswertungen für Berichte ist mühsam und zeitaufwendig.
+**Fehlende Automatisierung**: Abwesenheitszeiten werden nicht automatisch berücksichtigt, und die Erstellung von Auswertungen für Berichte ist mühsam. Nach 6 Wochen wird die Folie vollständig gelöscht - historische Daten gehen verloren.
 
-Aus diesen Gründen soll ein intelligentes System zur automatisierten Bewässerungsplanung im Laufe dieses Projektes erstellt werden.
+**Zeitaufwand**: Insgesamt ~17h pro Jahr für Planung und Änderungen, was bei einem Koordinator-Stundensatz von 35€/h zu 595€/Jahr führt.
+
+Aus diesen Gründen soll ein intelligentes System zur automatisierten Bewässerungsplanung erstellt werden.
 
 ### 1.2 Projektziel
 
 Ziel des Projektes ist die Entwicklung eines webbasierten Systems zur automatischen, fairen Generierung von Bewässerungsplänen unter Verwendung fortgeschrittener Fairness-Algorithmen. Eine Fairness-Engine ist eine Softwarekomponente, welche dafür ausgelegt ist, Aufgaben gerecht über unterschiedliche Zeiträume hinweg zu verteilen und dabei zeitproportionale Fairness zu gewährleisten.[^1]
 
-Hierbei soll es möglich sein, in einer modernen Web-Oberfläche Teilnehmer zu verwalten, Zeitpläne zu generieren und diese anhand objektiver Metriken zu bewerten. Das System muss dabei folgende Kernfunktionen erfüllen:
+Das System muss folgende Kernfunktionen erfüllen:
 
 1. **Automatische Zeitplan-Generierung** für 1-52 Wochen mit fairer Verteilung
 2. **Zeitproportionale Fairness**: Teilnehmer mit längerer Anwesenheit erhalten proportional mehr Aufgaben
-3. **Mentor-Mentee-Pairing**: Automatische Zuordnung erfahrener Teilnehmer zu Neulingen
+3. **Mentor-Mentee-Pairing**: Automatische Zuordnung erfahrener Teilnehmer (>4 Wochen) zu Neulingen
 4. **Fairness-Metriken**: Einhaltung definierter Schwellwerte (Gini-Koeffizient < 0.25, Variationskoeffizient < 0.30)
 5. **Lokale Datenspeicherung**: Keine Server-Infrastruktur erforderlich
 6. **Export-Funktionalität**: Datenexport in JSON, CSV und Excel-Format
 
-Durch die Implementierung dieser Funktionen soll die Wartbarkeit der Planungsprozesse erheblich erhöht und die Fehleranfälligkeit verringert werden.
+Durch die Implementierung dieser Funktionen soll die Wartbarkeit der Planungsprozesse erheblich erhöht und die Fehleranfälligkeit verringert werden. Die Fairness-Engine nutzt drei fortgeschrittene Algorithmen: Bayesian Random Walk für Zustandsverfolgung, Penalized Priority für Prioritätsberechnung und Gumbel-Softmax für stochastische Team-Auswahl.
 
 ### 1.3 Projektumfeld
 
-Auftraggeber des Projektes ist das Rotkreuz-Institut BBW und dessen Programm-Koordination. Auslöser des Projektes sind die Programm-Koordinatoren, die derzeit mit der manuellen Planung betraut sind.
+Auftraggeber des Projektes ist das Rotkreuz-Institut BBW und dessen Programm-Koordination.
 
 **Betroffene Nutzergruppen**:
 - **Primäre Nutzer**: 2-3 Programm-Koordinatoren (wöchentliche Planung, tägliche Anpassungen)
@@ -182,119 +148,41 @@ Auftraggeber des Projektes ist das Rotkreuz-Institut BBW und dessen Programm-Koo
 - Keine Internet-Verbindung erforderlich (Offline-First Ansatz)
 - Lokale Datenspeicherung über File System Access API
 
-Die Programm-Koordinatoren sind für die Erstellung und Verwaltung der Bewässerungspläne zuständig. Sie definieren, welche Personen zu welcher Zeit verfügbar sind und welche Anforderungen (z.B. Mentor-Pairing) erfüllt sein müssen. Diese Anforderungen ändern sich z.B. bei neuen Teilnehmern, Abgängen oder Programmänderungen.
-
-### 1.4 Projektbegründung
-
-Die Hauptschwachstelle des momentanen Planungssystems ist das hohe Maß an manueller Arbeit, welche beim Erstellen, Ändern und Nachvollziehen von Zeitplänen anfällt. Hierzu muss derzeit ein Koordinator die laminierte Folie zur Hand nehmen, manuell Namen mit abwischbaren Stiften eintragen und dabei im Kopf eine faire Verteilung berücksichtigen. Dies ist ein sehr zeitaufwändiges Unterfangen, da die Komplexität durch verschiedene Anwesenheitsdauern, Mentor-Anforderungen und Fairness-Überlegungen sehr hoch ist.
-
-Die Folie deckt nur 6 Wochen ab und wird danach vollständig gelöscht - historische Daten gehen verloren. Eine manuelle Planung ohne objektive Metriken kann zu ungewollten Seiteneffekten führen, wie z.B. der Überbelastung einzelner Personen oder der systematischen Benachteiligung von Langzeit-Teilnehmern. Ebenso sind Auswertungen über die Fairness und historische Daten derzeit nicht möglich, da keine digitale Datenbasis existiert und die physische Folie nach 6 Wochen gelöscht wird.
-
-Ein weiteres Problem ist, dass es durch die derzeitige Intransparenz nicht möglich ist, eine Aussage darüber zu treffen, ob die Verteilung über längere Zeiträume fair war. Dies führt zu Unzufriedenheit bei Teilnehmern und erschwert die Argumentation bei Rückfragen.
-
-**Quantifizierbare Probleme**:
-- Zeitaufwand: 30 Minuten pro Monat (6h/Jahr)
-- Fehlerquote: Geschätzt 10-15% bei manueller Planung
-- Fairness-Gini: Aktuell ca. 0.35 (Ziel: < 0.25)
-- Keine historische Datenanalyse möglich
-- Keine automatische Berücksichtigung von Abwesenheiten
-
-Aufgrund dieser Probleme und manuellen Arbeiten haben sich die Programm-Koordinatoren dazu entschlossen, die Entwicklung eines automatisierten Systems in Auftrag zu geben.
-
-### 1.5 Projektschnittstellen
-
-Damit die generierten Zeitpläne genutzt werden können, muss im Laufe des Projektes eine klare Datenschnittstelle definiert werden. Das System arbeitet vollständig eigenständig und benötigt keine Integration in bestehende Systeme.
-
-**Externe Schnittstellen**:
-- **File System Access API**: Moderne Browser-API für lokale Dateiverwaltung
-- **Excel/CSV Export**: Kompatibilität mit Microsoft Excel und LibreOffice
-- **JSON Export**: Maschinenlesbare Datenexporte für potenzielle zukünftige Integrationen
-
-**Interne Schnittstellen**:
-- **Fairness Engine API**: Schnittstelle zwischen UI und Algorithmen
-- **Data Layer**: Schnittstelle für Datenpersistenz und -verwaltung
-- **Person Manager**: CRUD-Operationen für Teilnehmerverwaltung
-
-**Datenschutz-Schnittstelle**:
-Das System muss DSGVO-konform arbeiten. Alle personenbezogenen Daten werden ausschließlich lokal gespeichert. Es erfolgt keine Datenübertragung an Server oder Cloud-Dienste. Die Verantwortung für Datensicherung und Backup liegt beim Anwender.
+Die Programm-Koordinatoren sind für die Erstellung und Verwaltung der Bewässerungspläne zuständig. Sie definieren, welche Personen zu welcher Zeit verfügbar sind und welche Anforderungen erfüllt sein müssen.
 
 ---
 
 ## 2. Projektplanung
 
-In der Projektplanung wurde die notwendige Zeit und die benötigten Ressourcen sowie ein strukturierter Ablauf für die Durchführung des Projektes geplant. Die Planung orientiert sich an den IHK-Vorgaben von maximal 70 Stunden Projektdauer.
+In der Projektplanung wurde die notwendige Zeit und die benötigten Ressourcen sowie ein strukturierter Ablauf für die Durchführung des Projektes geplant. Die Planung orientiert sich an den IHK-Vorgaben von maximal 80 Stunden Projektdauer.
 
 ### 2.1 Projektphasen
 
-Für die Umsetzung des Projektes standen dem Autor 70 Stunden zur Verfügung. Diese wurden vor Projektbeginn auf verschiedene Phasen verteilt, die während der Softwareentwicklung durchlaufen werden. Eine grobe Zeitplanung sowie die Hauptphasen lassen sich der folgenden Tabelle entnehmen:
+Die Projektdauer umfasste 80 Stunden, verteilt auf sechs Hauptphasen:
 
-| Projektphase | Geplante Zeit | Prozent |
-|--------------|---------------|---------|
-| Analyse | 8 h | 11% |
-| Entwurf | 10 h | 14% |
-| Implementierung | 35 h | 50% |
-| Testing | 10 h | 14% |
-| Dokumentation | 5 h | 7% |
-| Abnahme und Deployment | 2 h | 3% |
-| **Gesamt** | **70 h** | **100%** |
+| Projektphase | Geplant | Ist | Differenz |
+|--------------|---------|-----|-----------||
+| Analyse | 10 h | 10 h | 0 h |
+| Entwurf | 12 h | 12 h | 0 h |
+| Implementierung | 40 h | 41 h | +1 h |
+| Testing | 11 h | 11 h | 0 h |
+| Dokumentation | 5 h | 4 h | -1 h |
+| Abnahme/Deployment | 2 h | 2 h | 0 h |
+| **Gesamt** | **80 h** | **80 h** | **0 h** |
 
-**Tabelle 1: Grobe Zeitplanung**
+Die minimale Überschreitung bei der Implementierung (+1h) wurde durch Zeitersparnis bei der Dokumentation (-1h) kompensiert, da diese parallel zur Entwicklung erfolgte. Die detaillierte Zeitplanung mit Gantt-Diagramm, Meilensteinplanung und Ressourcenübersicht befindet sich in **Anhang A.1: Zeit- und Kostenplanung**.
 
-Die einzelnen Hauptphasen wurden in kleinere Unterphasen zerlegt, um eine detaillierte Kontrolle des Projektfortschritts zu ermöglichen. Eine vollständige Übersicht dieser Phasen mit detailliertem Gantt-Diagramm und Meilensteinplanung befindet sich im **Anhang A.1: Zeit- und Kostenplanung**.
+**Ressourcen-Zusammenfassung**:
+- **Hardware**: Desktop-PC (AMD Ryzen 5, 16GB RAM, Windows 11)
+- **Software**: VS Code, Node.js 20.x, React 19, TypeScript 5.7, Vite 6, Vitest 4 (alle Open Source)
+- **Personal**: 1 Auszubildender (80h), 1 Betreuer (5h), 3 Test-Nutzer (3h)
+- **Gesamtkosten**: 2.493€ (einmalig)
 
-### 2.2 Ressourcenplanung
+### 2.2 Entwicklungsprozess
 
-In der folgenden Übersicht sind alle Ressourcen aufgelistet, die für das Projekt eingesetzt wurden. Dies umfasst Hard- und Softwareressourcen sowie das Personal. Bei der Auswahl der verwendeten Software wurde darauf geachtet, dass diese kostenfrei (z.B. als Open Source) zur Verfügung steht. Dadurch wurden anfallende Projektkosten möglichst gering gehalten.
+**Agile Softwareentwicklung**: Der Autor entschied sich für einen iterativen Entwicklungsprozess in Zyklen von 1-2 Wochen. Bei der agilen Softwareentwicklung geht es darum, möglichst schnell auf sich ändernde Anforderungen reagieren zu können.[^1] Die Entwicklung geschieht in kurzen Abschnitten (Iterationen), nach denen jeweils ein funktionsfähiges Artefakt entsteht, welches den Koordinatoren gezeigt werden kann. Dies ermöglichte frühes Feedback und flexible Anpassung an geänderte Anforderungen.
 
-**Hardware-Ressourcen**:
-- Büroarbeitsplatz mit Desktop-PC
-- Hardware: AMD Ryzen 5 5600G Radeon Graphics, 16GB RAM, 512GB SSD
-- Betriebssystem: Windows 11 Pro
-- Testgeräte: Desktop
-
-**Software-Ressourcen**:
-- **Entwicklung**: Visual Studio Code 1.85, Node.js 20.x, Git 2.42
-- **Frameworks**: React 19.0, TypeScript 5.7, Vite 6.3
-- **Testing**: Vitest 4.0, @testing-library/react 16.x
-- **UI**: TailwindCSS 4.1, Radix UI 1.x
-- **Dokumentation**: Markdown, PlantUML für Diagramme
-- **Versionsverwaltung**: Git mit GitHub Repository
-- **Projektmanagement**: GitHub Issues, Markdown-basierte Todo-Listen
-
-**Personal-Ressourcen**:
-- **Entwickler**: 1 Auszubildender (70h Vollzeit)
-- **Fachlicher Betreuer**: Ausbilder BBW (5h beratend)
-- **Test-Nutzer**: 3 Programm-Koordinatoren (3h sporadisch)
-- **Code-Reviewer**: Senior-Entwickler (2h)
-
-**Kostenplanung**:
-
-Die detaillierte Kostenaufstellung mit Personalkosten, Ressourcenplanung und erwarteten Einsparungen ist im **Anhang A.1: Zeit- und Kostenplanung** dokumentiert.
-
-**Zusammenfassung**:
-- Gesamtkosten: 2.335€ (einmalig)
-- Erwartete jährliche Einsparung: 525€
-- Amortisation: ca. 4,5 Jahre
-
-### 2.3 Entwicklungsprozess
-
-Bevor mit der Realisierung des Projektes begonnen werden konnte, musste sich der Autor für einen geeigneten Entwicklungsprozess entscheiden. Dieser definiert die Vorgehensweise, nach der die Umsetzung erfolgen soll.
-
-**Agile Softwareentwicklung**:
-
-Im Zuge des Projektes entschied sich der Autor für einen agilen Entwicklungsprozess. Bei der agilen Softwareentwicklung geht es darum, möglichst schnell auf sich ändernde Anforderungen reagieren zu können.[^2] Dies unterscheidet sich insofern von der klassischen Vorgehensweise, da das zu entwickelnde System nicht im Voraus in allen Einzelheiten genau geplant und dann in einem einzelnen langen Durchgang entwickelt wird.
-
-Bei der agilen Softwareentwicklung steht ein iterativer Entwicklungsprozess im Mittelpunkt. Die Entwicklung geschieht in kurzen Abschnitten (Iterationen), nach denen jeweils ein funktionsfähiges Artefakt entsteht, welches den Koordinatoren gezeigt werden kann. Sollten diese einen Anpassungswunsch haben, kann auf diesen während der nächsten Iteration schnell reagiert werden.[^3]
-
-**Vorteile für dieses Projekt**:
-- Frühes Feedback von Programm-Koordinatoren
-- Flexible Anpassung an geänderte Anforderungen
-- Kontinuierliche Verbesserung der Benutzerfreundlichkeit
-- Risikoreduzierung durch frühe Problemerkennung
-
-**Test-Driven Development (TDD)**:
-
-Die gesamte Implementierungsphase wurde durch Test-Driven Development begleitet. Bei TDD wird zunächst ein fehlschlagender Test geschrieben, dann die minimale Implementierung erstellt, um den Test zu bestehen, und schließlich der Code refaktoriert.[^4]
+**Test-Driven Development (TDD)**: Die gesamte Implementierung wurde durch TDD begleitet. Bei TDD wird zunächst ein fehlschlagender Test geschrieben, dann die minimale Implementierung erstellt, um den Test zu bestehen, und schließlich der Code refaktoriert.[^2] 
 
 **TDD-Workflow**:
 1. **Red**: Test schreiben, der fehlschlägt
@@ -302,52 +190,19 @@ Die gesamte Implementierungsphase wurde durch Test-Driven Development begleitet.
 3. **Refactor**: Code verbessern, ohne Funktionalität zu ändern
 4. Wiederholen für nächstes Feature
 
-**Vorteile**:
-- Hohe Testabdeckung (Ziel: > 80%)
-- Dokumentation durch Tests
-- Frühe Fehlererkennung
-- Erleichtert Refactoring
+Dieser Ansatz führte zu einer Testabdeckung von 90% und erleichterte spätere Änderungen erheblich.
 
-**Versionsverwaltung mit Git**:
-
-Das gesamte Projekt wird in Git versioniert mit aussagekräftigen Commit-Messages. Die Entwicklung folgt einem Branch-basierten Workflow:
-
-- **main**: Produktionsreife Versionen
-- **develop**: Aktuelle Entwicklungsversion
-- **feature/**: Feature-Branches für neue Funktionen
-- **bugfix/**: Bugfix-Branches für Fehlerbehebungen
-
-**Commit-Konvention**:
-```
-type(scope): subject
-
-body (optional)
-
-footer (optional)
-```
-
-Beispiel: `feat(fairness): implement Bayesian state tracking algorithm`
-
-**Dokumentation**:
-
-Die Dokumentation wird parallel zur Entwicklung erstellt und umfasst:
-- **API-Dokumentation**: JSDoc für alle öffentlichen APIs
-- **Benutzerhandbuch**: USER_GUIDE.md mit Screenshots
-- **Architektur-Dokumentation**: ARCHITECTURE.md
-- **IHK-Projektdokumentation**: Dieses Dokument
-- **README.md**: Installation und Quick-Start-Guide
-
-Diese kontinuierliche Dokumentation gewährleistet, dass keine wichtigen Details vergessen werden und die Dokumentation stets aktuell ist.
+**Versionsverwaltung mit Git**: Das gesamte Projekt wurde in Git versioniert mit einem Branch-basierten Workflow (`main` für produktionsreife Versionen, `develop` für Entwicklung, `feature/*` für neue Funktionen) und aussagekräftigen Commit-Messages gemäß Konvention (`feat:`, `fix:`, `test:`).
 
 ---
 
 ## 3. Analysephase
 
-Nach der Projektplanung wurde eine umfassende Analyse durchgeführt. Diese dient der Ermittlung des Ist-Zustandes und der Definition konkreter Anforderungen. Hierbei wird vor allem auch der wirtschaftliche Aspekt des Projektes betrachtet.
+Nach der Projektplanung wurde eine umfassende Analyse durchgeführt. Diese dient der Ermittlung des Ist-Zustandes und der Definition konkreter Anforderungen sowie der wirtschaftlichen Bewertung.
 
 ### 3.1 Ist-Analyse
 
-Wie bereits im Abschnitt 1.1 (Projektbeschreibung) erwähnt wurde, erhält das BBW wöchentlich die Aufgabe, Pflanzen zu bewässern. Für diese Aufgabe wird von den Programm-Koordinatoren ein Zeitplan erstellt, der Teilnehmer entweder individuell oder in Teams zuweist.
+Wie bereits in Abschnitt 1.1 erwähnt, erstellen die Programm-Koordinatoren wöchentlich Bewässerungspläne für die Teilnehmer.
 
 **Aktueller Prozess** (30 Min alle 6 Wochen):
 1. Koordinator nimmt laminierte 6-Wochen-Folie zur Hand
@@ -359,85 +214,40 @@ Wie bereits im Abschnitt 1.1 (Projektbeschreibung) erwähnt wurde, erhält das B
 7. Nach 6 Wochen: Folie komplett löschen und neu erstellen
 8. Bei Krankheit/Urlaub während der 6 Wochen: Namen radieren, neu schreiben (oft unleserlich)
 
-**Identifizierte Probleme**:
-
-Im Laufe der Ist-Analyse wurden folgende konkrete Probleme identifiziert:
+**Quantifizierte Probleme**:
 
 **1. Unfaire Verteilung** (Kritisch):
 - Teilnehmer mit 365 Tagen Anwesenheit vs. 30 Tagen erhalten gleich viele Aufgaben
 - Keine Berücksichtigung der zeitproportionalen Fairness
-- Führt zu Unzufriedenheit und Beschwerden
-- Aktuelle Fairness-Metriken:
-  - Gini-Koeffizient: ~0.35 (Ziel: < 0.25)
-  - Variationskoeffizient: ~0.42 (Ziel: < 0.30)
+- Aktuelle Fairness-Metriken: Gini-Koeffizient ~0.35 (Ziel: < 0.25), Variationskoeffizient ~0.42 (Ziel: < 0.30)
 
-**2. Fehlende Mentor-Systematik** (Hoch):
-- Neue Teilnehmer (< 4 Wochen) werden nicht systematisch mit Mentoren gepaart
-- Führt zu Unsicherheiten und Fehlern bei der Ausführung
-- Keine Verfolgung, welche Mentoren wie oft als solche eingeteilt werden
-
-**3. Hoher Zeitaufwand** (Hoch):
+**2. Hoher Zeitaufwand** (Hoch):
 - 30 Minuten alle 6 Wochen für Neuerstellung = ~4h pro Jahr
 - Zusätzlich ~15 Minuten pro Woche für Änderungen = ~13h pro Jahr
-- Gesamt: ~17h pro Jahr
-- Bei 35€/h Koordinator-Stundensatz = 595€/Jahr nur für Planung
-- Zeit fehlt für wertvollere Tätigkeiten (Betreuung, Coaching)
+- Gesamt: ~17h pro Jahr bei 35€/h = 595€/Jahr nur für Planung
 
-**4. Fehleranfälligkeit** (Mittel):
+**3. Fehleranfälligkeit** (Mittel):
 - Bei 50%+ Fluktuation pro Jahr häufige Planungsänderungen
-- Häufiges Radieren und Neuschreiben führt zu unleserlichen Stellen
 - Vergessene Abwesenheiten führen zu Lücken im Plan
 - Physische Folie kann beschädigt oder verloren gehen
 
-**5. Intransparenz** (Mittel):
+**4. Intransparenz** (Mittel):
 - Keine objektiven Fairness-Metriken
 - Keine Nachvollziehbarkeit: "Warum wurde Person X schon wieder eingeteilt?"
-- Keine historische Datenanalyse möglich - Folie wird nach 6 Wochen gelöscht
 - Daten vor der aktuellen 6-Wochen-Periode sind komplett verloren
-
-**6. Fehlende Auswertungen** (Niedrig):
-- Keine Statistiken über Verteilung
-- Keine Exportmöglichkeit für Berichte
-- Manuelle Zählungen zeitaufwendig
-
-**Dokumentation der Ist-Situation**:
-
-Im Rahmen der Ist-Analyse wurde die aktuelle laminierte Folie analysiert und dokumentiert. Die Folie hat folgende Struktur:
-
-```
-+-------+------------+------------+------------+...+------------+
-| KW    | KW 1       | KW 2       | KW 3       |...| KW 6       |
-+-------+------------+------------+------------+...+------------+
-| Datum | 06.01.2025 | 13.01.2025 | 20.01.2025 |...| 10.02.2025 |
-+-------+------------+------------+------------+...+------------+
-| Haupt1| [Name]     | [Name]     | [Name]     |...| [Name]     |
-+-------+------------+------------+------------+...+------------+
-| Haupt2| [Name]     | [Name]     | [Name]     |...| [Name]     |
-+-------+------------+------------+------------+...+------------+
-| Ers. 1| [Name]     | [Name]     | [Name]     |...| [Name]     |
-+-------+------------+------------+------------+...+------------+
-| Ers. 2| [Name]     | [Name]     | [Name]     |...| [Name]     |
-+-------+------------+------------+------------+...+------------+
-```
-
-Die Namen werden handschriftlich mit abwischbaren Stiften eingetragen. Nach 6 Wochen wird die komplette Folie gelöscht und neu beschriftet. Es existiert keine automatische Berechnung, kein Fairness-Tracking und keine digitale Archivierung.
 
 ### 3.2 Wirtschaftlichkeitsanalyse
 
-Aufgrund der Probleme des momentanen Prozesses, die in Abschnitt 3.1 (Ist-Analyse) erläutert wurden, ist die Entwicklung des automatisierten Systems erforderlich. Die wirtschaftliche Betrachtung und die Entscheidung, ob die Realisierung des Projektes gerechtfertigt ist, wird in den folgenden Abschnitten getroffen.
+Aufgrund der Probleme des momentanen Prozesses ist die Entwicklung des automatisierten Systems erforderlich. Die wirtschaftliche Betrachtung wird in den folgenden Abschnitten getroffen.
 
-#### 3.2.1 „Make or Buy"-Entscheidung
+**"Make or Buy"-Entscheidung**:
 
-Für die Entscheidung zwischen Eigenentwicklung und Kauf eines Produktes wurden verschiedene Optionen geprüft:
+Für die Entscheidung zwischen Eigenentwicklung und Kauf wurden verschiedene Optionen geprüft:
 
 **Option 1: Kauf einer Standardsoftware**
 - Recherche nach Planungstools für Aufgabenverteilung
 - Gefundene Produkte: Doodle, When2Meet, Microsoft Bookings
-- **Bewertung**: Keine der Lösungen unterstützt:
-  - Zeitproportionale Fairness-Algorithmen
-  - Mentor-Mentee-Pairing
-  - Historisches Fairness-Tracking
-  - Offline-Betrieb ohne Server
+- **Bewertung**: Keine der Lösungen unterstützt zeitproportionale Fairness-Algorithmen, Mentor-Mentee-Pairing oder historisches Fairness-Tracking
 - **Kosten**: 5-15€/Monat/Nutzer = 180-540€/Jahr
 - **Fazit**: Nicht geeignet
 
@@ -448,156 +258,76 @@ Für die Entscheidung zwischen Eigenentwicklung und Kauf eines Produktes wurden 
 - **Fazit**: Zu teuer für BBW-Budget
 
 **Option 3: Eigenentwicklung (Make)**
-- Kosten: 2.335€ (einmalig)
+- Kosten: 2.493€ (einmalig)
 - Volle Kontrolle über Funktionalität
 - Anpassbar an spezifische BBW-Anforderungen
 - Ausbildungszweck erfüllt
 - **Fazit**: Wirtschaftlich sinnvoll ✓
 
-**Entscheidung**: Eigenentwicklung wurde gewählt, da keine Standardsoftware die spezifischen Anforderungen erfüllt und die Kosten deutlich geringer sind als bei externer Beauftragung.
+**Entscheidung**: Eigenentwicklung wurde gewählt, da keine Standardsoftware die spezifischen Anforderungen erfüllt und die Kosten deutlich geringer sind.
 
-#### 3.2.2 Projektkosten
+**Amortisationsrechnung**:
+- **Projektkosten**: 2.493€ (einmalig)
+- **Personalkosten**: 1.263€ (80h × 15,79€/h Auszubildender)
+- **Ressourcenkosten**: 1.230€ (Infrastruktur, anteilig)
+- **Jährliche Einsparung**: 525€ (Zeit + reduzierte Fehlerkosten)
+- **Amortisation**: 4,75 Jahre ≈ 57 Monate
+- **ROI nach 5 Jahren**: +5%
+- **ROI nach 10 Jahren**: +110%
 
-Die Projektkosten wurden bereits in Abschnitt 2.2 (Ressourcenplanung) detailliert aufgeführt. Zusammenfassend:
-
-- **Gesamtkosten**: 2.335€
-- **Personalkosten**: 1.105€ (47%)
-- **Ressourcenkosten**: 1.230€ (53%)
-- **Hardware/Software**: 0€ (vorhanden/Open Source)
-
-Alle verwendeten Softwarekomponenten sind Open Source und verursachen keine Lizenzkosten. Die Hardware-Infrastruktur ist vorhanden und wird für die Entwicklung mitgenutzt.
-
-#### 3.2.3 Amortisationsdauer
-
-Die detaillierte Amortisationsrechnung mit grafischer Darstellung, ROI-Analyse über 10 Jahre und Sensitivitätsanalyse (optimistisches, realistisches, pessimistisches Szenario) ist im **Anhang A.7: Amortisationsrechnung** dokumentiert.
-
-**Zusammenfassung**:
-- Projektkosten: 2.335€ (einmalig)
-- Jährliche Einsparung: 525€ (konservative Rechnung)
-- Amortisation: 4,45 Jahre ≈ 53 Monate
-- ROI nach 5 Jahren: +12%
-- ROI nach 10 Jahren: +125%
+Die detaillierte Amortisationsrechnung mit grafischer Darstellung ist im **Anhang A.7: Amortisationsrechnung** dokumentiert.
 
 **Fazit**: Das Projekt ist wirtschaftlich vertretbar. Bei Berücksichtigung der intangiblen Benefits (Fairness-Verbesserung, Transparenz, professionelles Image) ist die Investition klar gerechtfertigt.
 
-### 3.3 Anwendungsfälle
+### 3.3 Anforderungsanalyse
 
-Um eine grobe Übersicht über die abzudeckenden Anwendungsfälle zu erhalten, wurde im Zuge der Analysephase ein Use-Case-Diagramm erstellt. Hierbei wurden die betroffenen Akteure identifiziert und deren Anforderungen an das Projekt ermittelt.
+Am Ende der Analysephase wurde eine umfassende Anforderungsanalyse durchgeführt. Die Anforderungen wurden nach der MoSCoW-Methode priorisiert: Must have (kritisch), Should have (wichtig), Could have (wünschenswert), Won't have (ausgeschlossen).
 
-**Identifizierte Akteure**:
-1. **Koordinator** (Primärer Akteur): Plant Zeitpläne, verwaltet Personen, passt Pläne an
-2. **System** (Sekundärer Akteur): Berechnet Fairness, generiert Zeitpläne
-3. **Teilnehmer** (Stakeholder): Nutznießer fairer Verteilung
+---
 
-**Hauptanwendungsfälle**:
+### 3.3 Anforderungsanalyse
 
-**UC-01: Person verwalten**
-- **Akteur**: Koordinator
-- **Vorbedingung**: System gestartet
-- **Beschreibung**: Koordinator fügt neue Person hinzu, bearbeitet Daten oder markiert Abgang
-- **Nachbedingung**: Personen-Datenbank aktualisiert
+Am Ende der Analysephase wurde eine umfassende Anforderungsanalyse durchgeführt. Die Anforderungen wurden nach der MoSCoW-Methode priorisiert: Must have (kritisch), Should have (wichtig), Could have (wünschenswert), Won't have (ausgeschlossen).
 
-**UC-02: Zeitplan generieren**
-- **Akteur**: Koordinator
-- **Vorbedingung**: Mindestens 1 Person vorhanden
-- **Beschreibung**: Koordinator konfiguriert Zeitplan (Wochen, Startdatum, Mentor-Anforderung) und System generiert fairen Plan
-- **Nachbedingung**: Zeitplan erstellt und angezeigt
-- **Include**: UC-06 (Fairness berechnen)
+**Funktionale Anforderungen (Must-Have)**:
+- **Personenverwaltung**: Person mit Name und Ankunftsdatum erstellen, Abgangsdatum erfassen, Rückkehr nach Abgang ermöglichen (Mehrfachteilnahme), Erfahrungslevel automatisch bestimmen
+- **Zeitplan-Generierung**: 1-52 Wochen konfigurierbar, Startdatum frei wählbar, Fairness-Algorithmus anwenden (Bayesian, Priority, Softmax), Mentor-Anforderung optional
+- **Fairness-Metriken**: Gini < 0.25, CV < 0.30, Bayesian State Tracking
+- **Manuelle Anpassungen**: Person ersetzen, zwei Personen tauschen, Kommentare hinzufügen
+- **Datenmanagement**: JSON/CSV/Excel-Export, lokale Speicherung
 
-**UC-03: Zeitplan manuell anpassen**
-- **Akteur**: Koordinator
-- **Vorbedingung**: Zeitplan existiert
-- **Beschreibung**: Koordinator ersetzt Person oder tauscht Personen
-- **Nachbedingung**: Zeitplan aktualisiert, Fairness neu berechnet
-- **Include**: UC-06 (Fairness berechnen)
+**Nicht-funktionale Anforderungen**:
+- **Performance**: < 100ms für 10 Personen/25 Wochen, < 5s für 100 Personen/52 Wochen
+- **Qualität**: Test-Coverage > 80%, TypeScript Strict Mode
+- **Datenschutz**: 100% lokale Datenspeicherung (DSGVO-konform)
+- **Benutzerfreundlichkeit**: WCAG 2.1 Level AA Accessibility, intuitive Tab-basierte UI
 
-**UC-04: Daten exportieren**
-- **Akteur**: Koordinator
-- **Vorbedingung**: Zeitplan oder Personen-Daten vorhanden
-- **Beschreibung**: Koordinator exportiert Daten in JSON, CSV oder Excel
-- **Nachbedingung**: Datei lokal gespeichert
-
-**UC-05: Fairness-Metriken einsehen**
-- **Akteur**: Koordinator
-- **Vorbedingung**: Personen vorhanden
-- **Beschreibung**: Koordinator sieht Gini, CV, Zuweisungsraten pro Person
-- **Nachbedingung**: Metriken angezeigt
-
-**UC-06: Fairness berechnen** (Include)
-- **Akteur**: System
-- **Beschreibung**: System berechnet Bayesian States, Priorities, Softmax-Wahrscheinlichkeiten
-- **Nachbedingung**: Fairness-Metriken aktualisiert
-
-Das vollständige Use-Case-Diagramm mit allen Akteuren, Use Cases, Include- und Extend-Beziehungen befindet sich im **Anhang A.3: UML-Diagramme**.
-
-### 3.4 Anforderungsanalyse
-
-Am Ende der Analysephase wurde eine umfassende Anforderungsanalyse durchgeführt. Die Anforderungen wurden nach der MoSCoW-Methode priorisiert:[^5]
-- **Must have**: Kritisch für Projektabnahme
-- **Should have**: Wichtig, aber nicht kritisch
-- **Could have**: Wünschenswert
-- **Won't have**: Bewusst ausgeschlossen
-
-Der vollständige Anforderungskatalog mit allen funktionalen und nicht-funktionalen Anforderungen, User Stories, Akzeptanzkriterien und MoSCoW-Priorisierung befindet sich im **Anhang A.2: Anforderungskatalog**.
-
-**Zusammenfassung der wichtigsten Anforderungen**:
-- Personenverwaltung mit Mehrfachteilnahme-Support
-- Zeitplan-Generierung (1-52 Wochen) mit Fairness-Algorithmen
-- Gini-Koeffizient < 0.25, Variationskoeffizient < 0.30
-- Automatisches Mentor-Mentee-Pairing
-- Manuelle Anpassungen (Ersetzen, Tauschen)
-- JSON/CSV-Export für Datensicherung und Excel-Kompatibilität
-- Performance: < 100ms für 10 Personen, < 5s für 100 Personen
-- 100% lokale Datenspeicherung (DSGVO-konform)
-- Test-Coverage > 80%
+Der vollständige Anforderungskatalog mit User Stories, Akzeptanzkriterien und MoSCoW-Priorisierung befindet sich in **Anhang A.2: Anforderungskatalog**.
 
 ---
 
 ## 4. Entwurfsphase
 
-Als Folge der Analysephase wurde vor der eigentlichen Implementierung des Projektes eine umfassende Entwurfsphase durchgeführt. Hierbei wird entworfen, wie das System später aussehen soll und wie dies technisch umzusetzen ist. Am Ende der Entwurfsphase entsteht das Pflichtenheft, welches den Auftraggebern des Projektes vorgelegt wird.
+Als Folge der Analysephase wurde vor der Implementierung eine umfassende Entwurfsphase durchgeführt. Hierbei wird entworfen, wie das System später aussehen soll und wie dies technisch umzusetzen ist.
 
-### 4.1 Auswahl des Technologie-Stacks
+### 4.1 Technologie-Stack
 
-Die Auswahl der Technologien wurde anhand folgender Kriterien durchgeführt:
-1. **Keine Server-Infrastruktur** (Kostenreduktion, Datenschutz)
-2. **Moderne, zukunftssichere Technologien** (Wartbarkeit)
-3. **Open Source** (keine Lizenzkosten)
-4. **Gute Dokumentation und Community** (Lernkurve, Support)
-5. **Performance** (< 5s für 100 Personen, 52 Wochen)
+Die Auswahl der Technologien erfolgte nach folgenden Kriterien: Keine Server-Infrastruktur (Kostenreduktion, Datenschutz), moderne zukunftssichere Technologien (Wartbarkeit), Open Source (keine Lizenzkosten), gute Dokumentation und Community (Lernkurve, Support), Performance (< 5s für 100 Personen, 52 Wochen).
 
-**Frontend-Entscheidungen**:
+**Kernentscheidungen**:
 
 | Kategorie | Technologie | Begründung |
 |-----------|-------------|------------|
-| **Framework** | React 19.0 | Modern, große Community, performant, gut dokumentiert |
-| **Sprache** | TypeScript 5.7 | Type-Safety, bessere Wartbarkeit, IDE-Support |
-| **Build-Tool** | Vite 6.3 | Schnellste Build-Zeiten (10x schneller als Webpack), HMR |
-| **Styling** | TailwindCSS 4.1 | Utility-First, konsistentes Design, kleine Bundle-Size |
-| **UI-Komponenten** | Radix UI 1.x | Accessible (WCAG 2.1), unstyled primitives, flexibel |
-| **State Management** | React Hooks | Einfach, keine zusätzliche Bibliothek, ausreichend |
-
-**Testing & Qualität**:
-
-| Kategorie | Technologie | Begründung |
-|-----------|-------------|------------|
-| **Testing** | Vitest 4.0 | Vite-native, schnell, kompatibel zu Jest-API |
-| **React Testing** | @testing-library/react | Best Practice, fokussiert auf User-Perspektive |
-| **Coverage** | @vitest/coverage-v8 | Integriert, schnell, präzise |
-
-**Datenspeicherung**:
-
-| Kategorie | Technologie | Begründung |
-|-----------|-------------|------------|
-| **API** | File System Access API | Moderne Browser-API, kein Server nötig |
-| **Format** | JSON | Menschenlesbar, gut supported, einfach zu parsen |
-| **Fallback** | Download-API | Für Browser ohne FSAPI-Support (Firefox) |
+| **Framework** | React 19 | Modern, große Community, performant |
+| **Sprache** | TypeScript 5.7 | Type-Safety, bessere Wartbarkeit |
+| **Build-Tool** | Vite 6 | 10x schneller als Webpack, HMR |
+| **Styling** | TailwindCSS 4 | Utility-First, konsistentes Design |
+| **UI-Komponenten** | Radix UI 1.x | Accessible (WCAG 2.1), unstyled primitives |
+| **Testing** | Vitest 4 | Vite-native, schnell |
+| **Datenspeicherung** | File System Access API | Lokale Verwaltung ohne Server |
 
 **Alternative Überlegungen**:
-
-- **Vue.js**: Abgelehnt wegen geringerer TypeScript-Integration
-- **Svelte**: Abgelehnt wegen kleinerer Community und weniger Libraries
-- **Angular**: Abgelehnt wegen zu hoher Komplexität für Projektumfang
+- **Vue.js/Svelte**: Abgelehnt wegen geringerer TypeScript-Integration bzw. kleinerer Community
 - **Backend (Node.js/Express)**: Abgelehnt wegen unnötiger Komplexität, Kosten, Datenschutz
 
 ### 4.2 Systemarchitektur
@@ -605,290 +335,67 @@ Die Auswahl der Technologien wurde anhand folgender Kriterien durchgeführt:
 **Architektur-Entscheidung**: Single-Page Application (SPA) mit Schichtenarchitektur
 
 **Begründung**:
-- ✅ Keine Server-Infrastruktur = keine laufenden Kosten
-- ✅ Datenschutz durch lokale Speicherung (DSGVO-konform)
-- ✅ Schnelle Reaktionszeiten (kein Netzwerk-Latenz)
-- ✅ Offline-Fähigkeit (keine Internet-Verbindung nötig)
-- ✅ Einfache Installation (statische Dateien, npm run dev)
+- Keine Server-Infrastruktur = keine laufenden Kosten
+- Datenschutz durch lokale Speicherung (DSGVO-konform)
+- Schnelle Reaktionszeiten (kein Netzwerk-Latenz)
+- Offline-Fähigkeit
+- Einfache Installation
 
 **Schichtenmodell**:
 
-```
-┌─────────────────────────────────────────────┐
-│    Präsentationsschicht (Layer 1)           │
-│    React Components, TailwindCSS, Radix UI  │
-│    - PeopleTab, ScheduleTab, ManualTab      │
-│    - DataTab, Dialogs, UI Components        │
-└─────────────────────────────────────────────┘
-                    ↓ Props/Events
-┌─────────────────────────────────────────────┐
-│    Geschäftslogik-Schicht (Layer 2)         │
-│    Business Logic, Orchestration            │
-│    - scheduleEngine.ts (Hauptprozess)       │
-│    - personManager.ts (CRUD)                │
-│    - adaptiveFairness.ts (Orchestrierung)   │
-└─────────────────────────────────────────────┘
-                    ↓ Function Calls
-┌─────────────────────────────────────────────┐
-│    Fairness-Engine (Layer 3)                │
-│    Core Algorithms                          │
-│    - bayesianState.ts                       │
-│    - penalizedPriority.ts                   │
-│    - softmaxSelection.ts                    │
-│    - fairnessConstraints.ts                 │
-└─────────────────────────────────────────────┘
-                    ↓ Data Access
-┌─────────────────────────────────────────────┐
-│    Datenschicht (Layer 4)                   │
-│    - fileStorage.ts (File System Access)    │
-│    - types/index.ts (TypeScript Interfaces) │
-└─────────────────────────────────────────────┘
-```
-
-**Komponentendiagramm**:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     GießPlan System                         │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │         Presentation Layer (React UI)               │    │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐     │    │
-│  │  │ PeopleTab  │  │ScheduleTab │  │ ManualTab  │     │    │
-│  │  └────────────┘  └────────────┘  └────────────┘     │    │
-│  │  ┌────────────┐  ┌────────────────────────────┐     │    │
-│  │  │  DataTab   │  │   UI Components Library    │     │    │
-│  │  └────────────┘  │   (Radix UI + Custom)      │     │    │
-│  │                  └────────────────────────────┘     │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                            │                                │
-│                            │ Props / Events                 │
-│                            ▼                                │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │          Business Logic Layer                       │    │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────┐   │    │
-│  │  │ Schedule     │  │ Person       │  │ Export   │   │    │
-│  │  │ Engine       │  │ Manager      │  │ Utils    │   │    │
-│  │  └──────────────┘  └──────────────┘  └──────────┘   │    │
-│  │  ┌──────────────┐  ┌──────────────┐                 │    │
-│  │  │ Date Utils   │  │ Adaptive     │                 │    │
-│  │  │              │  │ Fairness     │                 │    │
-│  │  └──────────────┘  └──────────────┘                 │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                            │                                │
-│                            │ Function Calls                 │
-│                            ▼                                │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │         Fairness Engine (Core Algorithms)           │    │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────┐   │    │
-│  │  │ Bayesian     │  │ Penalized    │  │ Softmax  │   │    │
-│  │  │ State        │  │ Priority     │  │ Selection│   │    │
-│  │  └──────────────┘  └──────────────┘  └──────────┘   │    │
-│  │  ┌──────────────┐  ┌──────────────┐                 │    │
-│  │  │ Fairness     │  │ Random       │                 │    │
-│  │  │ Constraints  │  │ Utils        │                 │    │
-│  │  └──────────────┘  └──────────────┘                 │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                            │                                │
-│                            │ State Updates                  │
-│                            ▼                                │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │           Data Persistence Layer                    │    │
-│  │  ┌──────────────┐  ┌──────────────┐                 │    │
-│  │  │ File Storage │  │ IndexedDB    │                 │    │
-│  │  │ (JSON Files) │  │ (Handle Cache)                 │    │
-│  │  └──────────────┘  └──────────────┘                 │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                            │                                │
-└────────────────────────────┼────────────────────────────────┘
-                             │
-                             ▼
-                    ┌────────────────┐
-                    │  File System   │
-                    │  (Local Disk)  │
-                    └────────────────┘
-
-External Dependencies:
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│   React 19   │  │ TypeScript 5 │  │ TailwindCSS  │
-└──────────────┘  └──────────────┘  └──────────────┘
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  Radix UI    │  │   date-fns   │  │   Vitest     │
-└──────────────┘  └──────────────┘  └──────────────┘
-```
-
-Das vollständige Komponentendiagramm mit weiteren Details ist im Anhang A.3: UML-Diagramme auf S. iii zu finden.
+1. **Präsentationsschicht**: React Components (PeopleTab, ScheduleTab, ManualTab, DataTab) mit TailwindCSS und Radix UI
+2. **Geschäftslogik-Schicht**: scheduleEngine (Hauptprozess), personManager (CRUD), adaptiveFairness (Orchestrierung)
+3. **Fairness-Engine**: bayesianState, penalized Priority, softmaxSelection, fairnessConstraints
+4. **Datenschicht**: fileStorage (File System Access), types/index.ts (TypeScript Interfaces)
 
 **Datenfluss** (Beispiel: Zeitplan generieren):
-1. Nutzer klickt "Generieren" in ScheduleTab (Layer 1)
-2. ScheduleTab ruft `generateSchedule()` auf (Layer 2)
-3. scheduleEngine nutzt AdaptiveFairnessManager (Layer 2)
-4. AdaptiveFairnessManager orchestriert Fairness-Algorithmen (Layer 3)
-5. Zeitplan wird zurückgegeben und in UI angezeigt (Layer 1)
-6. Nutzer kann speichern → fileStorage.ts (Layer 4)
+UI (Nutzer klickt "Generieren") → scheduleEngine → adaptiveFairness → Fairness-Algorithmen → Zeitplan zurück → UI-Anzeige → fileStorage (Speichern)
 
-### 4.3 Datenmodell
+Das vollständige Komponentendiagramm befindet sich in **Anhang A.3: UML-Diagramme**.
 
-Das Datenmodell wurde in TypeScript als Interfaces definiert. Dies gewährleistet Type-Safety und erleichtert die Wartbarkeit. 
+### 4.3 Datenmodell und Fairness-Algorithmen
 
-**Kern-Entitäten**:
-- **YearData**: Container für Jahr, Personen und Zeitpläne
-- **Person**: Teilnehmer mit Ankunft/Abgang, Mehrfachteilnahme, Fairness-Metriken
-- **Schedule**: Zeitplan mit Wochen-Zuweisungen
-- **WeekAssignment**: Einzelne Wochen-Zuweisung mit Haupt- und Ersatzpersonen
-- **TimePeriod**: Zeitraum für Mehrfachteilnahme
-- **FairnessMetrics**: Bayesian State, Gini, CV
+**Datenmodell**:
 
-**Beziehungen**:
-- YearData ──< Person (1:n)
-- YearData ──< Schedule (1:n)
-- Person ──< TimePeriod (1:n, Mehrfachteilnahme)
-- Person ── FairnessMetrics (1:1, embedded)
-- Schedule ──< WeekAssignment (1:n)
-- WeekAssignment ──< Person (n:m via Arrays)
+Kern-Entitäten:
+- **YearData**: Container für Jahr, Personen (array), Zeitpläne (array)
+- **Person**: id, name, arrivalDate, programPeriods[], experienceLevel, fairnessMetrics
+- **Schedule**: weekAssignments[], fairnessStates (Map)
+- **WeekAssignment**: date, mainPeople[], backupPeople[], hasMentor
 
-Das vollständige ER-Diagramm und alle TypeScript-Interface-Definitionen befinden sich im **Anhang A.4: Datenmodell**.
+Die Beziehungen: YearData enthält Personen (1:n) und Zeitpläne (1:n). Eine Person kann mehrere TimePeriods haben (Mehrfachteilnahme). Ein Schedule enthält WeekAssignments (1:n), die wiederum auf Personen referenzieren (n:m via Arrays).
 
-### 4.4 Entwurf der Fairness-Algorithmen
+Das vollständige ER-Diagramm und alle TypeScript-Interface-Definitionen befinden sich in **Anhang A.4: Datenmodell**.
 
-Die Fairness-Engine ist das Herzstück des Systems. Sie besteht aus drei Haupt-Algorithmen, die zusammenarbeiten:
+**Fairness-Algorithmen**:
 
-**1. Bayesian Random Walk (Zustandsverfolgung)**
-- **Zweck**: Tracking der zeitproportionalen Zuweisungsrate mit Unsicherheitsquantifizierung
-- **Basis**: Kalman-Filter für diskrete Zeitschritte
-- **Parameter**: σ²_process = 0.005, σ²_obs = 0.05, Drift Correction α = 0.2
+Die Fairness-Engine ist das Herzstück und besteht aus drei Haupt-Algorithmen:
 
-**2. Penalized Priority (Prioritätsberechnung)**
-- **Zweck**: Berechnung von Prioritäts-Scores unter Berücksichtigung verschiedener Faktoren
-- **Formel**: priority = basePriority × mentorPenalty × recencyBonus × debtBonus
-- **Faktoren**: Aktuelle Rate, Mentor-Status, Recent Assignments, Cross-Year Debt
+**1. Bayesian Random Walk**: Kalman-Filter-basiertes Tracking der zeitproportionalen Zuweisungsrate mit Unsicherheitsquantifizierung. Parameter: σ²_process=0.005 (Process Noise), σ²_obs=0.05 (Observation Noise), Drift Correction α=0.2. Der Algorithmus aktualisiert bei jeder Beobachtung (Zuweisung oder nicht) den Belief-State (posterior mean, variance) und korrigiert systematische Drifts von der idealen Rate.
 
-**3. Gumbel-Softmax Selection (Stochastische Auswahl)**
-- **Zweck**: Stochastische Team-Auswahl mit Temperature-Control
-- **Formel**: score_i = log(priority_i) + Gumbel(0,1) / temperature
-- **Parameter**: τ_default = 1.0, τ_min = 0.1, τ_max = 10.0
+**2. Penalized Priority**: Multi-Faktoren-Prioritätsberechnung. Formel: `priority = basePriority × mentorPenalty × recencyBonus × debtBonus`. Faktoren: Aktuelle Rate vs. Ideal (basePriority), Mentor-Status (mentorPenalty 0.5 falls Mentor und viele Mentees), kürzliche Zuweisungen (recencyBonus 0.3-1.0), Cross-Year Debt (debtBonus 1.0-1.5).
 
-**Zusammenspiel**:
-1. Bayesian State liefert aktuelle Rate & Unsicherheit
-2. Penalized Priority berechnet Scores
-3. Softmax Selection wählt Team aus
-4. Nach Zuweisung: Bayesian State Update
-5. Constraint-Checking (Gini, CV)
+**3. Gumbel-Softmax Selection**: Stochastische Team-Auswahl mit Temperature-Control. Formel: `score_i = log(priority_i) + Gumbel(0,1) / temperature`. Der Gumbel-Trick ermöglicht probabilistische Auswahl unter Beibehaltung der Prioritätsrangfolge. Temperature τ steuert Stochastizität: niedrig = deterministischer, hoch = zufälliger.
+
+**Zusammenspiel**: Bayesian State liefert aktuelle Rate & Unsicherheit → Penalized Priority berechnet Scores → Softmax Selection wählt Team aus → Nach Zuweisung: Bayesian State Update → Constraint-Checking (Gini, CV).
 
 Die mathematischen Details, Formeln, Pseudocode und Beispielberechnungen befinden sich im **Anhang A.5: Code-Beispiele**.
-
-### 4.5 UI-Konzept
-
-Das UI-Konzept wurde anhand der Wireframes und Mockups entwickelt. Ziel war eine intuitive, selbsterklärende Oberfläche ohne langes Einarbeiten.
-
-**Layout-Struktur**:
-
-```
-┌────────────────────────────────────────────────────┐
-│  GießPlan                    [Folder] [Theme]      │
-├────────────────────────────────────────────────────┤
-│  [People] [Schedule] [Manual] [Data]               │ Tabs
-├────────────────────────────────────────────────────┤
-│                                                    │
-│  Tab-spezifischer Inhalt                           │
-│                                                    │
-│                                                    │
-└────────────────────────────────────────────────────┘
-```
-
-**Tab 1: People (Personenverwaltung)**
-- Tabelle mit allen Personen
-- Spalten: Name, Ankunft, Abgang, Fairness-Score, Erfahrung
-- Aktionen: Add, Edit, Delete
-- Statistik-Box: Gesamt, Aktiv, Erfahrene, Neue
-
-**Tab 2: Schedule (Zeitplan-Generierung)**
-- Konfiguration:
-  - Wochen-Anzahl (Slider 1-52)
-  - Startdatum (Date Picker)
-  - Mentor-Anforderung (Checkbox)
-  - Aufeinanderfolgende Wochen vermeiden (Checkbox)
-- Button: "Zeitplan generieren"
-- Ergebnis: Tabelle mit Wochen, Zuweisungen, Fairness-Warnings
-
-**Tab 3: Manual (Manuelle Anpassungen)**
-- Vorhandene Zeitpläne durchsuchen
-- Person ersetzen (Dropdown)
-- Zwei Personen tauschen (Drag & Drop)
-- Kommentar hinzufügen (Textfeld)
-
-**Tab 4: Data (Import/Export)**
-- Ordner auswählen
-- Dateien laden/speichern
-- Export: JSON, CSV, Excel
-- Statistiken: Personen, Zeitpläne, Fairness-Metriken
-
-**Design-Prinzipien**:
-- **Einfachheit**: Klare Struktur, keine Ablenkungen
-- **Konsistenz**: Gleiche Patterns für ähnliche Aktionen
-- **Feedback**: Sofortige Rückmeldung bei Aktionen (Toasts)
-- **Fehlervermeidung**: Validierung vor Aktionen, Confirmations bei Delete
-- **Accessibility**: WCAG 2.1 Level AA durch Radix UI
-
-**Farbschema** (TailwindCSS):
-- **Primary**: Blue-600 (Buttons, Links)
-- **Success**: Green-600 (Positive Fairness, Success Messages)
-- **Warning**: Yellow-600 (Fairness-Violations)
-- **Error**: Red-600 (Errors, Delete)
-- **Neutral**: Slate-xxx (Backgrounds, Borders, Text)
-
-### 4.6 Pflichtenheft
-
-Anhand der Entwürfe wurde am Ende der Entwurfsphase ein Pflichtenheft erstellt. Hierbei wird die konkrete Umsetzung der im Abschnitt 3.4 (Anforderungsanalyse) ermittelten Anforderungen erfasst. Hiermit kann am Ende des Projektes überprüft werden, ob alle Anforderungen an die Anwendung abgedeckt und ob diese auch wie vereinbart umgesetzt wurden.
-
-**Auszug aus dem Pflichtenheft** (vollständig im Anhang A.2):
-
-**Personenverwaltung**:
-- Als Koordinator muss ich Personen mit Name und Ankunftsdatum hinzufügen können, damit neue Teilnehmer erfasst werden.
-  - **Umsetzung**: Dialog mit Formular (Name: string, ArrivalDate: Date Picker)
-  - **Validation**: Name min. 2 Zeichen, Datum nicht in Zukunft
-  - **Persistenz**: Sofort in YearData.people gespeichert
-
-- Als Koordinator muss ich Abgangsdaten erfassen können, damit inaktive Teilnehmer korrekt markiert sind.
-  - **Umsetzung**: Edit-Dialog mit DepartureDate und DepartureReason
-  - **Validation**: Abgang >= Ankunft
-  - **Effekt**: Person wird als inaktiv markiert, nicht mehr in Zeitplan-Generierung
-
-**Zeitplan-Generierung**:
-- Als Koordinator muss ich Zeitpläne für 1-52 Wochen generieren können, damit flexible Planungsperioden möglich sind.
-  - **Umsetzung**: Slider mit Wert-Anzeige, onChange Update
-  - **Default**: 25 Wochen
-  - **Algorithmus**: scheduleEngine.generateSchedule()
-
-- Als Koordinator sollte das System Fairness-Metriken einhalten (Gini < 0.25, CV < 0.30), damit objektiv faire Verteilung garantiert ist.
-  - **Umsetzung**: Nach Generierung Constraint-Check
-  - **Feedback**: Warnings bei Violations in UI (gelbe Badges)
-  - **Toleranz**: Soft constraints, Generierung schlägt nicht fehl
-
-**Datenspeicherung**:
-- Als Koordinator muss ich Daten lokal speichern können, damit DSGVO-Konformität gewährleistet ist.
-  - **Umsetzung**: File System Access API
-  - **Fallback**: Download-API für Firefox
-  - **Format**: JSON mit YearData-Structure
-
-Das Pflichtenheft wurde den Programm-Koordinatoren vorgelegt und nach Feedback angepasst. Die finale Version wurde am Ende der Entwurfsphase freigegeben.
 
 ---
 
 ## 5. Implementierungsphase
 
-Anhand des erstellten Pflichtenheftes konnte der Autor mit der Implementierung des Projektes beginnen. Die Implementierung erfolgte test-getrieben und in iterativen Zyklen mit regelmäßigem Feedback.
+Anhand des Pflichtenheftes konnte mit der Implementierung begonnen werden. Die Implementierung erfolgte test-getrieben und in iterativen Zyklen mit regelmäßigem Feedback.
 
-### 5.1 Iterationsplanung
+### 5.1 Iterative Entwicklung
 
-Zu Anfang der Implementierungsphase wurde ein Iterationsplan erstellt. Der Iterationsplan sollte einen gegliederten Ablauf der einzelnen zu erfüllenden Aufgaben während der Implementierungsphase darstellen. Dieser Plan dient dem Entwickler als Orientierung während der Entwicklung.
+Die Implementierung erfolgte in 5 Iterationen (je 1-2 Wochen):
 
 **Iteration 1** (Woche 2, 10h): Projekt-Setup & Datenmodell
 - Vite-Projekt initialisieren mit React + TypeScript
 - TailwindCSS, Radix UI, Vitest konfigurieren
 - TypeScript Interfaces definieren (types/index.ts)
 - File Storage Grundstruktur (fileStorage.ts)
-- Tests: Datenmodell-Validierung
 
 **Iteration 2** (Woche 3, 15h): Fairness-Algorithmen
 - bayesianState.ts implementieren + Tests
@@ -902,170 +409,72 @@ Zu Anfang der Implementierungsphase wurde ein Iterationsplan erstellt. Der Itera
 - scheduleEngine.ts Kern-Logik
 - personManager.ts CRUD-Operationen
 - dateUtils.ts Hilfsfunktionen
-- Tests: Integration-Tests für Workflows
+- Integration-Tests für Workflows
 - Performance-Tests: 10 Personen, 25 Wochen < 100ms
 
 **Iteration 4** (Woche 5, 8h): UI-Komponenten
 - App.tsx Struktur mit Tabs
-- PeopleTab.tsx mit Tabelle und Dialog
-- ScheduleTab.tsx mit Konfiguration
-- ManualTab.tsx für Anpassungen
-- DataTab.tsx für Import/Export
-- Tests: React Component Tests
+- PeopleTab, ScheduleTab, ManualTab, DataTab
+- React Component Tests
 
 **Iteration 5** (Woche 5, 2h): Integration & Bugfixing
 - Alle Komponenten verbinden
 - File Storage integrieren
 - Export-Funktionen (JSON, CSV)
-- Bugfixes basierend auf Tests
-- Abschließende Performance-Optimierung
+- Performance-Optimierung
 
-Der vollständige Iterationsplan ist im Anhang A.1: Zeit- und Kostenplanung auf S. i zu finden.
+Der vollständige Iterationsplan ist im **Anhang A.1: Zeit- und Kostenplanung** zu finden.
 
-### 5.2 Implementierung des Datenmodells
+### 5.2 Kernkomponenten
 
-Die Implementierung begann mit der Definition der TypeScript-Interfaces im Ordner `src/types/index.ts`. TypeScript bietet Type-Safety zur Compile-Zeit, was viele Fehler verhindert.
+**Fairness-Engine** (`fairness/`):
 
-**Beispiel: Person Interface**:
-```typescript
-export interface Person {
-  id: string;
-  name: string;
-  arrivalDate: string;
-  expectedDepartureDate?: string;
-  actualDepartureDate?: string | null;
-  programPeriods: TimePeriod[];
-  experienceLevel: 'new' | 'experienced';
-  fairnessMetrics: FairnessMetrics;
-}
-```
+Die Fairness-Engine wurde als separates Modul implementiert, um die Trennung von Business-Logic und UI zu gewährleisten. Implementierte Module:
+- `bayesianState.ts`: Kalman-Filter-Implementierung für Fairness-Tracking (15 Unit-Tests)
+- `penalizedPriority.ts`: Multi-Faktoren-Prioritätsberechnung (20 Unit-Tests)
+- `softmaxSelection.ts`: Stochastische Team-Auswahl mit Temperature-Control (18 Unit-Tests)
+- `fairnessConstraints.ts`: Validierung von Gini und CV (12 Unit-Tests)
 
-**Validierung durch TypeScript Strict Mode**:
-Der Autor aktivierte `"strict": true` in `tsconfig.json`, um maximale Type-Safety zu gewährleisten:
-- `strictNullChecks`: Verhindert null/undefined-Fehler
-- `noImplicitAny`: Verbietet implizite any-Typen
-- `strictFunctionTypes`: Prüft Funktions-Parameter strikt
+Gesamt: 72 Unit-Tests, 90% Coverage. Alle Tests nutzen Seeded Random für Reproduzierbarkeit.
 
-**Helper-Funktionen**:
-Für wiederkehrende Operationen wurden Helper-Funktionen erstellt:
+**Schedule Engine** (`lib/scheduleEngine.ts`):
 
-```typescript
-// dateUtils.ts
-export function isActivean(
-  person: Person, 
-  date: string
-): boolean {
-  const periods = person.programPeriods;
-  return periods.some(p => 
-    p.startDate <= date && 
-    (!p.endDate || p.endDate >= date)
-  );
-}
-
-export function getTotalDaysPresent(
-  person: Person, 
-  endDate: string
-): number {
-  return person.programPeriods.reduce((total, period) => {
-    const start = parseISO(period.startDate);
-    const end = period.endDate 
-      ? parseISO(period.endDate) 
-      : parseISO(endDate);
-    return total + differenceInDays(end, start) + 1;
-  }, 0);
-}
-```
-
-Vollständige Interface-Definitionen sind im Anhang A.4: Datenmodell auf S. iv zu finden.
-
-### 5.3 Implementierung der Fairness-Algorithmen
-
-Die Fairness-Algorithmen wurden in einem separaten Modul `fairness/` implementiert, um die Trennung von Business-Logic und UI zu gewährleisten.
-
-**Implementierte Algorithmen**:
-
-**1. Bayesian State Tracking** (`bayesianState.ts`):
-- Kalman-Filter-Implementierung mit Process Noise und Drift Correction
-- Funktionen: `initializeBayesianState()`, `updateBayesianState()`, `getFairnessDeficit()`
-- Tests: 15 Unit-Tests mit verschiedenen Szenarien
-
-**2. Penalized Priority** (`penalizedPriority.ts`):
-- Multi-Faktoren-Prioritätsberechnung
-- Funktionen: `calculatePenalizedPriority()`, `calculateAllPriorities()`
-- Tests: 20 Unit-Tests mit Edge Cases
-
-**3. Gumbel-Softmax Selection** (`softmaxSelection.ts`):
-- Stochastische Team-Auswahl
-- Funktionen: `sampleGumbel()`, `selectTeamGumbelSoftmax()`, `calculateSoftmaxProbabilities()`
-- Tests: 18 Unit-Tests inklusive Determinismus-Tests mit Seed
-
-Vollständige Code-Beispiele mit mathematischen Kommentaren sind im **Anhang A.5: Code-Beispiele** zu finden. Test-Protokolle sind im **Anhang A.6: Test-Dokumentation** dokumentiert.
-
-### 5.4 Implementierung der Schedule Engine
-
-Die Schedule Engine orchestriert den gesamten Zeitplan-Generierungsprozess mit folgenden Schritten:
-
-1. **Validierung** der Eingabeparameter
-2. **Initialisierung** des Fairness Managers
+Die Schedule Engine orchestriert den gesamten Zeitplan-Generierungsprozess:
+1. **Validierung** der Eingabeparameter (Wochen 1-52, mindestens 1 Person)
+2. **Initialisierung** des Fairness Managers mit allen aktiven Personen
 3. **Wochenweise Generierung** mit Team-Auswahl und Fairness-Updates
-4. **Constraint-Checking** für Gini und CV
-5. **Schedule-Erstellung** mit Metadaten
+4. **Constraint-Checking** für Gini und CV (Warnings bei Violations)
+5. **Schedule-Erstellung** mit Metadaten (generatedAt, totalWeeks)
 
 **Performance-Optimierungen**:
-- Memoization von `getActivePeople()` Aufrufen
-- Lazy Evaluation von Fairness-Metriken
-- Batch-Updates für Bayesian States
+- Memoization von `getActivePeople()` Aufrufen (-15% Zeit)
+- Lazy Evaluation von Fairness-Metriken (-8% Zeit)
+- Batch-Updates für Bayesian States (-10% Zeit)
 
-**Erreichte Performance**:
-- 10 Personen, 25 Wochen: 42-56ms (Ziel: < 100ms) ✓
-- 100 Personen, 52 Wochen: 3.2-4.8s (Ziel: < 5s) ✓
+**Erreichte Performance**: 10 Personen/25 Wochen = 48ms (Ziel < 100ms ✅), 100 Personen/52 Wochen = 3.8s (Ziel < 5s ✅)
 
-### 5.5 Implementierung der UI-Komponenten
+**UI-Komponenten** (`src/components/`):
 
-Die UI wurde mit React 19 und Functional Components implementiert. Alle Komponenten nutzen TypeScript und sind vollständig typisiert.
+Die UI wurde mit React 19 und Functional Components implementiert:
+- **PeopleTab**: CRUD-Operationen mit Tabelle (Name, Ankunft, Abgang, Fairness-Score) und Dialogen (AddPersonDialog)
+- **ScheduleTab**: Konfiguration (Wochen-Slider 1-52, Datepicker, Mentor-Checkbox) + Generierung
+- **ManualTab**: Ersetzen und Tauschen von Personen mit Dropdown-Auswahl
+- **DataTab**: Import/Export-Funktionen (Select Folder, Save, Load, Export CSV)
 
-**Haupt-Komponenten**:
-- **App.tsx**: Hauptstruktur mit Tab-Navigation und State-Management
-- **PeopleTab.tsx**: Personenverwaltung mit Tabelle und CRUD-Dialogen
-- **ScheduleTab.tsx**: Zeitplan-Generierung mit Konfigurationsoptionen
-- **ManualTab.tsx**: Manuelle Anpassungen (Ersetzen, Tauschen)
-- **DataTab.tsx**: Import/Export-Funktionen
+**Design-Prinzipien**: TailwindCSS Utility-First für konsistentes Styling, Radix UI für WCAG 2.1-konforme accessible Komponenten, Responsive Design für Desktop und Tablet, vollständige TypeScript-Typisierung aller Props und States.
 
-**Design-Prinzipien**:
-- **TailwindCSS**: Utility-First Approach für konsistentes Styling
-- **Radix UI**: WCAG 2.1 konforme, accessible Komponenten
-- **Responsive Design**: Desktop und Tablet optimiert
-- **TypeScript**: Vollständige Typisierung aller Props und States
+**File Storage** (`lib/fileStorage.ts`):
 
-**Accessibility-Features**:
-- Keyboard Navigation (Tab, Enter, Escape)
-- ARIA Labels und Roles
-- Focus Management
-- Screen Reader Support
-
-Code-Beispiele für alle React-Komponenten sind im **Anhang A.5: Code-Beispiele** dokumentiert.
-
-### 5.6 Implementierung der File Storage
-
-Die File Storage nutzt die moderne File System Access API für lokale Datenverwaltung ohne Server-Infrastruktur.
-
-**Implementierte Funktionen**:
-- `selectDataFolder()`: Ordnerauswahl durch Nutzer
+Implementierte Funktionen:
+- `selectDataFolder()`: Ordnerauswahl durch Nutzer (File System Access API)
 - `saveYearData()`: Speichern von JSON-Dateien lokal
 - `loadYearData()`: Laden bestehender Daten
 - `exportAsDownload()`: Fallback für Browser ohne FSAPI-Support (Firefox)
 - `exportToCSV()`: Excel-kompatible CSV-Exporte
 
-**Besonderheiten**:
-- **File System Access API**: Moderne Browser-API für echte Datei-I/O
-- **Browser-Kompatibilität**: Chrome/Edge 102+, Safari 15.2+
-- **Fallback-Mechanismus**: Download-API für Firefox
-- **Datenschutz**: 100% lokal, keine Cloud-Übertragung
-- **Format**: JSON mit 2-Leerzeichen Einrückung (human-readable)
+Die File System Access API ermöglicht echte lokale Datei-I/O ohne Server. Browser-Kompatibilität: Chrome/Edge 102+, Safari 15.2+. Fallback-Mechanismus über Download-API für Firefox. Format: JSON mit 2-Leerzeichen Einrückung (human-readable).
 
-**Tests**: 25 Unit-Tests für verschiedene Szenarien (erfolgreich, Fehler, Fallback)
-
-Vollständige Implementierung siehe **Anhang A.5: Code-Beispiele**.
+Vollständige Code-Beispiele sind im **Anhang A.5: Code-Beispiele** dokumentiert.
 
 ---
 
@@ -1073,47 +482,21 @@ Vollständige Implementierung siehe **Anhang A.5: Code-Beispiele**.
 
 Die Testphase lief parallel zur Implementierung (Test-Driven Development) und wurde am Ende intensiviert. Ziel war eine Testabdeckung von > 80% und die Validierung aller funktionalen Anforderungen.
 
-### 6.1 Unit-Tests
-
-Die Unit-Tests wurden mit Vitest geschrieben und decken alle kritischen Funktionen ab. Insgesamt wurden 72 Unit-Tests erstellt.
+### 6.1 Test-Strategie
 
 **Test-Strategie**:
-- **TDD-Ansatz**: Test vor Implementierung schreiben
+- **TDD-Ansatz**: Test vor Implementierung schreiben (Red-Green-Refactor)
 - **Isolation**: Jede Funktion unabhängig testen
 - **Edge Cases**: Grenzwerte und Fehlerfälle abdecken
 - **Determinismus**: Seeded Random für reproduzierbare Tests
 
-**Beispiel: Bayesian State Tests**:
-```typescript
-describe('updateBayesianState', () => {
-  it('should update posterior mean on assignment', () => {
-    const initialState = initializeBayesianState('p1', 0.0, 0.1);
-    const updated = updateBayesianState(
-      initialState,
-      true,  // was assigned
-      7,     // days elapsed
-      0.15   // ideal rate
-    );
-    
-    expect(updated.posteriorMean).toBeGreaterThan(0);
-    expect(updated.posteriorMean).toBeLessThan(1);
-    expect(updated.posteriorVariance).toBeLessThan(
-      initialState.posteriorVariance
-    );
-    expect(updated.observationCount).toBe(1);
-  });
-  
-  it('should apply drift correction when far from ideal', () => {
-    const state = initializeBayesianState('p1', 0.5, 0.01);
-    const updated = updateBayesianState(state, false, 7, 0.15);
-    
-    const drift = Math.abs(updated.posteriorMean - 0.15);
-    expect(drift).toBeLessThan(
-      Math.abs(state.posteriorMean - 0.15)
-    );
-  });
-});
-```
+**Test-Kategorien**:
+- **Unit-Tests**: 72 Tests für Fairness-Algorithmen, Utils, Einzelfunktionen
+- **Integration-Tests**: 25 Tests für Workflows (Schedule Generation, Person Lifecycle)
+- **Performance-Tests**: Benchmarks für verschiedene Szenarien
+- **Benutzer-Tests**: 3 Koordinatoren, je 30 Min
+
+### 6.2 Ergebnisse
 
 **Test-Coverage nach Modulen**:
 
@@ -1122,166 +505,34 @@ describe('updateBayesianState', () => {
 | fairness/bayesianState.ts | 95% | 92% | 100% | 95% |
 | fairness/penalizedPriority.ts | 94% | 88% | 100% | 94% |
 | fairness/softmaxSelection.ts | 93% | 85% | 100% | 93% |
-| fairness/fairnessConstraints.ts | 96% | 90% | 100% | 96% |
 | lib/scheduleEngine.ts | 88% | 82% | 92% | 89% |
 | lib/personManager.ts | 91% | 85% | 95% | 92% |
-| lib/fileStorage.ts | 76% | 68% | 80% | 78% |
 | **Gesamt** | **90%** | **84%** | **92%** | **91%** |
 
-**Tabelle 4: Unit-Test Coverage**
+Ziel von > 80% wurde übertroffen. Detaillierte Test-Protokolle in **Anhang A.6**.
 
-Detaillierte Test-Protokolle sind im Anhang A.6: Test-Dokumentation auf S. vi zu finden.
+**Performance-Benchmarks**:
 
-### 6.2 Integration-Tests
+| Szenario | Personen | Wochen | Durchschnitt | Ziel | Status |
+|----------|----------|--------|--------------|------|--------|
+| Klein | 10 | 25 | 48ms | < 100ms | ✅ |
+| Mittel | 25 | 25 | 97ms | < 500ms | ✅ |
+| Groß | 100 | 52 | 3.8s | < 5s | ✅ |
 
-Integration-Tests überprüfen das Zusammenspiel mehrerer Komponenten. 25 Integration-Tests wurden erstellt.
+Alle Performance-Ziele erreicht. Durchläufe: 50 pro Konfiguration, Seed: 12345 (Reproduzierbarkeit).
 
-**Beispiel: Schedule Generation Integration Test**:
-```typescript
-describe('Schedule Generation Integration', () => {
-  it('should maintain fairness across 52 weeks', () => {
-    const people = createTestPeople(10);
-    
-    const result = generateSchedule({
-      people,
-      startDate: '2025-01-06',
-      weeks: 52,
-      requireMentor: true,
-      avoidConsecutive: true,
-      seed: 12345
-    });
-    
-    expect(result.success).toBe(true);
-    expect(result.schedule.weekAssignments).toHaveLength(52);
-    
-    // Check fairness
-    const fairnessMetrics = calculateFairnessMetrics(
-      people,
-      result.schedule
-    );
-    expect(fairnessMetrics.gini).toBeLessThan(0.25);
-    expect(fairnessMetrics.cv).toBeLessThan(0.30);
-    
-    // Check mentor requirement
-    const weeksWithoutMentor = result.schedule.weekAssignments
-      .filter(w => !w.hasMentor).length;
-    expect(weeksWithoutMentor).toBe(0);
-  });
-  
-  it('should handle new person joining mid-schedule', () => {
-    const people = createTestPeople(8);
-    
-    // Initial schedule
-    const schedule1 = generateSchedule({
-      people,
-      startDate: '2025-01-06',
-      weeks: 25,
-      seed: 12345
-    });
-    
-    // Add new person after week 10
-    const newPerson = createPerson('Newcomer', '2025-03-17');
-    const updatedPeople = [...people, newPerson];
-    
-    // Continue schedule
-    const schedule2 = generateSchedule({
-      people: updatedPeople,
-      startDate: '2025-03-17',
-      weeks: 15,
-      seed: 12345
-    });
-    
-    // New person should get virtual history
-    const newPersonState = schedule2.fairnessStates
-      .get(newPerson.id);
-    expect(newPersonState.observationCount).toBeGreaterThan(0);
-  });
-});
-```
+**Benutzer-Tests**:
 
-**Integration-Test-Kategorien**:
-- Schedule Generation Workflows (15 Tests)
-- Person Lifecycle (Hinzufügen, Löschen, Wiedereintritt) (10 Tests)
+3 Programm-Koordinatoren führten jeweils 30-minütige Tests durch mit folgenden Aufgaben:
+- Person hinzufügen: Durchschnitt 45s, 100% Erfolg, Kommentare: "Sehr einfach", "Intuitiv"
+- Zeitplan generieren (12 Wochen): Durchschnitt 2:14 Min, 100% Erfolg
+- Person ersetzen: Durchschnitt 38s, 100% Erfolg
+- CSV exportieren: Durchschnitt 22s, 100% Erfolg, "Excel öffnet perfekt"
+- Fairness-Metriken verstehen: 66% Erfolg (Verbesserungen: Tooltips hinzugefügt)
 
-**Ergebnis**: Alle 25 Integration-Tests bestanden
+**System Usability Scale (SUS)**: Durchschnitt **78/100** (über Branchen-Durchschnitt von 68)
 
-### 6.3 Performance-Tests
-
-Performance wurde kontinuierlich gemessen und optimiert. Stress-Tests validierten Szenarien mit vielen Personen und Wochen.
-
-**Benchmark-Setup**:
-- Hardware: Intel i7-10750H @ 2.60GHz, 16GB RAM
-- Durchläufe: 50 pro Konfiguration
-- Seed: Konstant (12345) für Reproduzierbarkeit
-
-**Ergebnisse**:
-
-| Szenario | Personen | Wochen | Min | Mittel | Max | Ziel | Status |
-|----------|----------|--------|-----|--------|-----|------|--------|
-| Klein | 10 | 25 | 42ms | 48ms | 56ms | < 100ms | ✅ |
-| Mittel-1 | 25 | 25 | 89ms | 97ms | 112ms | < 500ms | ✅ |
-| Mittel-2 | 50 | 25 | 187ms | 203ms | 245ms | < 1s | ✅ |
-| Groß-1 | 100 | 25 | 512ms | 587ms | 698ms | < 2s | ✅ |
-| Groß-2 | 100 | 52 | 3.2s | 3.8s | 4.8s | < 5s | ✅ |
-| Extrem | 200 | 52 | 18.2s | 21.5s | 28.1s | - | ⚠️ |
-
-**Tabelle 5: Performance-Benchmarks**
-
-**Optimierungen durchgeführt**:
-1. Memoization von `getActivePeople()` Aufrufen (-15% Zeit)
-2. Batch-Updates für Bayesian States (-10% Zeit)
-3. Lazy Evaluation von Fairness-Metriken (-8% Zeit)
-4. Optimierte Softmax-Berechnung (-5% Zeit)
-
-**Speicher-Nutzung**:
-- 10 Personen, 25 Wochen: ~2 MB
-- 100 Personen, 52 Wochen: ~15 MB
-- Kein Memory Leak festgestellt (1000 Generierungen)
-
-### 6.4 Benutzer-Tests
-
-Benutzer-Tests wurden mit 3 Programm-Koordinatoren durchgeführt (je 30 Minuten).
-
-**Test-Aufgaben**:
-
-| Aufgabe | Koordinator 1 | Koordinator 2 | Koordinator 3 | Durchschnitt |
-|---------|---------------|---------------|---------------|--------------|
-| **Person hinzufügen** | | | | |
-| Zeit | 45s | 38s | 52s | 45s |
-| Erfolg | ✅ | ✅ | ✅ | 100% |
-| Kommentar | "Sehr einfach" | "Intuitiv" | "Schnell" | - |
-| **Zeitplan generieren (12 Wochen)** | | | | |
-| Zeit | 2:15 | 1:58 | 2:30 | 2:14 |
-| Erfolg | ✅ | ✅ | ✅ | 100% |
-| Kommentar | "Konfiguration klar" | "Schnell" | "Mentor-Option gut" | - |
-| **Person ersetzen** | | | | |
-| Zeit | 38s | 42s | 35s | 38s |
-| Erfolg | ✅ | ✅ | ✅ | 100% |
-| Kommentar | "Einfach" | "Praktisch" | "Sehr gut" | - |
-| **CSV exportieren** | | | | |
-| Zeit | 22s | 18s | 25s | 22s |
-| Erfolg | ✅ | ✅ | ✅ | 100% |
-| Kommentar | "Excel öffnet perfekt" | "Super" | "Praktisch" | - |
-| **Fairness-Metriken verstehen** | | | | |
-| Zeit | - | - | - | - |
-| Erfolg | ⚠️ | ✅ | ⚠️ | 66% |
-| Kommentar | "Gini nicht klar" | "Mit Tooltip OK" | "Mehr Erklärung" | - |
-
-**Tabelle 6: Benutzer-Test-Protokoll**
-
-**System Usability Scale (SUS)**:
-- Koordinator 1: 75/100
-- Koordinator 2: 82/100
-- Koordinator 3: 77/100
-- **Durchschnitt: 78/100** (Gut, über Branchen-Durchschnitt von 68)
-
-**Verbesserungen basierend auf Feedback**:
-1. ✅ Tooltips für Gini/CV hinzugefügt
-2. ✅ Hilfe-Button in jedem Tab
-3. ✅ Erklärung in Statistik-Ansicht
-4. ⏳ Video-Tutorial geplant (post-launch)
-
-**Fazit**: Benutzer-Tests erfolgreich, alle kritischen Aufgaben bewältigbar. Kleinere UX-Verbesserungen umgesetzt.
+**Verbesserungen basierend auf Feedback**: Tooltips für Gini/CV hinzugefügt, Hilfe-Button in jedem Tab, erweiterte Erklärungen in Statistik-Ansicht.
 
 ---
 
@@ -1289,273 +540,83 @@ Benutzer-Tests wurden mit 3 Programm-Koordinatoren durchgeführt (je 30 Minuten)
 
 Nach erfolgreichen Tests wurde das System in den Produktiv-Betrieb überführt und an die Programm-Koordinatoren übergeben.
 
-### 7.1 Deployment
+**Deployment**: Production Build erstellt (`npm run build`) als statische Dateien in `dist/` Ordner. Build-Output: index.html + JavaScript (342 KB, gzipped 89 KB) + Vendor (156 KB, gzipped 51 KB) + CSS (12 KB, gzipped 3 KB). Optimierungen: Code Splitting, Tree Shaking, Minification, Gzip Compression (70% Größenreduktion).
 
-Das Deployment erfolgte als statische Web-Anwendung ohne Server-Infrastruktur.
+**Installationsanleitung**: Ordner auf Desktop kopieren → index.html mit Chrome/Edge öffnen → Bookmark setzen → Daten-Ordner erstellen → Beim ersten Start: Ordner auswählen.
 
-**Deployment-Schritte**:
-1. Production Build erstellen: `npm run build`
-2. Optimierte Dateien in `dist/` Ordner
-3. Deployment als statische Dateien auf lokalem File-Server
-4. Zugriff via `file://` oder lokaler Web-Server
+**Übergabe**: 1-stündiges Meeting mit Live-Demo (15 Min), Hands-On Session (30 Min), Dokumentationsübergabe (10 Min), Feedback & Ausblick (5 Min). Übergabe-Dokumente: USER_GUIDE.md (12 Seiten), ARCHITECTURE.md, README.md, CHANGELOG.md.
 
-**Build-Output**:
-```
-dist/
-  ├── index.html
-  ├── assets/
-  │   ├── index-[hash].js      (342 KB, gzipped: 89 KB)
-  │   ├── vendor-[hash].js     (156 KB, gzipped: 51 KB)
-  │   └── index-[hash].css     (12 KB, gzipped: 3 KB)
-  └── favicon.ico
-```
+**Support-Vereinbarung**: Level 1 (Koordinatoren lösen selbst via USER_GUIDE), Level 2 (IT-Support BBW für technische Probleme), Level 3 (Entwickler nur bei Bugs via GitHub Issues). Reaktionszeit: 2 Werktage bei kritischen Problemen.
 
-**Optimierungen**:
-- Code Splitting (vendor separate)
-- Tree Shaking (ungenutzte Code entfernt)
-- Minification (Variablennamen verkürzt)
-- Gzip Compression (70% Größenreduktion)
+**Schulung**: 2x 30-Min Sessions (Basis: Personen verwalten, Zeitplan generieren, Export; Fortgeschritten: Manuelle Anpassungen, Fairness-Metriken, Mehrfachteilnahme, Troubleshooting). Schulungs-Materialien: Screenshots, Video-Aufnahme (10 Min), FAQ-Dokument.
 
-**Installationsanleitung** (für Endnutzer):
-1. Ordner `GießPlan` auf Desktop kopieren
-2. `index.html` mit Chrome/Edge öffnen
-3. Bookmark setzen für schnellen Zugriff
-4. Daten-Ordner erstellen (z.B. `Dokumente/GießPlan-Daten`)
-5. Beim ersten Start: Ordner auswählen
-
-**Kein Update-Mechanismus nötig**: Statische Dateien können einfach überschrieben werden. Daten bleiben erhalten (in separatem Ordner).
-
-### 7.2 Übergabe an den Betrieb
-
-Die Übergabe erfolgte in einem 1-stündigen Meeting mit allen Programm-Koordinatoren.
-
-**Übergabe-Agenda**:
-1. **System-Demo** (15 Min)
-   - Kurzer Durchlauf aller Tabs
-   - Demonstration Zeitplan-Generierung
-   - Export-Funktionen zeigen
-
-2. **Hands-On Session** (30 Min)
-   - Koordinatoren arbeiten selbst mit System
-   - Typische Workflows durchführen
-   - Fragen beantworten
-
-3. **Dokumentation** (10 Min)
-   - USER_GUIDE.md durchgehen
-   - Troubleshooting-Tipps
-   - Support-Kontakt
-
-4. **Feedback & Ausblick** (5 Min)
-   - Feedback sammeln
-   - Feature-Wünsche notieren
-   - Wartungs-Vereinbarung
-
-**Übergabe-Dokumente**:
-- ✅ USER_GUIDE.md (Benutzerhandbuch, 12 Seiten)
-- ✅ ARCHITECTURE.md (für IT-Support)
-- ✅ README.md (Installation & Quick-Start)
-- ✅ CHANGELOG.md (Version History)
-
-**Support-Vereinbarung**:
-- **Level 1**: Koordinatoren lösen selbst (USER_GUIDE)
-- **Level 2**: IT-Support BBW (für technische Probleme)
-- **Level 3**: Entwickler (nur bei Bugs, via GitHub Issues)
-- **Reaktionszeit**: 2 Werktage bei kritischen Problemen
-
-### 7.3 Schulung der Anwender
-
-Eine formale Schulung war nicht nötig, da Koordinatoren bereits in der Entwicklung eingebunden wurden (agile Feedback-Loops). Dennoch wurde eine kurze Auffrischung durchgeführt.
-
-**Schulungs-Inhalte** (2x 30 Min Sessions):
-
-**Session 1: Basis-Funktionen**
-- Personen hinzufügen, bearbeiten, löschen
-- Zeitplan generieren für kommende Wochen
-- CSV-Export für Excel
-- Daten speichern und laden
-
-**Session 2: Fortgeschritten**
-- Manuelle Anpassungen (Ersetzen, Tauschen)
-- Fairness-Metriken interpretieren
-- Mehrfachteilnahme verwalten
-- Troubleshooting häufiger Probleme
-
-**Schulungs-Materialien**:
-- ✅ Schritt-für-Schritt Screenshots
-- ✅ Video-Aufnahme der Demo (10 Min)
-- ✅ FAQ-Dokument (15 häufigste Fragen)
-- ⏳ Video-Tutorials für YouTube (geplant)
-
-**Erfolgskriterium**: Alle 3 Koordinatoren können nach Schulung eigenständig:
-- ✅ Zeitplan für 12 Wochen generieren (< 3 Min)
-- ✅ Person hinzufügen/entfernen
-- ✅ Fairness-Metriken einsehen
-- ✅ Daten exportieren
-
-**Feedback nach 2 Wochen Nutzung**:
-- "Spart wirklich Zeit!"
-- "Fairness-Metriken sind transparent"
-- "Kein Excel-Chaos mehr"
-- "Wunsch: Mobile Version" (Backlog)
+**Feedback nach 2 Wochen**: "Spart wirklich Zeit!", "Fairness-Metriken sind transparent", "Kein Excel-Chaos mehr", Wunsch: "Mobile Version" (Backlog).
 
 ---
 
 ## 8. Fazit
 
-Zum Abschluss des Projektes zieht der Autor ein Fazit über das Gelernte, führt einen Soll/Ist-Vergleich durch und gibt einen Ausblick auf die Zukunft des Projektes.
-
 ### 8.1 Soll-/Ist-Vergleich
 
 Bei der rückblickenden Betrachtung des Projektes kann festgestellt werden, dass alle vorher definierten Anforderungen gemäß Pflichtenheft erfüllt wurden.
 
-**Zeitplanung**:
+**Zeitplanung**: Exakt 80h wie geplant (Implementierung +1h, Dokumentation -1h).
 
-| Projektphase | Soll | Ist | Differenz |
-|--------------|------|-----|-----------|
-| Analyse | 8h | 8h | 0h |
-| Entwurf | 10h | 10h | 0h |
-| Implementierung | 35h | 36h | +1h |
-| Testing | 10h | 10h | 0h |
-| Dokumentation | 5h | 4h | -1h |
-| Abnahme und Deployment | 2h | 2h | 0h |
-| **Gesamt** | **70h** | **70h** | **0h** |
-
-**Tabelle 7: Soll-/Ist-Vergleich Zeitplanung**
-
-Die minimale Überschreitung bei der Implementierung (+1h) wurde durch Zeitersparnis bei der Dokumentation (-1h) kompensiert, da diese parallel erfolgte.
-
-**Funktionale Anforderungen**:
-
-| ID | Anforderung | Status | Anmerkung |
-|----|-------------|--------|-----------|
-| FA-1.x | Personenverwaltung | ✅ | Alle Funktionen implementiert |
-| FA-2.x | Zeitplan-Generierung | ✅ | 1-52 Wochen, alle Optionen |
-| FA-3.x | Fairness-Berechnung | ✅ | Gini, CV, Bayesian State |
-| FA-4.x | Manuelle Anpassungen | ✅ | Ersetzen, Tauschen, Kommentare |
-| FA-5.x | Datenmanagement | ✅ | JSON, CSV, lokale Speicherung |
+**Funktionale Anforderungen**: Alle Must-Have Anforderungen erfüllt (Personenverwaltung, Zeitplan-Generierung, Fairness-Metriken, Manuelle Anpassungen, Datenmanagement).
 
 **Nicht-funktionale Anforderungen**:
 
-| ID | Anforderung | Ziel | Erreicht | Status |
-|----|-------------|------|----------|--------|
-| NFA-1 | Performance (10P, 25W) | < 100ms | 48ms | ✅ |
-| NFA-2 | Performance (100P, 52W) | < 5s | 3.8s | ✅ |
-| NFA-3 | Task Completion Rate | > 95% | 100% | ✅ |
-| NFA-4 | Test Coverage | > 80% | 90% | ✅ |
-| NFA-5 | Lokale Speicherung | 100% | 100% | ✅ |
-| NFA-6 | TypeScript Strict | 100% | 100% | ✅ |
+| Anforderung | Ziel | Erreicht | Status |
+|-------------|------|----------|--------|
+| Performance (10P, 25W) | < 100ms | 48ms | ✅ |
+| Performance (100P, 52W) | < 5s | 3.8s | ✅ |
+| Test Coverage | > 80% | 90% | ✅ |
+| Lokale Speicherung | 100% | 100% | ✅ |
+| TypeScript Strict | 100% | 100% | ✅ |
 
-**Code-Metriken**:
-
-**GießPlan (neu)**:
-- Lines of Code: 15.234
-- Files: 87
-- Avg. Complexity: 2.1
-- Max. Complexity: 12
-- Test Coverage: 90%
+**Code-Metriken**: 15.234 Lines of Code, 87 Files, Test Coverage 90%
 
 **Verbesserungen gegenüber manueller Planung**:
-- ✅ Zeitersparnis: 89% (45 Min → 5 Min)
-- ✅ Fairness-Gini: 0.35 → 0.22 (-37%)
-- ✅ Fehlerrate: ~15% → ~0% (automatische Validierung)
-- ✅ Transparenz: Keine Metriken → Alle Metriken sichtbar
+- Zeitersparnis: 89% (45 Min → 5 Min pro Planungszyklus)
+- Fairness-Gini: 0.35 → 0.22 (-37% Verbesserung)
+- Fehlerrate: ~15% → ~0% (automatische Validierung)
+- Transparenz: Keine Metriken → Alle Metriken sichtbar
+- Historische Daten: Verloren nach 6 Wochen → Unbegrenzt gespeichert
+
+**Wirtschaftliches Ergebnis**: ROI nach 5 Jahren +110%, Amortisation in 4,75 Jahren.
 
 ### 8.2 Lessons Learned
 
-Im Zuge des Projektes konnte der Autor viele Erfahrungen über die Arbeit an einem vollständigen Projekt sammeln.
-
 **Fachliche Erkenntnisse**:
-
-1. **Test-Driven Development lohnt sich**: Die hohe Testabdeckung (90%) hat zahlreiche Bugs früh verhindert und Refactoring erleichtert. Besonders bei komplexen Algorithmen (Bayesian, Softmax) waren Tests unverzichtbar.
-
-2. **TypeScript Strict Mode ist essentiell**: Die strikte Typisierung hat viele Fehler zur Compile-Zeit verhindert, die in JavaScript erst zur Laufzeit aufgefallen wären. Der anfängliche Mehraufwand hat sich durch weniger Debugging ausgezahlt.
-
-3. **Agile Entwicklung mit frühem Feedback**: Die Einbindung der Koordinatoren in jeder Iteration hat sichergestellt, dass das System ihren Bedürfnissen entspricht. Mehrere Funktionen wurden basierend auf Feedback angepasst.
-
-4. **Performance-Optimierung nicht vorzeitig**: Anfangs wurde ohne Optimierung entwickelt. Erst als Performance-Tests Bottlenecks zeigten, wurden gezielte Optimierungen vorgenommen (Memoization, Batch-Updates).
-
-5. **Dokumentation parallel schreiben**: Die parallele Dokumentation während der Entwicklung hat Zeit gespart und sichergestellt, dass keine Details vergessen wurden.
+- **Test-Driven Development lohnt sich**: Die hohe Testabdeckung (90%) hat zahlreiche Bugs früh verhindert und Refactoring erleichtert
+- **TypeScript Strict Mode ist essentiell**: Strikte Typisierung verhinderte viele Runtime-Fehler
+- **Agiles Feedback wichtig**: Einbindung der Koordinatoren in jeder Iteration sicherte Praxistauglichkeit
+- **Performance-Optimierung nicht vorzeitig**: Erst nach Benchmarks gezielt optimiert (Memoization, Batch-Updates)
+- **Dokumentation parallel schreiben**: Parallele Dokumentation sparte Zeit und sicherte Details
 
 **Technische Erkenntnisse**:
+- **Vite ist deutlich schneller als Webpack**: Build-Zeiten 2-3 Sekunden statt 30+ Sekunden
+- **File System Access API praktisch, aber limitiert**: Perfekt in Chrome/Edge, Firefox benötigt Fallback
+- **Radix UI spart Accessibility-Arbeit**: Out-of-the-box WCAG 2.1-konform
+- **Bayesian Algorithmen sind mächtig**: Kalman-Filter für Fairness-Tracking mathematisch elegant und praktisch effektiv
 
-1. **Vite ist deutlich schneller als Webpack**: Build-Zeiten von 2-3 Sekunden statt 30+ Sekunden ermöglichen schnelleres Iterieren.
-
-2. **File System Access API ist praktisch, aber limitiert**: Funktioniert perfekt in Chrome/Edge, aber Firefox-Support fehlt. Fallback über Download-API notwendig.
-
-3. **Radix UI für Accessibility**: Spart viel Arbeit bei ARIA-Labels, Keyboard-Navigation und Focus-Management. Out-of-the-box WCAG 2.1 konform.
-
-4. **Bayesian Algorithmen sind mächtig**: Kalman-Filter für Fairness-Tracking ist mathematisch elegant und praktisch effektiv. Unsicherheitsquantifizierung hilft bei Entscheidungen.
-
-**Projektmanagement-Erkenntnisse**:
-
-1. **Realistische Zeitplanung**: Die initiale Planung von 70h war akkurat. Puffer für unerwartete Probleme war hilfreich.
-
-2. **Iterative Entwicklung reduziert Risiken**: Durch kurze Iterationen (1-2 Wochen) wurden Probleme früh erkannt und behoben.
-
-3. **Git-Commit-Konventionen**: Klare Commit-Messages (`feat:`, `fix:`, `test:`) erleichtern Navigation in History.
-
-**Persönliche Entwicklung**:
-
-Der Autor hat durch das Projekt folgende Kompetenzen erworben:
-- ✅ Tiefes Verständnis fortgeschrittener Algorithmen (Bayesian, Softmax)
-- ✅ Praxiserfahrung mit modernen Web-Technologien (React 19, Vite)
-- ✅ Projektmanagement-Fähigkeiten (Planung, Zeitmanagement)
-- ✅ Technische Dokumentation erstellen
-- ✅ Benutzer-Tests durchführen und Feedback umsetzen
+**Persönliche Entwicklung**: Der Autor erwarb tiefes Verständnis fortgeschrittener Algorithmen (Bayesian, Softmax), Praxiserfahrung mit modernen Web-Technologien (React 19, Vite), Projektmanagement-Fähigkeiten (Planung, Zeitmanagement), technische Dokumentation und Benutzer-Test-Durchführung.
 
 ### 8.3 Ausblick
 
 Das Projekt ist erfolgreich abgeschlossen und im Produktiv-Betrieb. Dennoch gibt es Potenzial für zukünftige Erweiterungen.
 
-**Geplante Erweiterungen** (Post-Launch):
+**Geplante Erweiterungen**:
 
-**Kurzfristig** (1-3 Monate):
-- ✅ Video-Tutorials für YouTube erstellen
-- ✅ FAQ-Dokument erweitern basierend auf Support-Anfragen
-- 🔄 Mehrsprachigkeit (Englisch) für internationale BBW-Standorte
-- 🔄 Dark Mode vollständig implementieren
+**Kurzfristig** (1-3 Monate): Video-Tutorials für YouTube, FAQ-Erweiterung basierend auf Support-Anfragen, Mehrsprachigkeit (Englisch) für internationale BBW-Standorte, vollständiger Dark Mode.
 
-**Mittelfristig** (3-6 Monate):
-- 🔄 Mobile Version (Progressive Web App)
-- 🔄 Kalender-Integration (iCal Export)
-- 🔄 E-Mail-Benachrichtigungen (optional, opt-in)
-- 🔄 Statistik-Dashboard mit Charts (Chart.js)
+**Mittelfristig** (3-6 Monate): Mobile Version (Progressive Web App), Kalender-Integration (iCal Export), E-Mail-Benachrichtigungen (optional, opt-in), Statistik-Dashboard mit Charts (Chart.js).
 
-**Langfristig** (6-12 Monate):
-- 🔄 Multi-Tenancy für mehrere BBW-Standorte
-- 🔄 Cloud-Sync optional (Ende-zu-Ende verschlüsselt)
-- 🔄 KI-basierte Vorhersage von Fehlzeiten
-- 🔄 Integration mit BBW-internem CRM
+**Langfristig** (6-12 Monate): Multi-Tenancy für mehrere BBW-Standorte, optionaler Cloud-Sync (Ende-zu-Ende verschlüsselt), KI-basierte Vorhersage von Fehlzeiten, Integration mit BBW-internem CRM.
 
-**Skalierung auf andere Bereiche**:
+**Skalierung auf andere Bereiche**: Die Fairness-Engine ist domänen-agnostisch und könnte für andere Aufgabenverteilungen genutzt werden (Reinigungsdienste, Küchendienste, Schichtplanung, Tutoren-Zuweisung).
 
-Die Fairness-Engine ist domänen-agnostisch und könnte für andere Aufgabenverteilungen genutzt werden:
-- Reinigungsdienste in Wohnheimen
-- Küchendienste in Kantinen
-- Schichtplanung in Werkstätten
-- Tutoren-Zuweisung in Schulungen
-
-**Community & Open Source**:
-
-Erwägung, das Projekt als Open Source zu veröffentlichen:
-- ✅ Vorteil: Community-Beiträge, größere Reichweite
-- ⚠️ Nachteil: Wartungsaufwand, Support-Anfragen
-- 🔄 Entscheidung: Evaluierung nach 6 Monaten Produktiv-Betrieb
-
-**Wirtschaftlicher Ausblick**:
-
-Basierend auf der Amortisationsrechnung (1 Jahr 5 Monate) und der erwarteten Nutzungsdauer (5+ Jahre):
-
-```
-Jahr 1: Kosten 2.335€, Einsparung 1.690€ → -645€
-Jahr 2: Einsparung 1.690€ → +1.045€ (kumulativ)
-Jahr 3: Einsparung 1.690€ → +2.735€ (kumulativ)
-Jahr 5: Einsparung 1.690€ → +6.115€ (kumulativ)
-
-ROI nach 5 Jahren: +262%
-```
-
-Das Projekt hat sich wirtschaftlich gelohnt und bietet darüber hinaus qualitative Verbesserungen (Fairness, Transparenz, Zufriedenheit).
+**Wirtschaftlicher Ausblick**: Basierend auf der Amortisationsrechnung (4,75 Jahre) und erwarteter Nutzungsdauer (5+ Jahre) ergibt sich: Jahr 1: -803€, Jahr 2: +887€ (kumulativ), Jahr 5: +5.798€ (kumulativ), ROI nach 5 Jahren: +110%. Das Projekt hat sich wirtschaftlich gelohnt und bietet qualitative Verbesserungen (Fairness, Transparenz, Zufriedenheit).
 
 ---
 
@@ -1563,117 +624,26 @@ Das Projekt hat sich wirtschaftlich gelohnt und bietet darüber hinaus qualitati
 
 [^1]: Turk, D., France, R., & Rumpe, B. (2014). Assumptions underlying agile software development processes. *arXiv preprint arXiv:1409.6610*.
 
-[^2]: Turk et al. (2014), S. 1.
+[^2]: Beck, K. (2003). *Test-Driven Development: By Example*. Addison-Wesley Professional.
 
-[^3]: Turk et al. (2014), S. 1.
-
-[^4]: Beck, K. (2003). *Test-Driven Development: By Example*. Addison-Wesley Professional.
-
-[^5]: Haughey, D. (2014). MoSCoW Method. Verfügbar unter: http://www.projectsmart.co.uk/moscow-method.php (Zugriff: 02.12.2025).
-
-**Weiterführende Literatur**:
-
-- Bettini, L. (2013). *Implementing Domain-Specific Languages with Xtext and Xtend*. Packt Publishing.
-
-- Microsoft (2015). TypeScript Language Specification. Verfügbar unter: https://www.typescriptlang.org/docs/
-
-- Mozilla Developer Network (2024). File System Access API. Verfügbar unter: https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API
-
-- React Team (2024). React Documentation. Verfügbar unter: https://react.dev/
-
-- Vitest Team (2024). Vitest Documentation. Verfügbar unter: https://vitest.dev/
+**Weitere Quellen**:
+- Microsoft (2015). TypeScript Language Specification. https://www.typescriptlang.org/docs/
+- Mozilla Developer Network (2024). File System Access API. https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API
+- React Team (2024). React Documentation. https://react.dev/
+- Vitest Team (2024). Vitest Documentation. https://vitest.dev/
 
 ---
 
-## A. Anhang
+## Anhang
 
-### A.1 Zeit- und Kostenplanung
-
-Die detaillierte Zeit- und Kostenplanung mit allen Projektphasen, Meilensteinen, Gantt-Diagramm und Wirtschaftlichkeitsbetrachtung ist im Dokument `IHK/03_Anhaenge/A1_Zeit_und_Kostenplanung.md` zu finden.
-
-### A.2 Anforderungskatalog
-
-Der vollständige Anforderungskatalog mit allen funktionalen und nicht-funktionalen Anforderungen, User Stories und Akzeptanzkriterien ist im Dokument `IHK/03_Anhaenge/A2_Anforderungskatalog.md` zu finden.
-
-### A.3 UML-Diagramme
-
-UML-Diagramme sind im Dokument `IHK/03_Anhaenge/A3_UML_Diagramme.md` zu finden
-
-**Hardware**:
-- Büroarbeitsplatz mit Desktop-PC
-- Intel i7-10750H @ 2.60GHz, 16GB RAM, 512GB SSD
-- Windows 11 Pro
-- Testgeräte: Desktop, Tablet
-
-**Software**:
-- Visual Studio Code 1.85
-- Node.js 20.x, npm 10.x
-- Git 2.42
-- React 19.0, TypeScript 5.7, Vite 6.3
-- TailwindCSS 4.1, Radix UI 1.x
-- Vitest 4.0, @testing-library/react 16.x
-- PlantUML für Diagramme
-
-**Personal**:
-- 1 Auszubildender (70h)
-- 1 Fachlicher Betreuer (5h)
-- 3 Test-Nutzer (3h)
-- 1 Code-Reviewer (2h)
-
-### A.3 UML-Diagramme
-
-UML-Diagramme sind im Dokument `IHK/03_Anhaenge/UML_Diagramme.md` zu finden:
-- Klassendiagramm - Fairness Engine
-- Sequenzdiagramm - Zeitplan-Generierung
-- Use-Case-Diagramm
-- Komponentendiagramm
-- Aktivitätsdiagramm
-
-### A.4 Datenmodell
-
-Das vollständige Datenmodell mit ER-Diagrammen und TypeScript-Interface-Definitionen ist im Dokument `IHK/03_Anhaenge/Datenmodell.md` zu finden.
-
-### A.5 Code-Beispiele
-
-Code-Beispiele für die wichtigsten Algorithmen sind im Dokument `IHK/03_Anhaenge/A5_Code_Beispiele.md` zu finden:
-- Bayesian State Tracking
-- Penalized Priority Calculation
-- Gumbel-Softmax Selection
-- Schedule Engine
-- File Storage
-- React UI Components
-
-### A.6 Test-Dokumentation
-
-Die vollständige Test-Dokumentation mit Protokollen, Coverage-Berichten und Performance-Benchmarks ist im Dokument `IHK/03_Anhaenge/A6_Test_Dokumentation.md` zu finden.
-
-### A.7 Amortisationsrechnung
-
-Die graphische Darstellung der Amortisationsrechnung zeigt den Schnittpunkt der Kostengeraden mit der Einsparungsgeraden nach ca. 53 Monaten (siehe Anhang A.7: Amortisationsrechnung auf S. vii).
-
-```
-Kosten/Einsparungen (€)
-    ↑
-8000│                              ● Einsparungen
-    │                         ●
-6000│                    ●
-    │               ●
-4000│          ●
-    │     ●                   
-2000│●                             ▲ Kosten
-    │  ╲
-   0├───╲───────────────────────────────→ Zeit (Monate)
-    0   6   12  18  24  30  36
-            ↑
-         Amortisation
-         (17 Monate)
-```
+**A.1** Zeit- und Kostenplanung → `IHK/03_Anhaenge/A1_Zeit_und_Kostenplanung.md`  
+**A.2** Anforderungskatalog → `IHK/03_Anhaenge/A2_Anforderungskatalog.md`  
+**A.3** UML-Diagramme → `IHK/03_Anhaenge/A3_UML_Diagramme.md`  
+**A.4** Datenmodell → `IHK/03_Anhaenge/A4_Datenmodell.md`  
+**A.5** Code-Beispiele → `IHK/03_Anhaenge/A5_Code_Beispiele.md`  
+**A.6** Test-Dokumentation → `IHK/03_Anhaenge/A6_Test_Dokumentation.md`  
+**A.7** Amortisationsrechnung → `IHK/03_Anhaenge/A7_Amortisationsrechnung.md`
 
 ---
 
 **Ende der Projektdokumentation**
-
-**Gesamtumfang**: 35 Seiten Hauptdokumentation + 25 Seiten Anhänge = 60 Seiten
-
----
-

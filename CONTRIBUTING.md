@@ -3,7 +3,7 @@
 Guidelines for contributing to GießPlan Plant Watering Schedule Management System.
 
 **IHK Abschlussprojekt**: Fachinformatiker/-in für Anwendungsentwicklung  
-📄 [Project Documentation](docs/IHK_PROJECT.md)
+📄 [Project Documentation](IHK/02_Dokumentation/Projektdokumentation.md)
 
 ---
 
@@ -166,6 +166,34 @@ const updated = updatePerson(person, { name: 'New Name' });
 person.name = 'New Name';
 ```
 
+### Feature Flags
+
+**When developing fairness features**, use the `AdaptiveFairnessManager` feature flag system:
+
+```typescript
+// In adaptiveFairness.ts
+export const DEFAULT_FEATURE_FLAGS: FairnessFeatureFlags = {
+  usePenalizedPriority: true,
+  useBayesianUpdates: true,
+  useConstraintChecking: true,
+  useSoftmaxSelection: false  // New features start disabled
+};
+
+// Usage
+const manager = new AdaptiveFairnessManager(
+  people,
+  schedules,
+  evaluationDate,
+  { ...DEFAULT_FEATURE_FLAGS, useSoftmaxSelection: true }  // Enable for testing
+);
+```
+
+**Guidelines**:
+- New experimental features → Start with flag disabled
+- Test thoroughly before enabling by default
+- Document flag purpose in code comments
+- Consider gradual rollout implications
+
 ### Comments
 
 **JSDoc for public APIs**:
@@ -322,20 +350,34 @@ Fixes #123
 ```
 src/
 ├── components/        # React components
-│   ├── ui/           # Reusable UI components
+│   ├── ui/           # Reusable UI components (Radix UI based)
 │   └── dialogs/      # Dialog components
 ├── lib/              # Core business logic
-├── types/            # TypeScript types
-└── styles/           # CSS styles
+│   ├── adaptiveFairness.ts      # Fairness coordination with feature flags
+│   ├── scheduleEngine.ts        # Schedule generation orchestration
+│   ├── personManager.ts         # Person lifecycle management
+│   ├── fairnessEngine.ts        # Fairness utilities & compatibility
+│   ├── fileStorage.ts           # File System Access API storage
+│   ├── storage.ts               # LocalStorage utilities
+│   ├── dateUtils.ts             # Date manipulation
+│   ├── exportUtils.ts           # Export format conversion
+│   └── legacy/                  # Legacy fairnessEngine (backwards compatibility)
+├── types/            # TypeScript type definitions
+├── hooks/            # Custom React hooks (use-mobile, etc.)
+└── styles/           # CSS styles (theme.css)
 
-fairness/             # Fairness algorithms
-├── bayesianState.ts
-├── penalizedPriority.ts
-├── softmaxSelection.ts
-└── test/            # Algorithm tests
+fairness/             # Standalone fairness module
+├── index.ts          # Main exports (DynamicFairnessEngine)
+├── bayesianState.ts  # Bayesian random walk
+├── penalizedPriority.ts  # Priority calculation
+├── softmaxSelection.ts   # Gumbel-Softmax selection
+├── fairnessConstraints.ts  # Constraint validation
+├── random.ts         # Seeded PRNG utilities
+├── types.ts          # Fairness-specific types
+└── test/            # Algorithm unit tests
 
 Test/                 # Integration & stress tests
-docs/                 # Documentation
+docs/                 # Documentation (API, ARCHITECTURE, TESTING, etc.)
 ```
 
 ---

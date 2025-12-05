@@ -5,7 +5,7 @@
 **Projekt**: GießPlan - Plant Watering Schedule Management System  
 **Auszubildender**: Kai Delor  
 **Ausbildungsbetrieb**: Rotkreuz-Institut BBW  
-**Gesamtumfang**: 70 Stunden
+**Gesamtumfang**: 80 Stunden
 
 ---
 
@@ -15,22 +15,22 @@
 
 | Phase | Zeitaufwand | Prozent | Zeitraum |
 |-------|-------------|---------|----------|
-| **1. Analysephase** | 8h | 11% | Woche 1 |
-| **2. Entwurfsphase** | 10h | 14% | Woche 1-2 |
-| **3. Implementierungsphase** | 35h | 50% | Woche 2-5 |
-| **4. Testphase** | 10h | 14% | Woche 5-6 |
-| **5. Dokumentationsphase** | 5h | 7% | Woche 6 |
-| **6. Abschlussphase** | 2h | 3% | Woche 6 |
-| **Gesamt** | **70h** | **100%** | **6 Wochen** |
+| **1. Analysephase** | 10h | 12.5% | Woche 1 |
+| **2. Entwurfsphase** | 12h | 15% | Woche 1-2 |
+| **3. Implementierungsphase** | 40h | 50% | Woche 2-5 |
+| **4. Testphase** | 11h | 13.75% | Woche 5-6 |
+| **5. Dokumentationsphase** | 5h | 6.25% | Woche 6 |
+| **6. Abschlussphase** | 2h | 2.5% | Woche 6 |
+| **Gesamt** | **80h** | **100%** | **6 Wochen** |
 
 ### 1.2 Zeitlicher Ablauf
 
 ```
-Woche 1: [███████████░░░░░░░] Analyse (8h) + Entwurf (5h)
-Woche 2: [█████████████████░] Entwurf (5h) + Impl. (10h)
-Woche 3: [█████████████████░] Implementierung (15h)
-Woche 4: [█████████░░░░░░░░░] Implementierung (10h)
-Woche 5: [██████████████░░░░] Testing (7h) + Impl. (3h)
+Woche 1: [███████████░░░░░░░] Analyse (10h) + Entwurf (6h)
+Woche 2: [█████████████████░] Entwurf (6h) + Impl. (12h)
+Woche 3: [█████████████████░] Implementierung (16h)
+Woche 4: [█████████░░░░░░░░░] Implementierung (12h)
+Woche 5: [██████████████░░░░] Testing (8h) + Impl. (3h)
 Woche 6: [███████░░░░░░░░░░░] Testing (3h) + Doku (5h) + Abschluss (2h)
 ```
 
@@ -38,27 +38,27 @@ Woche 6: [███████░░░░░░░░░░░] Testing (3h) +
 
 ## 2. Detaillierte Zeitplanung
 
-### Phase 1: Analysephase (8 Stunden)
+### Phase 1: Analysephase (10 Stunden)
 
 | Nr | Tätigkeit | Zeitaufwand | Ergebnis |
 |----|-----------|-------------|----------|
-| 1.1 | Ist-Analyse durchführen | 2h | Dokumentation aktueller Prozess |
+| 1.1 | Ist-Analyse durchführen | 3h | Dokumentation aktueller Prozess |
 | 1.2 | Anforderungen aufnehmen | 2h | Anforderungskatalog (funktional) |
 | 1.3 | Use Cases definieren | 2h | Use-Case-Diagramm + Beschreibungen |
-| 1.4 | Wirtschaftlichkeit bewerten | 1h | Kosten-Nutzen-Analyse |
+| 1.4 | Wirtschaftlichkeit bewerten | 2h | Kosten-Nutzen-Analyse |
 | 1.5 | Soll-Konzept erstellen | 1h | Zieldefinition, Akzeptanzkriterien |
 
 **Meilenstein M1**: Anforderungen definiert und dokumentiert
 
 ---
 
-### Phase 2: Entwurfsphase (10 Stunden)
+### Phase 2: Entwurfsphase (12 Stunden)
 
 | Nr | Tätigkeit | Zeitaufwand | Ergebnis |
 |----|-----------|-------------|----------|
-| 2.1 | Systemarchitektur entwerfen | 3h | Schichtenmodell, Komponentendiagramm |
+| 2.1 | Systemarchitektur entwerfen | 4h | Schichtenmodell, Komponentendiagramm |
 | 2.2 | Datenmodell entwickeln | 2h | ER-Diagramm, TypeScript Interfaces |
-| 2.3 | Algorithmen spezifizieren | 2h | Pseudocode für Fairness-Engine |
+| 2.3 | Algorithmen spezifizieren | 3h | Pseudocode für Fairness-Engine |
 | 2.4 | UI-Konzept erstellen | 2h | Wireframes, Mockups |
 | 2.5 | Technologie-Stack festlegen | 1h | Begründete Technologieauswahl |
 
@@ -66,7 +66,7 @@ Woche 6: [███████░░░░░░░░░░░] Testing (3h) +
 
 ---
 
-### Phase 3: Implementierungsphase (35 Stunden)
+### Phase 3: Implementierungsphase (40 Stunden)
 
 | Nr | Tätigkeit | Zeitaufwand | Ergebnis |
 |----|-----------|-------------|----------|
@@ -91,11 +91,11 @@ Woche 6: [███████░░░░░░░░░░░] Testing (3h) +
 
 ---
 
-### Phase 4: Testphase (10 Stunden)
+### Phase 4: Testphase (11 Stunden)
 
 | Nr | Tätigkeit | Zeitaufwand | Ergebnis |
 |----|-----------|-------------|----------|
-| 4.1 | Unit-Tests schreiben | 4h | 70+ Unit-Tests |
+| 4.1 | Unit-Tests schreiben | 5h | 70+ Unit-Tests |
 | 4.2 | Integration-Tests | 2h | 20+ Integration-Tests |
 | 4.3 | Performance-Tests | 2h | Benchmarks, Stress-Tests |
 | 4.4 | Benutzer-Tests | 1h | Feedback von Koordinatoren |
@@ -161,9 +161,9 @@ M8 Produktiv-Einsatz       |    |    |    |    |    |  ● |
 
 | Position | Stundensatz | Stunden | Kosten |
 |----------|-------------|---------|--------|
-| Auszubildender (3. Lehrjahr) | 15 €/h | 70h | 1.050 € |
+| Auszubildender (3. Lehrjahr) | 15,79 €/h | 80h | 1.263 € |
 | Fachlicher Betreuer | 45 €/h | 5h | 225 € |
-| **Summe Personalkosten** | | | **1.275 €** |
+| **Summe Personalkosten** | | | **1.488 €** |
 
 ### 4.2 Hardwarekosten
 
@@ -196,11 +196,11 @@ M8 Produktiv-Einsatz       |    |    |    |    |    |  ● |
 
 | Kategorie | Kosten |
 |-----------|--------|
-| Personalkosten | 1.275 € |
+| Personalkosten | 1.488 € |
 | Hardwarekosten | 0 € |
 | Softwarekosten | 0 € |
 | Infrastrukturkosten | 0 € |
-| **Projektgesamtkosten** | **1.275 €** |
+| **Projektgesamtkosten** | **1.488 €** |
 
 ---
 
@@ -217,18 +217,18 @@ M8 Produktiv-Einsatz       |    |    |    |    |    |  ● |
 ### 5.2 Amortisation
 
 ```
-Projektkosten:           1.275 €
+Projektkosten:           1.488 €
 Einsparung pro Jahr:     1.260 €
 
-Amortisationszeit:       1.01 Jahre ≈ 12 Monate
+Amortisationszeit:       1.18 Jahre ≈ 14 Monate
 ```
 
 **Return on Investment (ROI)**:
 ```
 ROI = (Einsparung - Kosten) / Kosten × 100%
-ROI (Jahr 1) = (1.260 - 1.275) / 1.275 × 100% = -1.2%
-ROI (Jahr 2) = (2.520 - 1.275) / 1.275 × 100% = +97.6%
-ROI (Jahr 3) = (3.780 - 1.275) / 1.275 × 100% = +196.5%
+ROI (Jahr 1) = (1.260 - 1.488) / 1.488 × 100% = -15.3%
+ROI (Jahr 2) = (2.520 - 1.488) / 1.488 × 100% = +69.4%
+ROI (Jahr 3) = (3.780 - 1.488) / 1.488 × 100% = +154.0%
 ```
 
 ### 5.3 Qualitative Vorteile

@@ -96,7 +96,7 @@ Deployment and hosting:
 
 ### For IHK Review
 
-#### [IHK Project Documentation](IHK_PROJECT.md) 🎓
+#### [IHK Project Documentation](../IHK/02_Dokumentation/Projektdokumentation.md) 🎓
 **Target Audience**: IHK examiners, project reviewers
 
 Complete IHK Fachinformatiker Abschlussprüfung documentation:
@@ -119,7 +119,7 @@ Complete IHK Fachinformatiker Abschlussprüfung documentation:
 **Program Coordinator** → [User Guide](USER_GUIDE.md)  
 **Developer** → [API Reference](API.md) + [Architecture Guide](ARCHITECTURE.md)  
 **Deploying** → [Deployment Guide](DEPLOYMENT.md)  
-**IHK Examiner** → [IHK Project Documentation](IHK_PROJECT.md)  
+**IHK Examiner** → [IHK Project Documentation](../IHK/02_Dokumentation/Projektdokumentation.md)  
 **Contributing** → [Contributing Guide](../CONTRIBUTING.md)
 
 ### By Topic
@@ -159,7 +159,7 @@ Complete IHK Fachinformatiker Abschlussprüfung documentation:
 | [ARCHITECTURE.md](ARCHITECTURE.md) | ✅ Complete | ~600 | System design |
 | [TESTING.md](TESTING.md) | ✅ Complete | ~400 | Testing guide |
 | [DEPLOYMENT.md](DEPLOYMENT.md) | ✅ Complete | ~450 | Deployment guide |
-| [IHK_PROJECT.md](IHK_PROJECT.md) | ✅ Complete | ~926 | IHK documentation |
+| [../IHK/02_Dokumentation/](../IHK/02_Dokumentation/) | ✅ Complete | ~3000+ | IHK project documentation |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | ✅ Complete | ~350 | Contribution guide |
 | [CHANGELOG.md](../CHANGELOG.md) | ✅ Complete | ~150 | Version history |
 

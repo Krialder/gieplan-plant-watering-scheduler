@@ -563,7 +563,7 @@ Persönliches Fazit:
 ║                 Vielen Dank für Ihre                         ║
 ║                    Aufmerksamkeit!                           ║
 ║                                                              ║
-║                  🌱 GießPlan 🌱                              ║
+║                  🌱 GießPlan 🌱                             ║
 ║                                                              ║
 ║              Fragen & Diskussion                             ║
 ║                                                              ║

@@ -4,9 +4,9 @@
 ### Kosten-Nutzen-Übersicht
 
 ```
-Projektkosten (einmalig):        2.335 €
+Projektkosten (einmalig):        2.493 €
 Jährliche Einsparung:              525 €
-Amortisationsdauer:              4,45 Jahre ≈ 53 Monate
+Amortisationsdauer:              4,75 Jahre ≈ 57 Monate
 ```
 
 ### Detaillierte Berechnung
@@ -48,10 +48,10 @@ Kumulative Kosten/Einsparungen (€)
      │            ╱╱╱╱╱╱             
 2500 │      ╱╱╱╱╱╱
      │╱╱╱╱╱╱ 
-2335 │█████████████████████████████████████████████ Projektkosten
+2493 │█████████████████████████████████████████████ Projektkosten
 2000 │                           ↑
      │                    Amortisationspunkt
-1500 │                      (53 Monate)
+1500 │                      (57 Monate)
      │
 1000 │
      │
@@ -61,7 +61,7 @@ Kumulative Kosten/Einsparungen (€)
         0    12   24   36   48   60   72   84   96
                         Monate
 
-█ Projektkosten (konstant 2.335 €)
+█ Projektkosten (konstant 2.493 €)
 ╱ Kumulative Einsparung (525 €/Jahr = 43,75 €/Monat)
 ```
 
@@ -69,16 +69,16 @@ Kumulative Kosten/Einsparungen (€)
 
 | Jahr | Kumulative Kosten | Kumulative Einsparung | Netto | ROI |
 |------|-------------------|----------------------|-------|-----|
-| 0 | 2.335 € | 0 € | -2.335 € | -100% |
-| 1 | 2.335 € | 525 € | -1.810 € | -77% |
-| 2 | 2.335 € | 1.050 € | -1.285 € | -55% |
-| 3 | 2.335 € | 1.575 € | -760 € | -33% |
-| 4 | 2.335 € | 2.100 € | -235 € | -10% |
-| 4,45 (53 Mon) | 2.335 € | 2.335 € | **0 €** | **0%** |
-| 5 | 2.335 € | 2.625 € | +290 € | +12% |
-| 6 | 2.335 € | 3.150 € | +815 € | +35% |
-| 7 | 2.335 € | 3.675 € | +1.340 € | +57% |
-| 10 | 2.335 € | 5.250 € | +2.915 € | +125% |
+| 0 | 2.493 € | 0 € | -2.493 € | -100% |
+| 1 | 2.493 € | 525 € | -1.968 € | -79% |
+| 2 | 2.493 € | 1.050 € | -1.443 € | -58% |
+| 3 | 2.493 € | 1.575 € | -918 € | -37% |
+| 4 | 2.493 € | 2.100 € | -393 € | -16% |
+| 4,75 (57 Mon) | 2.493 € | 2.493 € | **0 €** | **0%** |
+| 5 | 2.493 € | 2.625 € | +132 € | +5% |
+| 6 | 2.493 € | 3.150 € | +657 € | +26% |
+| 7 | 2.493 € | 3.675 € | +1.182 € | +47% |
+| 10 | 2.493 € | 5.250 € | +2.757 € | +110% |
 
 ### Sensitivitätsanalyse
 
@@ -90,8 +90,8 @@ Weniger Fehlerkosten: +200 €/Jahr
 Bessere Berichte: +100 €/Jahr
 Gesamt: 825 €/Jahr
 
-Amortisation: 34 Monate (2,8 Jahre)
-ROI (Jahr 5): +77%
+Amortisation: 36 Monate (3,0 Jahre)
+ROI (Jahr 5): +66%
 ```
 
 **Pessimistisches Szenario** (Nur direkte Zeitersparnis, niedriger Stundensatz):
@@ -133,12 +133,12 @@ Nicht in Geld messbar, aber wertvoll:
 
 | Position | Mitarbeiter | Zeit | Stundensatz | Personal | Ressourcen | Gesamt |
 |----------|-------------|------|-------------|----------|------------|--------|
-| Entwicklung | 1x Azubi | 70h | 10€/h | 700€ | 1.050€ | 1.750€ |
+| Entwicklung | 1x Azubi | 80h | 10€/h | 800€ | 1.200€ | 2.000€ |
 | Fachberatung | 1x Betreuer | 5h | 25€/h | 125€ | 75€ | 200€ |
 | Code-Review | 1x Senior | 2h | 25€/h | 50€ | 30€ | 80€ |
 | Testing | 3x Koordinator | 3h | 20€/h | 180€ | 45€ | 225€ |
 | Abnahme | 2x Betreuer | 1h | 25€/h | 50€ | 30€ | 80€ |
-| **Gesamt** | | **81h** | | **1.105€** | **1.230€** | **2.335€** |
+| **Gesamt** | | **91h** | | **1.205€** | **1.380€** | **2.585€** |
 
 Annahmen:
 - Azubi: 10€/h Personal + 15€/h Ressourcen = 25€/h Vollkosten

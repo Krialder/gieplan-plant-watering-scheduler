@@ -3,7 +3,7 @@
 Testing strategies, practices, and examples for GießPlan Plant Watering Schedule Management System.
 
 **IHK Abschlussprojekt**: Fachinformatiker/-in für Anwendungsentwicklung  
-📄 [Project Documentation](IHK_PROJECT.md)
+📄 [Project Documentation](../IHK/02_Dokumentation/Projektdokumentation.md)
 
 ---
 
@@ -1138,6 +1138,131 @@ npm test -- --reporter=verbose
 
 # Track coverage trends
 npm run test:coverage -- --reporter=json > coverage.json
+```
+
+---
+
+## Testing Feature Flags
+
+### Feature Flag Testing Strategy
+
+When testing `AdaptiveFairnessManager` with feature flags, test both enabled and disabled states:
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { AdaptiveFairnessManager, DEFAULT_FEATURE_FLAGS } from '@/lib/adaptiveFairness';
+import { createMockPeople, createMockSchedules } from './setup';
+
+describe('AdaptiveFairnessManager Feature Flags', () => {
+  it('should respect useSoftmaxSelection flag when enabled', () => {
+    const people = createMockPeople(10);
+    const schedules = createMockSchedules(people, 10);
+    
+    const manager = new AdaptiveFairnessManager(
+      people,
+      schedules,
+      '2025-01-06',
+      { ...DEFAULT_FEATURE_FLAGS, useSoftmaxSelection: true }
+    );
+    
+    // Test that softmax selection is used
+    const priorities = manager.calculatePriorities(people, '2025-01-06');
+    const team = manager.selectTeamWithSoftmax(
+      people.map(p => p.id),
+      priorities,
+      2,
+      1.0
+    );
+    
+    expect(team).toHaveLength(2);
+    // Verify stochastic behavior (run multiple times)
+  });
+  
+  it('should use deterministic selection when useSoftmaxSelection disabled', () => {
+    const people = createMockPeople(10);
+    const schedules = createMockSchedules(people, 10);
+    
+    const manager = new AdaptiveFairnessManager(
+      people,
+      schedules,
+      '2025-01-06',
+      { ...DEFAULT_FEATURE_FLAGS, useSoftmaxSelection: false }
+    );
+    
+    // Test that greedy/deterministic selection is used
+    // Results should be consistent across runs
+  });
+  
+  it('should validate constraints only when useConstraintChecking enabled', () => {
+    const people = createMockPeople(10);
+    const schedules = createMockSchedules(people, 10);
+    
+    const managerWithChecking = new AdaptiveFairnessManager(
+      people,
+      schedules,
+      '2025-01-06',
+      { ...DEFAULT_FEATURE_FLAGS, useConstraintChecking: true }
+    );
+    
+    const managerWithoutChecking = new AdaptiveFairnessManager(
+      people,
+      schedules,
+      '2025-01-06',
+      { ...DEFAULT_FEATURE_FLAGS, useConstraintChecking: false }
+    );
+    
+    // Verify that constraint violations are detected only when enabled
+    const report1 = managerWithChecking.checkConstraints();
+    const report2 = managerWithoutChecking.checkConstraints();
+    
+    expect(report1).toBeDefined();
+    // Without checking, constraints should be skipped
+  });
+});
+```
+
+### A/B Testing with Feature Flags
+
+```typescript
+describe('Feature Flag A/B Testing', () => {
+  it('should compare fairness outcomes with different flag configurations', () => {
+    const people = createMockPeople(50);
+    
+    // Configuration A: All features enabled
+    const resultsA = generateSchedule({
+      startDate: '2025-01-06',
+      weeks: 52,
+      people,
+      existingSchedules: [],
+      flags: {
+        usePenalizedPriority: true,
+        useBayesianUpdates: true,
+        useConstraintChecking: true,
+        useSoftmaxSelection: true
+      }
+    });
+    
+    // Configuration B: Softmax disabled (default)
+    const resultsB = generateSchedule({
+      startDate: '2025-01-06',
+      weeks: 52,
+      people,
+      existingSchedules: [],
+      flags: DEFAULT_FEATURE_FLAGS
+    });
+    
+    // Compare fairness metrics
+    const metricsA = calculateFairnessMetrics(resultsA.schedule);
+    const metricsB = calculateFairnessMetrics(resultsB.schedule);
+    
+    console.log('With Softmax:', metricsA);
+    console.log('Without Softmax:', metricsB);
+    
+    // Both should achieve acceptable fairness
+    expect(metricsA.giniCoefficient).toBeLessThan(0.25);
+    expect(metricsB.giniCoefficient).toBeLessThan(0.25);
+  });
+});
 ```
 
 ---

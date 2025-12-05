@@ -105,6 +105,33 @@ Complete plant watering schedule management system for vocational rehabilitation
 
 ## [Unreleased]
 
+### Documentation Audit (2025-12-04)
+
+#### Documented Previously Undocumented Features
+- **Feature Flags System**: Added comprehensive documentation for `AdaptiveFairnessManager` feature flags
+  - `usePenalizedPriority`: Priority calculation with mentor penalties
+  - `useBayesianUpdates`: Bayesian state tracking
+  - `useConstraintChecking`: Fairness constraint validation
+  - `useSoftmaxSelection`: Gumbel-Softmax stochastic selection (gradual rollout)
+- **Dual Storage Architecture**: Clarified separation between `fileStorage.ts` and `storage.ts`
+  - `fileStorage.ts`: File System Access API for persistent data
+  - `storage.ts`: LocalStorage utilities for preferences
+- **Legacy Code**: Documented `src/lib/legacy/` folder purpose and migration path
+- **Dependencies Cleanup**: Noted unused `octokit` dependency (candidate for removal)
+
+#### Fixed Documentation Issues
+- Corrected all IHK_PROJECT.md references to point to actual location in `IHK/` folder
+- Updated architecture diagrams to show dual storage system
+- Added feature flags testing guide in TESTING.md
+- Enhanced API reference with storage.ts module documentation
+- Improved CONTRIBUTING.md with detailed project structure
+
+#### Documentation Alignment
+- Verified all code examples match actual implementation
+- Confirmed all function signatures are accurate
+- Validated dependency versions in package.json
+- Ensured test coverage claims match reality (85%+, 100+ tests)
+
 ### Planned for v2.0
 - [ ] Multi-task support (beyond plant watering)
 - [ ] Calendar integration (iCal export)
@@ -113,6 +140,7 @@ Complete plant watering schedule management system for vocational rehabilitation
 - [ ] Cloud synchronization options
 - [ ] Advanced reporting and analytics
 - [ ] Role-based access control
+- [ ] Remove unused dependencies (octokit, potentially others)
 
 ---
 
@@ -124,4 +152,4 @@ Complete plant watering schedule management system for vocational rehabilitation
 
 **Projekt-Repository**: [github.com/Krialder/gieplan-plant-watering-scheduler](https://github.com/Krialder/gieplan-plant-watering-scheduler)
 
-**Projektdokumentation**: Siehe [docs/IHK_PROJECT.md](docs/IHK_PROJECT.md)
+**Projektdokumentation**: Siehe [IHK/02_Dokumentation/](IHK/02_Dokumentation/)

@@ -3,7 +3,7 @@
 Complete API documentation for GießPlan Plant Watering Schedule Management System.
 
 **IHK Abschlussprojekt**: Fachinformatiker/-in für Anwendungsentwicklung  
-📄 [Project Documentation](IHK_PROJECT.md)
+📄 [Project Documentation](../IHK/02_Dokumentation/Projektdokumentation.md)
 
 ---
 
@@ -11,12 +11,14 @@ Complete API documentation for GießPlan Plant Watering Schedule Management Syst
 
 | Module | Purpose | Key Functions |
 |--------|---------|---------------|
-| **scheduleEngine** | Schedule generation | `generateSchedule`, `updateWeekAssignment`, `replacePersonInWeek` |
-| **personManager** | People management | `addPerson`, `updatePerson`, `deletePerson`, `calculateExperienceLevel` |
-| **fairnessEngine** | Fairness calculations | `calculateFairnessMetrics`, `updateFairnessMetrics` |
-| **adaptiveFairness** | Advanced fairness | `AdaptiveFairnessManager`, `generateScheduleWithAdaptiveFairness` |
-| **fileStorage** | Data persistence | `loadYearData`, `saveYearData`, `exportToJSON`, `exportToCSV` |
+| **scheduleEngine** | Schedule generation orchestration | `generateSchedule`, `updateWeekAssignment`, `replacePersonInWeek` |
+| **personManager** | People lifecycle management | `addPerson`, `updatePerson`, `deletePerson`, `calculateExperienceLevel` |
+| **fairnessEngine** | Fairness utilities & compatibility | `calculateFairnessMetrics`, `updateFairnessMetrics`, `calculateTenure` |
+| **adaptiveFairness** | Advanced fairness coordination | `AdaptiveFairnessManager` (with feature flags), `DEFAULT_FEATURE_FLAGS` |
+| **fileStorage** | File-based data persistence | `loadYearData`, `saveYearData`, `exportToJSON`, `exportToCSV` |
+| **storage** | LocalStorage utilities | `useLocalStorage` hook for preferences (theme, folder name) |
 | **dateUtils** | Date operations | `getNextMonday`, `getWeeksInRange`, `isDateInRange` |
+| **exportUtils** | Export format conversion | `convertToCSV`, `convertToExcel` |
 
 ---
 
@@ -173,25 +175,103 @@ Utility functions and compatibility layer.
 
 ### Adaptive Fairness (`src/lib/adaptiveFairness.ts`)
 
-Dynamic fairness system coordination.
+Dynamic fairness system coordination with feature flags for gradual rollout.
+
+#### FairnessFeatureFlags Interface
+
+```typescript
+interface FairnessFeatureFlags {
+  usePenalizedPriority: boolean;    // Enable priority with mentor penalties
+  useBayesianUpdates: boolean;      // Enable Bayesian state tracking
+  useConstraintChecking: boolean;   // Enable fairness constraint validation
+  useSoftmaxSelection: boolean;     // Enable Gumbel-Softmax selection
+}
+
+// Default configuration (production)
+export const DEFAULT_FEATURE_FLAGS: FairnessFeatureFlags = {
+  usePenalizedPriority: true,
+  useBayesianUpdates: true,
+  useConstraintChecking: true,
+  useSoftmaxSelection: false  // Disabled for gradual rollout
+};
+```
 
 #### AdaptiveFairnessManager
 
 **Constructor:** `new AdaptiveFairnessManager(people, schedules, evaluationDate, flags?, constraints?)`
 
+**Parameters:**
+- `people`: Person[] - Active participants
+- `schedules`: Schedule[] - Historical schedules
+- `evaluationDate`: string - Current date (ISO format)
+- `flags?`: FairnessFeatureFlags - Feature toggles (default: DEFAULT_FEATURE_FLAGS)
+- `constraints?`: FairnessConstraints - Fairness thresholds
+
 **Methods:**
 - `calculatePriorities(people, weekStartDate)` - Returns `Map<string, number>` of priorities
-- `selectTeamWithSoftmax(candidates, priorities, teamSize, temperature?)` - Stochastic selection
+- `selectTeamWithSoftmax(candidates, priorities, teamSize, temperature?)` - Stochastic selection (if enabled)
 - `updateAfterSelection(selectedIds, weekStartDate)` - Update fairness state
 - `getFairnessReport()` - Get comprehensive metrics
-- `checkConstraints()` - Validate fairness constraints
-- `generateScheduleWithAdaptiveFairness(options)` - Full schedule generation
+- `checkConstraints()` - Validate fairness constraints (if enabled)
+- `getFeatureFlags()` - Get current feature flag configuration
+
+**Usage Example:**
+```typescript
+// Production usage (default flags)
+const manager = new AdaptiveFairnessManager(people, schedules, evaluationDate);
+
+// Testing with experimental features
+const testManager = new AdaptiveFairnessManager(
+  people,
+  schedules,
+  evaluationDate,
+  { ...DEFAULT_FEATURE_FLAGS, useSoftmaxSelection: true }
+);
+```
+
+---
+
+### Storage Utilities (`src/lib/storage.ts`)
+
+LocalStorage-based React hook for preferences and lightweight data.
+
+#### useLocalStorage Hook
+
+```typescript
+function useLocalStorage<T>(
+  key: string,
+  defaultValue: T
+): [T, (value: T | ((prev: T) => T)) => void]
+```
+
+**Usage:**
+```typescript
+// In React components
+const [theme, setTheme] = useLocalStorage('theme', 'light');
+const [folderName, setFolderName] = useLocalStorage('folderName', '');
+const [settings, setSettings] = useLocalStorage('settings', { /* defaults */ });
+
+// Works like useState but persists to localStorage
+setTheme('dark');  // Automatically syncs to localStorage
+```
+
+**Features:**
+- Automatic JSON serialization/deserialization
+- React state integration (triggers re-renders)
+- Error handling for quota exceeded
+- Supports updater functions like useState
+
+**Use Cases:**
+- Theme selection (light/dark/twilight)
+- UI preferences
+- Last selected folder name
+- Recent items cache
 
 ---
 
 ### File Storage (`src/lib/fileStorage.ts`)
 
-File-based JSON persistence.
+File-based JSON persistence using File System Access API.
 
 #### Functions
 - `selectDataFolder()` - Prompt user to select folder → `Promise<boolean>`

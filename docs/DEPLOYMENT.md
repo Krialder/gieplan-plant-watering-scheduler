@@ -3,7 +3,7 @@
 Production deployment options and configuration for GießPlan.
 
 **IHK Abschlussprojekt**: Fachinformatiker/-in für Anwendungsentwicklung  
-📄 [Project Documentation](IHK_PROJECT.md)
+📄 [Project Documentation](../IHK/02_Dokumentation/Projektdokumentation.md)
 
 ---
 
